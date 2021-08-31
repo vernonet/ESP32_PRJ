@@ -10,10 +10,10 @@
   Bit-Depth: 24 or 16.
   
   Microphone connection: 
-   I2S_MIC_SERIAL_CLOCK      (SCK)      GPIO_NUM_32
-   I2S_MIC_LEFT_RIGHT_CLOCK  (WS)       GPIO_NUM_25
-   I2S_MIC_SERIAL_DATA       (SD)       GPIO_NUM_33
-   L/R pin of mic connect to ground.
+   -I2S_MIC_SERIAL_CLOCK      (SCK)      GPIO_NUM_32
+   -I2S_MIC_LEFT_RIGHT_CLOCK  (WS)       GPIO_NUM_25
+   -I2S_MIC_SERIAL_DATA       (SD)       GPIO_NUM_33
+   -L/R pin of mic connect to ground.
   
   serial_audio.exe - program for wifi_microphone,  it allows you to testing  microphone through a serial port (uncomment  "//#define NO_WIFI").
   
