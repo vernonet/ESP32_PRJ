@@ -7,9 +7,7 @@
   The microphone works much better than a microphone based on ESP8266.
   Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>.
   Tested on Arduino ESP32 release 1.06.
-  
   Tested sample rate 16000Hz, 22500Hz.
-  
   Bit-Depth: 24 or 16.
   
   Microphone connection: 
