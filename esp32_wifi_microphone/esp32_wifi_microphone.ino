@@ -8,6 +8,7 @@
   #include <WiFiClient.h>
 #endif
 #include <core_version.h>
+#define USE_AVAILABLE_PAGES     true
 #include <ESP_WiFiManager.h>
 #include "I2SMEMSSampler.h"
 #include <ESPmDNS.h>
@@ -45,6 +46,19 @@
 #define WHILE_LOOP_DELAY          200L
 #define WHILE_LOOP_STEPS          (WIFI_CONNECT_TIMEOUT / ( 3 * WHILE_LOOP_DELAY ))
 
+// Use USE_DHCP_IP == true for dynamic DHCP IP, false to use static IP which you have to change accordingly to your network
+#if (defined(USE_STATIC_IP_CONFIG_IN_CP) && !USE_STATIC_IP_CONFIG_IN_CP)
+  // Force DHCP to be true
+  #if defined(USE_DHCP_IP)
+    #undef USE_DHCP_IP
+  #endif
+  #define USE_DHCP_IP     true
+#else
+  // You can select DHCP or Static IP here
+  #define USE_DHCP_IP     true
+#endif
+
+
 #define reverse_bytes(val)        ((val & 0x000000FFU) << 24 | (val & 0x0000FF00U) << 8 |(val & 0x00FF0000U) >> 8 | (val & 0xFF000000U) >> 24)
 #define reverse_halfword(val)     ((val & 0x00FFU) << 24 |  (val & 0xFF000000U) >> 24)
 #define reverse_sample16(val)     (((val >> 8)&0xFF) | ((val << 8)&0xFF00))
@@ -57,14 +71,13 @@
 #endif
 
 #ifndef ARDUINO_ESP32_RELEASE_1_0_6
-  #error Recomended Arduino core for the ESP32 v1.06, v.2.00.. get always 255.255.255.255 as IP address from WiFi.localIP()
+//  #error Recomended Arduino core for the ESP32 v1.06, v.2.00.. get always 255.255.255.255 as IP address from WiFi.localIP()
 #endif  
 
 const i2s_port_t I2S_PORT = I2S_NUM_0;
 uint8_t signal_gain = SIGNAL_GAIN;
 volatile uint32_t wait_reset = 0;
 uint8_t temp_buf_f[128] __attribute__((aligned(4))); //for header
-char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 String ssid = "wifi_mic_ap";
 const char* password = "testtest";
 // SSID and PW for your Router
@@ -74,6 +87,7 @@ const int TRIGGER_PIN3 = GPIO_NUM_2;      // short  contact to ground to enter c
 volatile bool con_flag = false, start_rec = false;
 volatile unsigned int tme = 0;
 uint32_t send_count;
+WiFi_STA_IPConfig  WM_STA_IPconfig_;
 
 WebServer server(SERVER_PORT);
 WiFiClient client_;
@@ -84,6 +98,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 void launchWeb(int webtype);
 void i2sMemsToClientTask(void *param);
+void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig);
 I2SSampler *i2sSampler = NULL;
 i2s_config_t i2s_config = {
   .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX), // Receive, not transfer
@@ -133,7 +148,8 @@ void setup(void) {
   // ESP_wifiManager.setSTAStaticIPConfig(IPAddress(192,168,2,114), IPAddress(192,168,2,1), IPAddress(255,255,255,0), IPAddress(192,168,2,1), IPAddress(8,8,8,8));
   // Have to create a new function to store in EEPROM/SPIFFS for this purpose
   Router_SSID = ESP_wifiManager.WiFi_SSID();
-  Router_Pass = ESP_wifiManager.WiFi_Pass();
+  Router_Pass = ESP_wifiManager.WiFi_Pass();  
+  //ESP_wifiManager.getSTAStaticIPConfig(WM_STA_IPconfig_);
   //Remove this line if you do not want to see WiFi password printed
   Serial.println("Stored: SSID = " + Router_SSID + ", Pass = " + Router_Pass);
   // SSID to uppercase
@@ -158,11 +174,15 @@ void setup(void) {
   startedAt = millis();
 
   while ( (WiFi.status() != WL_CONNECTED) && (millis() - startedAt < WIFI_CONNECT_TIMEOUT ) )
-  {   
+  { 
+    IPAddress ip_255(255,255,255,255);   
+    WiFi.disconnect(); // probalbly not needed
+    delay(1000);
     WiFi.mode(WIFI_STA);
+    //WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
     //WiFi.hostname("wifi-mic");
-    //WiFi.config(IPAddress(192, 168, 123, 18), IPAddress(192, 168, 123, 1), IPAddress(255, 255, 255, 0), IPAddress(192, 168, 123, 1));
-    WiFi.setHostname("wifi-mic");
+    String hostname = "wifi-mic";
+    WiFi.setHostname(hostname.c_str());
     //WiFi.persistent (false);
     // We start by connecting to a WiFi network
 
@@ -175,6 +195,21 @@ void setup(void) {
     while ((!WiFi.status() || WiFi.status() >= WL_DISCONNECTED) && i++ < WHILE_LOOP_STEPS)
     {
       delay(WHILE_LOOP_DELAY);
+    }
+
+    if (WiFi.localIP() == ip_255 && WiFi.status() == WL_CONNECTED) {//v.2.00.. get always 255.255.255.255 as IP address from WiFi.localIP()
+      WiFi.disconnect();
+      delay(1000);
+      WiFi.mode(WIFI_STA);
+      WiFi.setHostname(hostname.c_str());
+      //configWiFi(WM_STA_IPconfig_);
+      WiFi.config(IPAddress(0, 0, 0, 0), IPAddress(192, 168, 1, 1), IPAddress(255, 255, 255, 0), IPAddress(192, 168, 1, 1));
+      WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str()); 
+      i = 0;
+       while ((!WiFi.status() || WiFi.status() >= WL_DISCONNECTED) && i++ < WHILE_LOOP_STEPS)
+      {
+        delay(WHILE_LOOP_DELAY);
+      }
     }
   }
 
@@ -212,18 +247,23 @@ void loop(void) {
   if (con_flag) {
     server.handleClient();
     if (tme < 1) {
-      Serial.print(daysOfTheWeek[timeClient.getDay()]);
-      Serial.print(", ");
-      Serial.printf("%02d", timeClient.getHours());
-      Serial.print(":");
-      Serial.printf("%02d", timeClient.getMinutes());
-      Serial.print("\n\r");
       timeClient.update();
+      unsigned long epochTime = timeClient.getEpochTime();
+       //Get a time structure
+      struct tm *ptm = gmtime ((time_t *)&epochTime); 
+      int monthDay = ptm->tm_mday;
+      int currentMonth = ptm->tm_mon+1;
+      int currentYear = ptm->tm_year+1900;
+      //Print complete date:
+      char str[18];
+      sprintf(str, "%02d/%02d/%04d %02d:%02d\n\r", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes());
+      Serial.printf("%s", str);    
       if (WiFi.status() != WL_CONNECTED) {
         Serial.println("NO WIFI, try to connect");
         WiFi.mode(WIFI_STA);
-        WiFi.hostname("wifi-mic");
-        WiFi.persistent (true);
+       // WiFi.hostname("wifi-mic");
+        WiFi.setHostname("wifi-mic");
+        //WiFi.persistent (true);
         //WiFi.setOutputPower(0);
         WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str());
       }
@@ -333,7 +373,7 @@ void handle_rec_wav() {
 
   client_ = server.client();
   if (client_) {
-    Serial.print(" New client conected - IP ");
+    Serial.print("New client conected - IP ");
     Serial.print(client_.remoteIP());
     Serial.printf(" PORT %d\n\r", client_.remotePort());
   }
@@ -364,7 +404,7 @@ void handle_rec_wav() {
 
   while (true) {
     if (!client_ || send_count >= (SAMPLE_BUFFER_SIZE * NUM_CPY)) {
-      Serial.print(" client disconected\n\r");
+      Serial.print("client disconected\n\r");
       //ESP.restart();
       i2s_stop(I2S_PORT);
       digitalWrite(PIN_LED, LED_OFF);
@@ -373,6 +413,17 @@ void handle_rec_wav() {
   }
 }
 
+
+void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig)
+{
+  #if USE_CONFIGURABLE_DNS  
+    // Set static IP, Gateway, Subnetmask, DNS1 and DNS2. New in v1.0.5
+    WiFi.config(in_WM_STA_IPconfig._sta_static_ip, in_WM_STA_IPconfig._sta_static_gw, in_WM_STA_IPconfig._sta_static_sn, in_WM_STA_IPconfig._sta_static_dns1, in_WM_STA_IPconfig._sta_static_dns2);  
+  #else
+    // Set static IP, Gateway, Subnetmask, Use auto DNS1 and DNS2.
+    WiFi.config(in_WM_STA_IPconfig._sta_static_ip, in_WM_STA_IPconfig._sta_static_gw, in_WM_STA_IPconfig._sta_static_sn);
+  #endif 
+}
 
 
 // Task to send samples to wifi clients
