@@ -15,7 +15,12 @@
 #include <NTPClient.h>
 #include <driver/i2s.h>
 #include "sample_wav.h"   //test wav  file
+#include <Update.h>
 
+
+extern "C" {
+uint8_t temprature_sens_read();
+}
 
 // I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S
 // SPH0645, INMP441 MEMS MICROPHONE
@@ -88,6 +93,7 @@ volatile bool con_flag = false, start_rec = false;
 volatile unsigned int tme = 0;
 uint32_t send_count;
 WiFi_STA_IPConfig  WM_STA_IPconfig_;
+const char compile_date[] = __DATE__ " " __TIME__;
 
 WebServer server(SERVER_PORT);
 WiFiClient client_;
@@ -139,7 +145,8 @@ void setup(void) {
 #endif
   delay(500);
   Serial.begin(BAUDRATE);
-  Serial.println("\nStarting");
+  Serial.print("\nStarting...\n\rcompile date: ");
+  Serial.println(compile_date);
 #ifndef NO_WIFI
   unsigned long startedAt = millis();
   ESP_WiFiManager ESP_wifiManager("wifi-mic");
@@ -254,9 +261,13 @@ void loop(void) {
       int monthDay = ptm->tm_mday;
       int currentMonth = ptm->tm_mon+1;
       int currentYear = ptm->tm_year+1900;
+      //get internal temp of ESP32
+      uint8_t temp_farenheit= temprature_sens_read();
+      //convert farenheit to celcius
+      double temp = ( temp_farenheit - 32 ) / 1.8;
       //Print complete date:
       char str[18];
-      sprintf(str, "%02d/%02d/%04d %02d:%02d\n\r", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes());
+      sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\n\r", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
       Serial.printf("%s", str);    
       if (WiFi.status() != WL_CONNECTED) {
         Serial.println("NO WIFI, try to connect");
@@ -334,8 +345,6 @@ void createWebServer(int webtype)
 
   } else if (webtype == 0) {  //are configured
 
-    server.onNotFound(handleNotFound);
-
     if (MDNS.begin("wifi-mic")) {
       Serial.println("MDNS responder started");
     }
@@ -343,9 +352,15 @@ void createWebServer(int webtype)
       Serial.println("Error setting up MDNS responder!");
     }
     MDNS.addService("http", "tcp", 8080);  //orig 80
-    MDNS.addService("osc", "udp", 4500);
+    //MDNS.addService("osc", "udp", 4500);
 
-    server.on("/rec.wav", handle_rec_wav);
+  server.onNotFound(handleNotFound);
+  /*return index page which is stored in serverIndex */
+  server.on("/upd_frm", handle_upd_frm);//for update frm http://wifi-mic.local:8080/upd_frm     admin:admin
+  server.on("/serverIndex", handle_serverIndex);
+  /*handling uploading firmware file */
+  server.on("/update", HTTP_POST, handle_update, handle_upload);
+  server.on("/rec.wav", handle_rec_wav);
   }
 }
 
@@ -413,6 +428,48 @@ void handle_rec_wav() {
   }
 }
 
+
+void handle_upd_frm()
+{ 
+    server.sendHeader("Connection", "close");
+    server.send(200, "text/html", loginIndex);
+}
+
+void handle_serverIndex() 
+{
+    server.sendHeader("Connection", "close");
+    server.send(200, "text/html", serverIndex);
+}
+
+void handle_upload()
+ {
+    HTTPUpload& upload = server.upload();
+    if (upload.status == UPLOAD_FILE_START) {
+      Serial.printf("Update: %s\n", upload.filename.c_str());
+      if (!Update.begin(UPDATE_SIZE_UNKNOWN)) { //start with max available size
+        Update.printError(Serial);
+      }
+    } else if (upload.status == UPLOAD_FILE_WRITE) {
+      /* flashing firmware to ESP*/
+      if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+        Update.printError(Serial);
+      }
+    } else if (upload.status == UPLOAD_FILE_END) {
+      if (Update.end(true)) { //true to set the size to the current progress
+        Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+      } else {
+        Update.printError(Serial);
+      }
+    }
+}
+
+void handle_update()
+{
+    server.sendHeader("Connection", "close");
+    server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+    ESP.restart();
+    handle_upload();
+ }
 
 void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig)
 {
