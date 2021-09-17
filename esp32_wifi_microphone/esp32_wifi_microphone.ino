@@ -25,6 +25,8 @@ uint8_t temprature_sens_read();
 // I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S
 // SPH0645, INMP441 MEMS MICROPHONE
 //insert in vlc  "http:\\wifi-mic.local:8080\rec.wav"  or "http:\\ip:8080\rec.wav"   ip - ip address of mic
+//for ota update  http://wifi-mic.local:8080/upd_frm     admin:admin
+//for info http://wifi-mic.local:8080/info
 
 //#define NO_WIFI                  //testing the microphone using the "serial_audio.exe" program.
 
@@ -45,6 +47,8 @@ uint8_t temprature_sens_read();
 #define SIGNAL_GAIN                (0)// 0 - max gain, 2 - no gain
 #define REC_TIME                   (6000) //sec
 #define NUM_CPY                    ((SAMPLE_RATE * BITS_PER_SAMPLE / 8 * REC_TIME)/SAMPLE_BUFFER_SIZE)//
+#define USER_OTA                   "admin"
+#define PASS_OTA                   "admin"
 
 
 #define WIFI_CONNECT_TIMEOUT      30000L
@@ -94,6 +98,9 @@ volatile unsigned int tme = 0;
 uint32_t send_count;
 WiFi_STA_IPConfig  WM_STA_IPconfig_;
 const char compile_date[] = __DATE__ " " __TIME__;
+bool authenticate=false;
+char temp_[5];
+char date_[10];
 
 WebServer server(SERVER_PORT);
 WiFiClient client_;
@@ -265,6 +272,9 @@ void loop(void) {
       uint8_t temp_farenheit= temprature_sens_read();
       //convert farenheit to celcius
       double temp = ( temp_farenheit - 32 ) / 1.8;
+      memset(temp_, 0x30, sizeof temp_);
+      sprintf(temp_, "%.4lg",temp);
+      sprintf(date_, "%02d/%02d/%04d", monthDay,currentMonth,currentYear);
       //Print complete date:
       char str[18];
       sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\n\r", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
@@ -353,14 +363,16 @@ void createWebServer(int webtype)
     }
     MDNS.addService("http", "tcp", 8080);  //orig 80
     //MDNS.addService("osc", "udp", 4500);
+    //MDNS.addService("telnet", "tcp", 23);// Telnet server RemoteDebug
 
   server.onNotFound(handleNotFound);
   /*return index page which is stored in serverIndex */
-  server.on("/upd_frm", handle_upd_frm);//for update frm http://wifi-mic.local:8080/upd_frm     admin:admin
-  server.on("/serverIndex", handle_serverIndex);
+  server.on("/upd_frm", HTTP_GET, handle_upd_frm);//for update frm http://wifi-mic.local:8080/upd_frm     admin:admin
+  //server.on("/serverIndex", handle_serverIndex);
   /*handling uploading firmware file */
   server.on("/update", HTTP_POST, handle_update, handle_upload);
-  server.on("/rec.wav", handle_rec_wav);
+  server.on("/info", HTTP_GET, handle_info);
+  server.on("/rec.wav", HTTP_GET, handle_rec_wav);
   }
 }
 
@@ -431,15 +443,24 @@ void handle_rec_wav() {
 
 void handle_upd_frm()
 { 
+    if (strlen(USER_OTA) > 0) {
+      authenticate = true;
+    }
+    if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+        return server.requestAuthentication();
+      }
     server.sendHeader("Connection", "close");
-    server.send(200, "text/html", loginIndex);
+    //server.send(200, "text/html", loginIndex);
+    server.send(200, "text/html", serverIndex);
+    //String temp__ = String(temp_);
+    //server.send(200, "text/html", "<div id='tmp'>core temp : 0" + temp__ + "°C" + "</div>");
 }
 
-void handle_serverIndex() 
-{
-    server.sendHeader("Connection", "close");
-    server.send(200, "text/html", serverIndex);
-}
+//void handle_serverIndex() 
+//{
+//    server.sendHeader("Connection", "close");
+//    server.send(200, "text/html", serverIndex);
+//}
 
 void handle_upload()
  {
@@ -464,12 +485,83 @@ void handle_upload()
 }
 
 void handle_update()
-{
+{   
+    if (strlen(USER_OTA) > 0) {
+      authenticate = true;
+    }
+    if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+        return server.requestAuthentication();
+      }
     server.sendHeader("Connection", "close");
     server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
     ESP.restart();
-    handle_upload();
+    //handle_upload();
  }
+
+ void handle_info() 
+{
+    if (strlen(USER_OTA) > 0) {
+      authenticate = true;
+     }
+    if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+        return server.requestAuthentication();
+     }
+    server.sendHeader("Connection", "close");
+    
+    // http://wifi-mic.local:8080/info
+    String page = F("<html><head><meta http-equiv='content-type' content='text/html; charset=utf-8'></head><body>\n");
+    page += F("<h2>wifi-mic information</h2>");
+    page += F("<fieldset>");
+    page += F("<h3>Device Data</h3>");
+    page += F("<table class=\"table\">");
+    page += F("<thead><tr><th>Name</th><th>Value</th></tr></thead><tbody>");
+
+    page += F("<tr><td>ESP32 core version    </td><td>");
+    page += String(ARDUINO_ESP32_RELEASE);
+    page += F("</td></tr>");
+ 
+    page += F("<tr><td>Compil. date of  FW </td><td>");
+    page += String(date_);
+    page += F("</td></tr>");
+    
+    page += F("<tr><td>Flash Chip Size</td><td>");
+    page += (ESP.getFlashChipSize()/1024);
+    page += F(" kbytes</td></tr>");
+  
+    page += F("<tr><td>Access Point IP</td><td>");
+    page += WiFi.softAPIP().toString();
+    page += F("</td></tr>");
+    
+    page += F("<tr><td>Access Point MAC</td><td>");
+    page += WiFi.softAPmacAddress();
+    page += F("</td></tr>");
+  
+    page += F("<tr><td>SSID</td><td>");
+    page += Router_SSID;
+    page += F("</td></tr>");
+  
+    page += F("<tr><td>Station IP</td><td>");
+    page += WiFi.localIP().toString();
+    page += F("</td></tr>");
+  
+    page += F("<tr><td>Station MAC</td><td>");
+    page += WiFi.macAddress();
+    page += F("</td></tr>");
+
+    page += F("<tr><td>Core temp</td><td>");
+    page += (String(temp_));
+    page += F(" °C</td></tr>");
+
+    page += F("<tr><td>CpuFreqMHz</td><td>");
+    page += (String(ESP.getCpuFreqMHz()));
+    page += F(" MHz</td></tr>");
+    
+    page += F("</tbody></table>");
+    page += F("</fieldset>");
+    page += FPSTR(WM_HTTP_END);
+    
+    server.send(200, "text/html", (const char *) page.c_str());
+}
 
 void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig)
 {
