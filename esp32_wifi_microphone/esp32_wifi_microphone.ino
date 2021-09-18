@@ -72,6 +72,12 @@ uint8_t temprature_sens_read();
 #define reverse_halfword(val)     ((val & 0x00FFU) << 24 |  (val & 0xFF000000U) >> 24)
 #define reverse_sample16(val)     (((val >> 8)&0xFF) | ((val << 8)&0xFF00))
 
+#define param_info(str, nme, z)   str +=F("<tr><td>");\
+                                  str +=F(nme);\
+                                  str +=F("</td><td>");\
+                                  str += z;\
+                                  str += F("</td></tr>");
+
 #define LED_ON                     HIGH
 #define LED_OFF                    LOW
 #define PIN_LED                    GPIO_NUM_22         // 
@@ -244,6 +250,9 @@ void setup(void) {
     timeClient.setTimeOffset(3600 * 3); //for GMT+3
     timeClient.update();
     launchWeb(0);
+    digitalWrite(PIN_LED, LED_ON);
+    delay(500);
+    digitalWrite(PIN_LED, LED_OFF);
   }
   else
     Serial.println(ESP_wifiManager.getStatus(WiFi.status()));
@@ -510,52 +519,25 @@ void handle_update()
     
     // http://wifi-mic.local:8080/info
     String page = F("<html><head><meta http-equiv='content-type' content='text/html; charset=utf-8'></head><body>\n");
+    page += F(WM_HTTP_STYLE);
+    page += F("</head><body><div class='container'><div style='text-align:left;display:inline-block;min-width:260px;'>");
     page += F("<h2>wifi-mic information</h2>");
     page += F("<fieldset>");
     page += F("<h3>Device Data</h3>");
     page += F("<table class=\"table\">");
     page += F("<thead><tr><th>Name</th><th>Value</th></tr></thead><tbody>");
 
-    page += F("<tr><td>ESP32 core version    </td><td>");
-    page += String(ARDUINO_ESP32_RELEASE);
-    page += F("</td></tr>");
- 
-    page += F("<tr><td>Compil. date of  FW </td><td>");
-    page += String(date_);
-    page += F("</td></tr>");
-    
-    page += F("<tr><td>Flash Chip Size</td><td>");
-    page += (ESP.getFlashChipSize()/1024);
-    page += F(" kbytes</td></tr>");
-  
-    page += F("<tr><td>Access Point IP</td><td>");
-    page += WiFi.softAPIP().toString();
-    page += F("</td></tr>");
-    
-    page += F("<tr><td>Access Point MAC</td><td>");
-    page += WiFi.softAPmacAddress();
-    page += F("</td></tr>");
-  
-    page += F("<tr><td>SSID</td><td>");
-    page += Router_SSID;
-    page += F("</td></tr>");
-  
-    page += F("<tr><td>Station IP</td><td>");
-    page += WiFi.localIP().toString();
-    page += F("</td></tr>");
-  
-    page += F("<tr><td>Station MAC</td><td>");
-    page += WiFi.macAddress();
-    page += F("</td></tr>");
-
-    page += F("<tr><td>Core temp</td><td>");
-    page += (String(temp_));
-    page += F(" °C</td></tr>");
-
-    page += F("<tr><td>CpuFreqMHz</td><td>");
-    page += (String(ESP.getCpuFreqMHz()));
-    page += F(" MHz</td></tr>");
-    
+    param_info(page, "ESP32 core version    ", String(ARDUINO_ESP32_RELEASE)); 
+    param_info(page, "Compil. date of  FW ", String(date_));    
+    param_info(page, "Flash Chip Size ", (ESP.getFlashChipSize()/1024) + String(" kbytes"));
+    param_info(page, "Access Point IP ", (WiFi.softAPIP().toString()));   
+    param_info(page, "Access Point MAC", WiFi.softAPmacAddress()); 
+    param_info(page, "SSID", Router_SSID);   
+    param_info(page, "Station IP", WiFi.localIP().toString());  
+    param_info(page, "Station MAC", WiFi.macAddress());  
+    param_info(page, "Core temp", String(temp_) + String(" °C"));  
+    param_info(page, "CpuFreq", String(ESP.getCpuFreqMHz()) + String(" MHz"));  
+   
     page += F("</tbody></table>");
     page += F("</fieldset>");
     page += FPSTR(WM_HTTP_END);
