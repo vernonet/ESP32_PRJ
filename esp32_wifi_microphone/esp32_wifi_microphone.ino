@@ -49,6 +49,7 @@ uint8_t temprature_sens_read();
 #define NUM_CPY                    ((SAMPLE_RATE * BITS_PER_SAMPLE / 8 * REC_TIME)/SAMPLE_BUFFER_SIZE)//
 #define USER_OTA                   "admin"
 #define PASS_OTA                   "admin"
+#define LOG_SIZE                   (100000)
 
 
 #define WIFI_CONNECT_TIMEOUT      30000L
@@ -107,6 +108,7 @@ const char compile_date[] = __DATE__ " " __TIME__;
 bool authenticate=false;
 char temp_[5];
 char date_[10];
+String log_page;
 
 WebServer server(SERVER_PORT);
 WiFiClient client_;
@@ -146,6 +148,7 @@ i2s_pin_config_t i2s_mic_pins = {
 
 void setup(void) {
 
+  log_page.reserve(LOG_SIZE);
 #if (BITS_PER_SAMPLE != 16 && BITS_PER_SAMPLE != 24)
   #error "This BITS_PER_SAMPLE not suported!!!!"
 #endif  
@@ -382,6 +385,7 @@ void createWebServer(int webtype)
   server.on("/update", HTTP_POST, handle_update, handle_upload);
   server.on("/info", HTTP_GET, handle_info);
   server.on("/rec.wav", HTTP_GET, handle_rec_wav);
+  server.on("/log", HTTP_GET, handle_log);
   }
 }
 
@@ -412,6 +416,12 @@ void handle_rec_wav() {
     Serial.print("New client conected - IP ");
     Serial.print(client_.remoteIP());
     Serial.printf(" PORT %d\n\r", client_.remotePort());
+    char strr[18];
+    sprintf(strr, "%s %02d:%02d", date_, timeClient.getHours(), timeClient.getMinutes());
+    if (log_page. length() >= 100000) log_page = "";
+    if (log_page. length() == 0) log_page = F("<div class='text'><pre>");
+    if (log_page.endsWith("</pre></div>")) log_page.remove(log_page.length()-12, 12);
+    log_page += String(strr) +  String(" client conected IP ") + client_.remoteIP().toString() +  String(" <---> ");
   }
   if (!start_rec)  {  //if first connections
     start_rec = true;
@@ -441,6 +451,9 @@ void handle_rec_wav() {
   while (true) {
     if (!client_ || send_count >= (SAMPLE_BUFFER_SIZE * NUM_CPY)) {
       Serial.print("client disconected\n\r");
+      char strr[18];
+      sprintf(strr, "%02d:%02d", timeClient.getHours(),timeClient.getMinutes());
+      log_page += String(strr) +  String(" client disconected ") +  String("\n");
       //ESP.restart();
       i2s_stop(I2S_PORT);
       digitalWrite(PIN_LED, LED_OFF);
@@ -502,9 +515,8 @@ void handle_update()
         return server.requestAuthentication();
       }
     server.sendHeader("Connection", "close");
-    server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
+    server.send(200, "text/plain", (Update.hasError()) ? "UPDATE FAIL" : "UPDATE OK");
     ESP.restart();
-    //handle_upload();
  }
 
  void handle_info() 
@@ -540,9 +552,23 @@ void handle_update()
    
     page += F("</tbody></table>");
     page += F("</fieldset>");
+    page += F("<a href='/log'>View log</a>");
     page += FPSTR(WM_HTTP_END);
     
     server.send(200, "text/html", (const char *) page.c_str());
+}
+
+void handle_log() 
+{
+    if (strlen(USER_OTA) > 0) {
+      authenticate = true;
+     }
+    if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+        return server.requestAuthentication();
+     }
+    log_page += F("</pre></div>"); 
+    server.sendHeader("Connection", "close");
+    server.send(200, "text/html", (const char *)log_page.c_str());
 }
 
 void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig)
