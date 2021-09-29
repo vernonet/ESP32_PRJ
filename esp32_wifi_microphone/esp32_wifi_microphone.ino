@@ -420,7 +420,8 @@ void handle_rec_wav() {
     sprintf(strr, "%s %02d:%02d", date_, timeClient.getHours(), timeClient.getMinutes());
     if (log_page. length() >= 100000) log_page = "";
     if (log_page. length() == 0) log_page = F("<div class='text'><pre>");
-    if (log_page.endsWith("</pre></div>")) log_page.remove(log_page.length()-12, 12);
+    //if (log_page.endsWith("</pre></div>")) log_page.remove(log_page.length()-12, 12);
+    log_page.replace("</pre></div>", "");   //delete old "</pre></div>"
     log_page += String(strr) +  String(" client conected IP ") + client_.remoteIP().toString() +  String(" <---> ");
   }
   if (!start_rec)  {  //if first connections
