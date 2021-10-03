@@ -419,8 +419,9 @@ void handle_rec_wav() {
     char strr[18];
     sprintf(strr, "%s %02d:%02d", date_, timeClient.getHours(), timeClient.getMinutes());
     if (log_page. length() >= 100000) log_page = "";
-    if (log_page. length() == 0) log_page = F("<div class='text'><pre>");
+    //if (log_page. length() == 0) log_page = F("<div class='text'><pre>");
     //if (log_page.endsWith("</pre></div>")) log_page.remove(log_page.length()-12, 12);
+    if (!(log_page.startsWith("<div class='text'><pre>"))) log_page =  String("<div class='text'><pre>") + log_page;
     log_page.replace("</pre></div>", "");   //delete old "</pre></div>"
     log_page += String(strr) +  String(" client conected IP ") + client_.remoteIP().toString() +  String(" <---> ");
   }
@@ -541,7 +542,7 @@ void handle_update()
     page += F("<thead><tr><th>Name</th><th>Value</th></tr></thead><tbody>");
 
     param_info(page, "ESP32 core version    ", String(ARDUINO_ESP32_RELEASE)); 
-    param_info(page, "Compil. date of  FW ", String(date_));    
+    param_info(page, "Compil. date of  FW ", String(compile_date));    
     param_info(page, "Flash Chip Size ", (ESP.getFlashChipSize()/1024) + String(" kbytes"));
     param_info(page, "Access Point IP ", (WiFi.softAPIP().toString()));   
     param_info(page, "Access Point MAC", WiFi.softAPmacAddress()); 
