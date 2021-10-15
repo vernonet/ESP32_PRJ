@@ -49,6 +49,7 @@ uint8_t temprature_sens_read();
 #define NUM_CPY                    ((SAMPLE_RATE * BITS_PER_SAMPLE / 8 * REC_TIME)/SAMPLE_BUFFER_SIZE)//
 #define USER_OTA                   "admin"
 #define PASS_OTA                   "admin"
+#define PASS_CONF_PORTAL           "testtest"
 #define LOG_SIZE                   (100000)
 
 
@@ -69,15 +70,15 @@ uint8_t temprature_sens_read();
 #endif
 
 
-#define reverse_bytes(val)        ((val & 0x000000FFU) << 24 | (val & 0x0000FF00U) << 8 |(val & 0x00FF0000U) >> 8 | (val & 0xFF000000U) >> 24)
-#define reverse_halfword(val)     ((val & 0x00FFU) << 24 |  (val & 0xFF000000U) >> 24)
-#define reverse_sample16(val)     (((val >> 8)&0xFF) | ((val << 8)&0xFF00))
+#define reverse_bytes(value)        ((value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |(value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24)
+#define reverse_halfword(value)     ((value & 0x00FFU) << 24 |  (value & 0xFF000000U) >> 24)
+#define reverse_sample16(value)     (((value >> 8)&0xFF) | ((value << 8)&0xFF00))
 
-#define param_info(str, nme, z)   str +=F("<tr><td>");\
-                                  str +=F(nme);\
-                                  str +=F("</td><td>");\
-                                  str += z;\
-                                  str += F("</td></tr>");
+#define param_info(str, nme, value)   str +=F("<tr><td>");\
+                                      str +=F(nme);\
+                                      str +=F("</td><td>");\
+                                      str += value;\
+                                      str += F("</td></tr>");
 
 #define LED_ON                     HIGH
 #define LED_OFF                    LOW
@@ -95,12 +96,12 @@ uint8_t signal_gain = SIGNAL_GAIN;
 volatile uint32_t wait_reset = 0;
 uint8_t temp_buf_f[128] __attribute__((aligned(4))); //for header
 String ssid = "wifi_mic_ap";
-const char* password = "testtest";
+const char* password = PASS_CONF_PORTAL;     //password for config portal
 // SSID and PW for your Router
 String Router_SSID;
 String Router_Pass;
 const int TRIGGER_PIN3 = GPIO_NUM_2;      // short  contact to ground to enter config portal
-volatile bool con_flag = false, start_rec = false;
+volatile bool con_flag = false, start_rec = false, starting = true;
 volatile unsigned int tme = 0;
 uint32_t send_count;
 WiFi_STA_IPConfig  WM_STA_IPconfig_;
@@ -120,6 +121,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 void launchWeb(int webtype);
 void i2sMemsToClientTask(void *param);
 void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig);
+
 I2SSampler *i2sSampler = NULL;
 i2s_config_t i2s_config = {
   .mode = i2s_mode_t(I2S_MODE_MASTER | I2S_MODE_RX), // Receive, not transfer
@@ -287,6 +289,12 @@ void loop(void) {
       memset(temp_, 0x30, sizeof temp_);
       sprintf(temp_, "%.4lg",temp);
       sprintf(date_, "%02d/%02d/%04d", monthDay,currentMonth,currentYear);
+      if (starting){
+        char strr[30];
+        sprintf(strr, "...starting %s %02d:%02d\n", date_, timeClient.getHours(), timeClient.getMinutes());
+        log_page = String(strr); 
+        starting = false;
+      }
       //Print complete date:
       char str[18];
       sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\n\r", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
