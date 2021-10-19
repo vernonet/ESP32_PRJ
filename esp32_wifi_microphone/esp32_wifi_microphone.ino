@@ -107,8 +107,8 @@ uint32_t send_count;
 WiFi_STA_IPConfig  WM_STA_IPconfig_;
 const char compile_date[] = __DATE__ " " __TIME__;
 bool authenticate=false;
-char temp_[5];
-char date_[10];
+char temp_[6];
+char date_[11];
 String log_page;
 
 WebServer server(SERVER_PORT);
