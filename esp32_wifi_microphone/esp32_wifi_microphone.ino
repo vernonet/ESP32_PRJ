@@ -7,7 +7,8 @@
   #include <WiFi.h>
   #include <WiFiClient.h>
 #endif
-#include <core_version.h>
+//#include <core_version.h>
+#include <esp_arduino_version.h>
 #define USE_AVAILABLE_PAGES     true
 #include <ESP_WiFiManager.h>
 #include "I2SMEMSSampler.h"
@@ -50,7 +51,7 @@ uint8_t temprature_sens_read();
 #define USER_OTA                   "admin"
 #define PASS_OTA                   "admin"
 #define PASS_CONF_PORTAL           "testtest"
-#define LOG_SIZE                   (100000)
+#define LOG_SIZE                   (0x10000)
 
 
 #define WIFI_CONNECT_TIMEOUT      30000L
@@ -94,7 +95,7 @@ uint8_t temprature_sens_read();
 const i2s_port_t I2S_PORT = I2S_NUM_0;
 uint8_t signal_gain = SIGNAL_GAIN;
 volatile uint32_t wait_reset = 0;
-uint8_t temp_buf_f[128] __attribute__((aligned(4))); //for header
+uint32_t temp_buf_f[44/4]; //for header
 String ssid = "wifi_mic_ap";
 const char* password = PASS_CONF_PORTAL;     //password for config portal
 // SSID and PW for your Router
@@ -121,6 +122,13 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 void launchWeb(int webtype);
 void i2sMemsToClientTask(void *param);
 void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig);
+void handleNotFound(void);
+void handle_rec_wav(void); 
+void handle_update(void);
+void handle_upload(void);
+void handle_upd_frm(void);
+void handle_log(void);
+void handle_info(void);
 
 I2SSampler *i2sSampler = NULL;
 i2s_config_t i2s_config = {
@@ -426,7 +434,7 @@ void handle_rec_wav() {
     Serial.printf(" PORT %d\n\r", client_.remotePort());
     char strr[18];
     sprintf(strr, "%s %02d:%02d", date_, timeClient.getHours(), timeClient.getMinutes());
-    if (log_page. length() >= 100000) log_page = "";
+    if (log_page. length() >= (LOG_SIZE-100)) log_page = "";
     //if (log_page. length() == 0) log_page = F("<div class='text'><pre>");
     //if (log_page.endsWith("</pre></div>")) log_page.remove(log_page.length()-12, 12);
     if (!(log_page.startsWith("<div class='text'><pre>"))) log_page =  String("<div class='text'><pre>") + log_page;
@@ -448,11 +456,11 @@ void handle_rec_wav() {
   server.setContentLength(SAMPLE_BUFFER_SIZE * (BITS_PER_SAMPLE / 8)*NUM_CPY + 44);
 
   memcpy(&temp_buf_f[0], &test_wav[0],  44);
-  *(uint32_t *)&temp_buf_f[4]  = (SAMPLE_BUFFER_SIZE) * NUM_CPY + 36; //long size
-  *(uint32_t *)&temp_buf_f[24]  = SAMPLE_RATE;
-  *(uint32_t *)&temp_buf_f[28]  = SAMPLE_RATE * (BITS_PER_SAMPLE / 8);
-  *(uint32_t *)&temp_buf_f[32]  = (uint32_t)(BITS_PER_SAMPLE >> 3) + ((BITS_PER_SAMPLE << 16) & 0xFF0000);
-  *(uint32_t *)&temp_buf_f[40] = (SAMPLE_BUFFER_SIZE) * NUM_CPY;    //long chunkSize
+  temp_buf_f[4/4]  = (SAMPLE_BUFFER_SIZE) * NUM_CPY + 36; //long size
+  temp_buf_f[24/4]  = SAMPLE_RATE;
+  temp_buf_f[28/4]  = SAMPLE_RATE * (BITS_PER_SAMPLE / 8);
+  temp_buf_f[32/4]  = (uint32_t)(BITS_PER_SAMPLE >> 3) + ((BITS_PER_SAMPLE << 16) & 0xFF0000);
+  temp_buf_f[40/4] = (SAMPLE_BUFFER_SIZE) * NUM_CPY;    //long chunkSize
 
   server.send_P(200, "audio/x-wav", (const char*)&temp_buf_f[0], 44);
 
@@ -549,7 +557,7 @@ void handle_update()
     page += F("<table class=\"table\">");
     page += F("<thead><tr><th>Name</th><th>Value</th></tr></thead><tbody>");
 
-    param_info(page, "ESP32 core version    ", String(ARDUINO_ESP32_RELEASE)); 
+    param_info(page, "ESP32 core version    ", String(ESP_ARDUINO_VERSION_MAJOR) + "." + String(ESP_ARDUINO_VERSION_MINOR) + "." + String(ESP_ARDUINO_VERSION_PATCH)); 
     param_info(page, "Compil. date of  FW ", String(compile_date));    
     param_info(page, "Flash Chip Size ", (ESP.getFlashChipSize()/1024) + String(" kbytes"));
     param_info(page, "Access Point IP ", (WiFi.softAPIP().toString()));   
@@ -562,7 +570,9 @@ void handle_update()
    
     page += F("</tbody></table>");
     page += F("</fieldset>");
-    page += F("<a href='/log'>View log</a>");
+    page += F("<a href='/log'>View log("); 
+    page += String(log_page.length());
+    page += F(" bytes)</a>");
     page += FPSTR(WM_HTTP_END);
     
     server.send(200, "text/html", (const char *) page.c_str());
