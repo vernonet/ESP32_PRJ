@@ -29,7 +29,7 @@ uint8_t temprature_sens_read();
 //for ota update  http://wifi-mic.local:8080/upd_frm 
 //for info        http://wifi-mic.local:8080/info
 
-#define NO_WIFI                  //testing the microphone using the "serial_audio.exe" program.
+//#define NO_WIFI                  //testing the microphone using the "serial_audio.exe" program.
 
 #define SAMPLE_BUFFER_SIZE         600    //Length of one buffer, in 32-bit words.  //512 //300  
 #define BUF_CNT                    8      // Number of buffers in the I2S circular buffer   
