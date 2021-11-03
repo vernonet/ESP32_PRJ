@@ -25,9 +25,9 @@ uint8_t temprature_sens_read();
 
 // I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S
 // SPH0645, INMP441 MEMS MICROPHONE
-//insert in vlc  "http:\\wifi-mic.local:8080\rec.wav"  or "http:\\ip:8080\rec.wav"   ip - ip address of mic
-//for ota update  http://wifi-mic.local:8080/upd_frm     admin:admin
-//for info http://wifi-mic.local:8080/info
+//insert in vlc  "http://wifi-mic.local:8080/rec.wav" or "http://<user>:<pass>wifi-mic.local:8080/rec.wav" or "http://ip:8080/rec.wav"   ip - ip address of mic
+//for ota update  http://wifi-mic.local:8080/upd_frm 
+//for info        http://wifi-mic.local:8080/info
 
 //#define NO_WIFI                  //testing the microphone using the "serial_audio.exe" program.
 
@@ -111,6 +111,7 @@ bool authenticate=false;
 char temp_[6];
 char date_[11];
 String log_page;
+uint32_t free_mem8 = 0, free_mem32 = 0;
 
 WebServer server(SERVER_PORT);
 WiFiClient client_;
@@ -302,6 +303,8 @@ void loop(void) {
         sprintf(strr, "...starting %s %02d:%02d\n", date_, timeClient.getHours(), timeClient.getMinutes());
         log_page = String(strr); 
         starting = false;
+        free_mem8 = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+        free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
       }
       //Print complete date:
       char str[18];
@@ -389,7 +392,7 @@ void createWebServer(int webtype)
     else {
       Serial.println("Error setting up MDNS responder!");
     }
-    MDNS.addService("http", "tcp", 8080);  //orig 80
+    MDNS.addService("http", "tcp", SERVER_PORT);  //orig 80
     //MDNS.addService("osc", "udp", 4500);
     //MDNS.addService("telnet", "tcp", 23);// Telnet server RemoteDebug
 
@@ -426,6 +429,12 @@ void handleNotFound() {
 }
 
 void handle_rec_wav() {
+  if (strlen(USER_OTA) > 0) {
+      authenticate = true;
+     }
+  if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+        return server.requestAuthentication();
+     }
 
   client_ = server.client();
   if (client_) {
@@ -464,6 +473,9 @@ void handle_rec_wav() {
 
   server.send_P(200, "audio/x-wav", (const char*)&temp_buf_f[0], 44);
 
+  free_mem8 = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+  free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
+
   send_count = 0;
 
   while (true) {
@@ -492,8 +504,6 @@ void handle_upd_frm()
     server.sendHeader("Connection", "close");
     //server.send(200, "text/html", loginIndex);
     server.send(200, "text/html", serverIndex);
-    //String temp__ = String(temp_);
-    //server.send(200, "text/html", "<div id='tmp'>core temp : 0" + temp__ + "°C" + "</div>");
 }
 
 //void handle_serverIndex() 
@@ -567,6 +577,8 @@ void handle_update()
     param_info(page, "Station MAC", WiFi.macAddress());  
     param_info(page, "Core temp", String(temp_) + String(" °C"));  
     param_info(page, "CpuFreq", String(ESP.getCpuFreqMHz()) + String(" MHz"));  
+    param_info(page, "Free mem8/32bit", String(free_mem8/1024) + "/" + String(free_mem32/1024) + String(" Kbytes"));  
+   // param_info(page, "Free mem8/32bit", free_mem32/1024 + String(" Kbytes"));
    
     page += F("</tbody></table>");
     page += F("</fieldset>");
