@@ -29,7 +29,7 @@ uint8_t temprature_sens_read();
 //for ota update  http://wifi-mic.local:8080/upd_frm 
 //for info        http://wifi-mic.local:8080/info
 
-//#define NO_WIFI                  //testing the microphone using the "serial_audio.exe" program.
+#define NO_WIFI                  //testing the microphone using the "serial_audio.exe" program.
 
 #define SAMPLE_BUFFER_SIZE         600    //Length of one buffer, in 32-bit words.  //512 //300  
 #define BUF_CNT                    8      // Number of buffers in the I2S circular buffer   
@@ -122,6 +122,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 void launchWeb(int webtype);
 void i2sMemsToClientTask(void *param);
+void i2sMemsToUartTask(void *param);
 void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig);
 void handleNotFound(void);
 void handle_rec_wav(void); 
@@ -303,7 +304,7 @@ void loop(void) {
         sprintf(strr, "...starting %s %02d:%02d\n", date_, timeClient.getHours(), timeClient.getMinutes());
         log_page = String(strr); 
         starting = false;
-        free_mem8 = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+        free_mem8  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
         free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
       }
       //Print complete date:
@@ -372,7 +373,7 @@ void loop(void) {
   TaskHandle_t i2sMemsToUartTaskHandle;
   xTaskCreatePinnedToCore(i2sMemsToUartTask, "I2S Writer Task", 4096, i2sSampler, 1, &i2sMemsToUartTaskHandle, 1);
   // start sampling from i2s device
-  i2sSampler->start(I2S_PORT, i2s_config, BITS_PER_SAMPLE, BITS_PER_SAMPLE, SAMPLE_BUFFER_SIZE * (BITS_PER_SAMPLE >> 3), i2sMemsToUartTaskHandle); //32768
+  i2sSampler->start(I2S_PORT, i2s_config, BITS_PER_SAMPLE, SAMPLE_BUFFER_SIZE * (BITS_PER_SAMPLE >> 3), i2sMemsToUartTaskHandle); //32768
   while (true) {};
 
 #endif
