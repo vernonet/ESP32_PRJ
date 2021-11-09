@@ -25,7 +25,7 @@ uint8_t temprature_sens_read();
 
 // I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S
 // SPH0645, INMP441 MEMS MICROPHONE
-//insert in vlc  "http://wifi-mic.local:8080/rec.wav" or "http://<user>:<pass>wifi-mic.local:8080/rec.wav" or "http://ip:8080/rec.wav"   ip - ip address of mic
+//insert in vlc  "http://wifi-mic.local:8080/rec.wav" or "http://<user>:<pass>@wifi-mic.local:8080/rec.wav" or "http://ip:8080/rec.wav"   ip - ip address of mic
 //for ota update  http://wifi-mic.local:8080/upd_frm 
 //for info        http://wifi-mic.local:8080/info
 
