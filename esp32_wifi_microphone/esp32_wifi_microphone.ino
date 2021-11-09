@@ -86,11 +86,7 @@ uint8_t temprature_sens_read();
 #define PIN_LED                    GPIO_NUM_22         // 
 #ifdef ARDUINO_ESP32_RELEASE_1_0_6 
   #define ESP_getChipId()   (ESP.getChipId())
-#endif
-
-#ifndef ARDUINO_ESP32_RELEASE_1_0_6
-//  #error Recomended Arduino core for the ESP32 v1.06, v.2.00.. get always 255.255.255.255 as IP address from WiFi.localIP()
-#endif  
+#endif 
 
 const i2s_port_t I2S_PORT = I2S_NUM_0;
 uint8_t signal_gain = SIGNAL_GAIN;
