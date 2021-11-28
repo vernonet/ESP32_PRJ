@@ -115,6 +115,8 @@ WiFiClient client_;
 const long utcOffsetInSeconds = 2 * 60 * 60; //+2;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+const int SAMPLE_SIZE = SAMPLE_BUFFER_SIZE;
+int16_t *samples;
 
 void launchWeb(int webtype);
 void i2sMemsToClientTask(void *param);
@@ -171,6 +173,8 @@ void setup(void) {
   Serial.begin(BAUDRATE);
   Serial.print("\nStarting...\n\rcompile date: ");
   Serial.println(compile_date);
+  samples = (int16_t *)malloc((BITS_PER_SAMPLE/8) * SAMPLE_SIZE);
+  if (!samples) Serial.println("Failed to allocate memory for samples");
 #ifndef NO_WIFI
   unsigned long startedAt = millis();
   ESP_WiFiManager ESP_wifiManager("wifi-mic");
@@ -364,12 +368,12 @@ void loop(void) {
 #else
 
   start_rec = true;
-  i2sSampler = new I2SMEMSSampler(i2s_mic_pins, false);
+  i2sSampler = new I2SMEMSSampler(I2S_NUM_0, i2s_mic_pins, i2s_config, false);
+  // start sampling from i2s device
+  i2sSampler->start();
   // set up the i2s sample writer task
   TaskHandle_t i2sMemsToUartTaskHandle;
   xTaskCreatePinnedToCore(i2sMemsToUartTask, "I2S Writer Task", 4096, i2sSampler, 1, &i2sMemsToUartTaskHandle, 1);
-  // start sampling from i2s device
-  i2sSampler->start(I2S_PORT, i2s_config, BITS_PER_SAMPLE, SAMPLE_BUFFER_SIZE * (BITS_PER_SAMPLE >> 3), i2sMemsToUartTaskHandle); //32768
   while (true) {};
 
 #endif
@@ -448,13 +452,13 @@ void handle_rec_wav() {
     log_page += String(strr) +  String(" client conected IP ") + client_.remoteIP().toString() +  String(" <---> ");
   }
   if (!start_rec)  {  //if first connections
-    start_rec = true;
-    i2sSampler = new I2SMEMSSampler(i2s_mic_pins, false);
+   start_rec = true;
+    i2sSampler = new I2SMEMSSampler(I2S_NUM_0, i2s_mic_pins, i2s_config, false);
+    // start sampling from i2s device
+    i2sSampler->start();
     // set up the i2s sample writer task
     TaskHandle_t i2sMemsToClientTaskHandle;
     xTaskCreatePinnedToCore(i2sMemsToClientTask, "I2S Writer Task", 4096, i2sSampler, 1, &i2sMemsToClientTaskHandle, 1);
-    // start sampling from i2s device
-    i2sSampler->start(I2S_PORT, i2s_config, BITS_PER_SAMPLE, SAMPLE_BUFFER_SIZE * (BITS_PER_SAMPLE >> 3), i2sMemsToClientTaskHandle); //32768  //1200   1800
   }
    //if any other connections
    else i2s_start(I2S_PORT);
@@ -616,42 +620,31 @@ void configWiFi(WiFi_STA_IPConfig in_WM_STA_IPconfig)
 void i2sMemsToClientTask(void *param)
 {
   I2SSampler *sampler = (I2SSampler *)param;
-  const TickType_t xMaxBlockTime = pdMS_TO_TICKS(100);
-
+  uint32_t sze;
+  
   while (true)
   {
-    // wait for some samples to save
-    uint32_t ulNotificationValue = ulTaskNotifyTake(pdTRUE, xMaxBlockTime);
-    if (ulNotificationValue > 0)
-    {
-      if (send_count < (SAMPLE_BUFFER_SIZE * NUM_CPY)) {
-        uint32_t sze;
-        if ((SAMPLE_BUFFER_SIZE * NUM_CPY - send_count) < sampler->getBufferSizeInBytes()) sze = SAMPLE_BUFFER_SIZE * NUM_CPY - send_count;
-        else sze = sampler->getBufferSizeInBytes();
-        //Serial.printf(" send content_p\n\r");
-        server.sendContent_P((char *)sampler->getCapturedAudioBuffer(),  sze);
-        send_count += sampler->getBufferSizeInBytes();
+     if (send_count < (SAMPLE_BUFFER_SIZE * NUM_CPY)) {
+        int samples_read = sampler->read(samples, SAMPLE_SIZE, BITS_PER_SAMPLE);
+        if ((SAMPLE_BUFFER_SIZE * NUM_CPY - send_count) < (samples_read * BITS_PER_SAMPLE/8)) sze = SAMPLE_BUFFER_SIZE * NUM_CPY - send_count;
+          else sze = samples_read * (BITS_PER_SAMPLE/8);
+        //Serial.printf("samples_read = 0x%x\n", samples_read);
+        server.sendContent_P((char *)samples,  sze);
+        send_count += sze;
         digitalWrite(PIN_LED, !digitalRead(PIN_LED));     //indicate process
       }
-    }
   }
 }
 
 // Task to send samples to uart
 void i2sMemsToUartTask(void *param)
 {
-  uint32_t temp;
-  int16_t  temp_S16;
   I2SSampler *sampler = (I2SSampler *)param;
-  const TickType_t xMaxBlockTime = pdMS_TO_TICKS(100);
 
   while (true)
   {
-    // wait for some samples to save
-    uint32_t ulNotificationValue = ulTaskNotifyTake(pdTRUE, xMaxBlockTime);
-    if (ulNotificationValue > 0)
-    {
-      Serial.write((char *)sampler->getCapturedAudioBuffer(), sampler->getBufferSizeInBytes());
-    }
+     int samples_read = sampler->read(samples, SAMPLE_SIZE, BITS_PER_SAMPLE);
+     Serial.write((char *)samples,  samples_read * (BITS_PER_SAMPLE/8));
+     digitalWrite(PIN_LED, !digitalRead(PIN_LED)); 
   }
 }
