@@ -16,7 +16,12 @@
   - I2S_MIC_SERIAL_DATA       (SD)       GPIO_NUM_33
   - L/R pin of mic connect to ground.
   
-  serial_audio.exe - program for wifi_microphone,  it allows you to testing  microphone through a serial port (uncomment  "//#define NO_WIFI").
+  serial_audio.exe (<a href="https://github.com/vernonet/serial_audio" rel="nofollow">serial_audio</a>)- program for wifi_microphone,  it allows you to testing  microphone through a serial port (uncomment  "//#define NO_WIFI").
+  
+  The following libraries need to be installed:
+  - <a href="https://github.com/khoih-prog/ESP_WiFiManager" rel="nofollow">ESP_WiFiManager</a>
+  - <a href="https://github.com/arduino-libraries/NTPClient" rel="nofollow">NTPClient</a>
+
   
 
 
