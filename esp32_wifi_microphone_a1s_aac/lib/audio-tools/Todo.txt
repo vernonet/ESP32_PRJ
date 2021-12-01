@@ -1,0 +1,6 @@
+Open issues
+
+- A2DP output not working
+- Test/Example MP3 Encoder
+- Test/Example AAC Encoder
+- Test/Example for STK
