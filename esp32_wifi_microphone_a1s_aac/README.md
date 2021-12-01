@@ -1,7 +1,8 @@
 # wifi microphone with AAC encoding on <a href="https://docs.ai-thinker.com/en/esp32-audio-kit" rel="nofollow">ESP32 audio Kit V2.2 ESP32-A1S</a>.
 
-  In project uses an  I2S microphone SPH0645(INMP441), ESP32-A1S,the onboard microphone can be used, but the sound quality is poor. 
+  In project uses an  I2S microphone SPH0645(INMP441), ESP32-A1S, the onboard microphone can be used, but the sound quality is poor. 
   Since the encoder uses a lot of memory, the use of PSRAM is necessary (included on the board). 
+  
   To play audio insert in vlc  "http:\\\wifi-mic.local:8080\rec.aac" or "http:\\\<user>:<pass>@wifi-mic.local:8080\rec.aac" or "http:\\\ip_of_mic:8080\rec.aac".
   Initially, you need to connect to the access point "wifi-mic" and configure the access settings.
   You can find the ip address from the UART terminal, or from the program on your smartphone - "bonjour browser".
