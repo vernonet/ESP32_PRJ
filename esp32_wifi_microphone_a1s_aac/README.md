@@ -19,7 +19,7 @@
   - I2S_MIC_SERIAL_DATA       (SD)       GPIO_NUM_23
   - L/R pin of mic connect to ground.
   
-  
+  ![Image alt](https://docs.ai-thinker.com/_media/esp32/esp32-audio-kit2.png)
 
 # License
 
