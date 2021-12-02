@@ -10,15 +10,15 @@
   The project was created in  PlatformIO IDE with VS Code (framework arduino), project can also be compiled in arduino ide.   
   To be able to resize the stack, you need to edit "C: \ Users \ <user> \ .platformio \ packages \ framework-arduinoespressif32 \ tools \ sdk \ include \ config \ sdkconfig.h" :  
   replace 
-  <code>
+  ```
   #define CONFIG_ARDUINO_LOOP_STACK_SIZE 8192  
-  </code>
+  ```
   to 
-  <code>
+  ```
   #ifndef CONFIG_ARDUINO_LOOP_STACK_SIZE  
    #define CONFIG_ARDUINO_LOOP_STACK_SIZE 8192  
   #endif  
-  </code>  
+  ``` 
   
   Tested on Arduino ESP32 release 1.0.6, 2.0.0, 2.0.1.
   Tested sample rate 16000Hz, 22500Hz.
