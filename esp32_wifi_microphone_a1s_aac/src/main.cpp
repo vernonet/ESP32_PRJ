@@ -44,16 +44,12 @@ uint8_t temprature_sens_read();
 #define I2S_MIC_LEFT_RIGHT_CLOCK   GPIO_NUM_5
 #define I2S_MIC_SERIAL_DATA        GPIO_NUM_23
 #define SERVER_PORT                8080
-#ifdef  NO_WIFI
- #define BAUDRATE                  921600//921600//921600     //baud one of 300, 600, 1200, 2400, 4800, 9600, 19200, 31250, 38400, 57600, 74880, 115200, 230400, 256000, 460800, 921600, 1843200, 3686400
-#else
- #define BAUDRATE                  (BAUDRATE_)
-#endif
+#define BAUDRATE                  (BAUDRATE_)
 #define SIGNAL_GAIN                (0)// 0 - max gain, 2 - no gain
 #define REC_TIME                   (6000) //sec
 #define NUM_CPY                    ((SAMPLE_RATE * BITS_PER_SAMPLE / 8 * REC_TIME)/SAMPLE_BUFFER_SIZE)//
-#define USER_OTA                   "admin"
-#define PASS_OTA                   "admin"
+#define USER_OTA                   "admin908"
+#define PASS_OTA                   "admin908"
 #define PASS_CONF_PORTAL           "testtest"
 #define LOG_SIZE                   (0x10000)
 
@@ -141,7 +137,6 @@ void handle_info(void);
 void logMemory();
 static void fill_mem_seed(int seed, void *mem, int len, int block_size);
 static bool check_mem_seed(int seed, void *mem, int len, int block_size);
-void acc_enc_Callback(uint8_t *aac_data, size_t len);
 
 I2SSampler *i2sSampler = NULL;
 i2s_config_t i2s_config = {
@@ -157,8 +152,8 @@ i2s_config_t i2s_config = {
   .intr_alloc_flags = (ESP_INTR_FLAG_LEVEL1 | ESP_INTR_FLAG_SHARED),        // Interrupt level 1
   .dma_buf_count = BUF_CNT,                        // number of buffers
   .dma_buf_len = SAMPLE_BUFFER_SIZE,               // samples per buffer
-  .use_apll = true
-  //.tx_desc_auto_clear = true
+  .use_apll = true,
+  .tx_desc_auto_clear = true
 };
 // The pin config as per the setup
 i2s_pin_config_t i2s_mic_pins = {
@@ -194,7 +189,7 @@ void setup(void) {
   Serial.printf("Total PSRAM: %d KBytes\n\r", ESP.getPsramSize()/1024);
   Serial.printf("Free PSRAM: %d KBytes\n\r", ESP.getFreePsram()/1024);
 
-  byte* psdRamBuffer = (byte*)ps_malloc(0x10000*32);  //test 2Mbytes
+  byte* psdRamBuffer = (byte*)ps_malloc(0x10000*16*3);  //test 3Mbytes
   fill_mem_seed(0xaaaa, psdRamBuffer, sizeof psdRamBuffer, 0x1000);
   if (check_mem_seed(0xaaaa, psdRamBuffer, sizeof psdRamBuffer, 0x1000)) {
      Serial.println("PSRAM test - OK!\n\r");
@@ -231,7 +226,6 @@ void setup(void) {
       Serial.println("Not connected to WiFi but continuing anyway.");
     else {
       Serial.println("WiFi connected...:)");
-      //launchWeb(0);
     }
   }
 
@@ -473,7 +467,7 @@ void handle_rec_aac() {
   }
   if (!start_rec)  {  //if first connections
     start_rec = true;
-     i2sSampler = new I2SMEMSSampler(I2S_NUM_0, i2s_mic_pins, i2s_config, false);
+    i2sSampler = new I2SMEMSSampler(I2S_NUM_0, i2s_mic_pins, i2s_config, false);
     // start sampling from i2s device
     i2sSampler->start(); 
   }
@@ -490,13 +484,16 @@ void handle_rec_aac() {
 
    send_count = 0;
    int samples_read;
+   uint32_t readed_bytes = 0;
    while (true)
    {
       samples_read = i2sSampler->read(samples, SAMPLE_SIZE*2, BITS_PER_SAMPLE);
+      readed_bytes += samples_read * (BITS_PER_SAMPLE/8);
+      //Serial.printf("readed_bytes = %d \n\r", readed_bytes);
       yield();
       if (samples_read) aac.write((uint8_t*)samples, samples_read * (BITS_PER_SAMPLE/8));   
       yield();
-     if (!client_)
+     if (!client_ || readed_bytes >= (SAMPLE_BUFFER_SIZE * NUM_CPY))
      {
        Serial.print("client disconected\n\r");
        char strr[18];
@@ -514,7 +511,6 @@ void handle_rec_aac() {
    }
 }
 
-
 void handle_upd_frm()
 { 
     if (strlen(USER_OTA) > 0) {
@@ -527,12 +523,6 @@ void handle_upd_frm()
     //server.send(200, "text/html", loginIndex);
     server.send(200, "text/html", serverIndex);
 }
-
-//void handle_serverIndex() 
-//{
-//    server.sendHeader("Connection", "close");
-//    server.send(200, "text/html", serverIndex);
-//}
 
 void handle_upload()
  {
