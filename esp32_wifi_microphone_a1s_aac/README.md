@@ -11,9 +11,9 @@
   To be able to resize the stack, you need to edit "C: \ Users \ <user> \ .platformio \ packages \ framework-arduinoespressif32 \ tools \ sdk \ include \ config \ sdkconfig.h" :  
   replace #define CONFIG_ARDUINO_LOOP_STACK_SIZE 8192
   to  
-  #ifndef CONFIG_ARDUINO_LOOP_STACK_SIZE
-   #define CONFIG_ARDUINO_LOOP_STACK_SIZE 8192
-  #endif
+  #ifndef CONFIG_ARDUINO_LOOP_STACK_SIZE  
+   #define CONFIG_ARDUINO_LOOP_STACK_SIZE 8192  
+  #endif  
   
   Tested on Arduino ESP32 release 1.0.6, 2.0.0, 2.0.1.
   Tested sample rate 16000Hz, 22500Hz.
