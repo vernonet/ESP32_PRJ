@@ -9,11 +9,16 @@
   Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>, <a href="https://github.com/khoih-prog/ESP_WiFiManager"    rel="nofollow">ESP_WiFiManager</a>, <a href="https://github.com/pschatzmann/arduino-audio-tools" rel="nofollow">Arduino Audio Tools</a>, <a href="https://github.com/pschatzmann/arduino-fdk-aac" rel="nofollow">Arduino AAC Encoding and Decoding Library</a>.  
   The project was created in  PlatformIO IDE with VS Code (framework arduino), project can also be compiled in arduino ide.   
   To be able to resize the stack, you need to edit "C: \ Users \ <user> \ .platformio \ packages \ framework-arduinoespressif32 \ tools \ sdk \ include \ config \ sdkconfig.h" :  
-  replace #define CONFIG_ARDUINO_LOOP_STACK_SIZE 8192  
-  to    
+  replace 
+  ```
+  #define CONFIG_ARDUINO_LOOP_STACK_SIZE 8192  
+  ```
+  to 
+  ```
   #ifndef CONFIG_ARDUINO_LOOP_STACK_SIZE  
    #define CONFIG_ARDUINO_LOOP_STACK_SIZE 8192  
   #endif  
+  ```
   
   Tested on Arduino ESP32 release 1.0.6, 2.0.0, 2.0.1.
   Tested sample rate 16000Hz, 22500Hz.
