@@ -17,7 +17,14 @@
 #include <driver/i2s.h>
 #include "sample_wav.h"   //test wav  file
 #include <Update.h>
+#include <ArduinoJson.h>
 
+#include "FS.h"
+#include <LittleFS.h>
+FS* filesystem =      &LittleFS;
+#define FileFS        LittleFS
+#define FS_Name       "LittleFS"
+const char* CONFIG_FILE = "/ConfigSW.json";
 
 extern "C" {
 uint8_t temprature_sens_read();
@@ -39,7 +46,7 @@ uint8_t temprature_sens_read();
 #define I2S_MIC_SERIAL_CLOCK       GPIO_NUM_32
 #define I2S_MIC_LEFT_RIGHT_CLOCK   GPIO_NUM_25
 #define I2S_MIC_SERIAL_DATA        GPIO_NUM_33
-#define SERVER_PORT                8080
+#define SERVER_PORT                "8080"
 #ifdef  NO_WIFI
  #define BAUDRATE                  921600//921600//921600     //baud one of 300, 600, 1200, 2400, 4800, 9600, 19200, 31250, 38400, 57600, 74880, 115200, 230400, 256000, 460800, 921600, 1843200, 3686400
 #else
@@ -109,7 +116,7 @@ char date_[11];
 String log_page;
 uint32_t free_mem8 = 0, free_mem32 = 0;
 
-WebServer server(SERVER_PORT);
+WebServer server;
 WiFiClient client_;
 // Define NTP Client to get time
 const long utcOffsetInSeconds = 2 * 60 * 60; //+2;
@@ -117,6 +124,7 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 const int SAMPLE_SIZE = SAMPLE_BUFFER_SIZE;
 int16_t *samples;
+char m_login[12], m_pass[12], m_port[8];
 
 void launchWeb(int webtype);
 void i2sMemsToClientTask(void *param);
@@ -129,6 +137,9 @@ void handle_upload(void);
 void handle_upd_frm(void);
 void handle_log(void);
 void handle_info(void);
+bool writeConfigFile(void);
+bool readConfigFile(void);
+bool mount_fs(void);
 
 I2SSampler *i2sSampler = NULL;
 i2s_config_t i2s_config = {
@@ -175,6 +186,13 @@ void setup(void) {
   Serial.println(compile_date);
   samples = (int16_t *)malloc((BITS_PER_SAMPLE/8) * SAMPLE_SIZE);
   if (!samples) Serial.println("Failed to allocate memory for samples");
+  if (!mount_fs() || !readConfigFile())
+  {
+    Serial.println(F("Failed to read ConfigFile, using default values"));
+    strcpy(m_login, USER_OTA);
+    strcpy(m_pass, PASS_OTA);
+    strcpy(m_port, SERVER_PORT);
+  }
 #ifndef NO_WIFI
   unsigned long startedAt = millis();
   ESP_WiFiManager ESP_wifiManager("wifi-mic");
@@ -346,6 +364,15 @@ void loop(void) {
     else
       Serial.println("No stored Credentials. No timeout");
 
+    ESP_WMParameter p_m_login("mic_login", "mic Login", USER_OTA, 12);  
+    ESP_WMParameter p_m_pass("mic_pass", "mic password", PASS_OTA, 12);
+    ESP_WMParameter p_m_port("mic_port", "server port", SERVER_PORT, 8);
+
+    ESP_wifiManager.addParameter(&p_m_login);
+    ESP_wifiManager.addParameter(&p_m_pass);
+    ESP_wifiManager.addParameter(&p_m_port);
+   
+
     //it starts an access point
     //and goes into a blocking loop awaiting configuration
     if (!ESP_wifiManager.startConfigPortal((const char *) ssid.c_str(), password))
@@ -357,6 +384,12 @@ void loop(void) {
       //if you get here you have connected to the WiFi
       Serial.println("connected...yeey :):):)");
     }
+
+    strcpy(m_login, p_m_login.getValue());
+    strcpy(m_pass, p_m_pass.getValue());
+    strcpy(m_port, p_m_port.getValue());
+    // Writing JSON config file to flash for next boot
+    writeConfigFile();
 
     digitalWrite(PIN_LED, LED_OFF); // Turn led off as we are not in configuration mode.
   }
@@ -393,7 +426,7 @@ void createWebServer(int webtype)
     else {
       Serial.println("Error setting up MDNS responder!");
     }
-    MDNS.addService("http", "tcp", SERVER_PORT);  //orig 80
+    MDNS.addService("http", "tcp", atoi(m_port));  //orig 80
     //MDNS.addService("osc", "udp", 4500);
     //MDNS.addService("telnet", "tcp", 23);// Telnet server RemoteDebug
 
@@ -419,7 +452,7 @@ void launchWeb(int webtype) {
   Serial.println(WiFi.softAPIP());
   createWebServer(webtype);
   // Start the server
-  server.begin();
+  server.begin(atoi(m_port));
   Serial.println("Server started");
 }
 
@@ -433,7 +466,7 @@ void handle_rec_wav() {
   if (strlen(USER_OTA) > 0) {
       authenticate = true;
      }
-  if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+  if (authenticate && !server.authenticate(m_login, m_pass)) {
         return server.requestAuthentication();
      }
 
@@ -499,7 +532,7 @@ void handle_upd_frm()
     if (strlen(USER_OTA) > 0) {
       authenticate = true;
     }
-    if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+    if (authenticate && !server.authenticate(m_login, m_pass)) {
         return server.requestAuthentication();
       }
     server.sendHeader("Connection", "close");
@@ -540,7 +573,7 @@ void handle_update()
     if (strlen(USER_OTA) > 0) {
       authenticate = true;
     }
-    if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+    if (authenticate && !server.authenticate(m_login, m_pass)) {
         return server.requestAuthentication();
       }
     server.sendHeader("Connection", "close");
@@ -553,7 +586,7 @@ void handle_update()
     if (strlen(USER_OTA) > 0) {
       authenticate = true;
      }
-    if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+    if (authenticate && !server.authenticate(m_login, m_pass)) {
         return server.requestAuthentication();
      }
     server.sendHeader("Connection", "close");
@@ -596,7 +629,7 @@ void handle_log()
     if (strlen(USER_OTA) > 0) {
       authenticate = true;
      }
-    if (authenticate && !server.authenticate(USER_OTA, PASS_OTA)) {
+    if (authenticate && !server.authenticate(m_login, m_pass)) {
         return server.requestAuthentication();
      }
     log_page += F("</pre></div>"); 
@@ -647,4 +680,140 @@ void i2sMemsToUartTask(void *param)
      Serial.write((char *)samples,  samples_read * (BITS_PER_SAMPLE/8));
      digitalWrite(PIN_LED, !digitalRead(PIN_LED)); 
   }
+}
+
+bool writeConfigFile()
+{
+  Serial.println("Saving config file");
+
+#if (ARDUINOJSON_VERSION_MAJOR >= 6)
+  DynamicJsonDocument json(1024);
+#else
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
+#endif
+
+  // JSONify local configuration parameters
+  json["mic_login"] = m_login;
+  json["mic_pass"]  = m_pass;
+  json["mic_port"]  = m_port;
+ 
+
+  // Open file for writing
+  File f = FileFS.open(CONFIG_FILE, "w");
+
+  if (!f)
+  {
+    Serial.println("Failed to open config file for writing");
+    return false;
+  }
+
+#if (ARDUINOJSON_VERSION_MAJOR >= 6)
+  serializeJsonPretty(json, Serial);
+  // Write data to file and close it
+  serializeJson(json, f);
+#else
+  json.prettyPrintTo(Serial);
+  // Write data to file and close it
+  json.printTo(f);
+#endif
+
+  f.close();
+
+  Serial.println("\nConfig file was successfully saved");
+  return true;
+}
+
+bool readConfigFile(void)
+{
+  // this opens the config file in read-mode
+  File f = FileFS.open(CONFIG_FILE, "r");
+
+  if (!f)
+  {
+    Serial.println("Configuration file not found");
+    return false;
+  }
+  else
+  {
+    // we could open the file
+    size_t size = f.size();
+    // Allocate a buffer to store contents of the file.
+    std::unique_ptr<char[]> buf(new char[size + 1]);
+
+    // Read and store file contents in buf
+    f.readBytes(buf.get(), size);
+    // Closing file
+    f.close();
+    // Using dynamic JSON buffer which is not the recommended memory model, but anyway
+    // See https://github.com/bblanchon/ArduinoJson/wiki/Memory%20model
+
+#if (ARDUINOJSON_VERSION_MAJOR >= 6)
+    DynamicJsonDocument json(1024);
+    auto deserializeError = deserializeJson(json, buf.get());
+    if ( deserializeError )
+    {
+      Serial.println("JSON parseObject() failed");
+      return false;
+    }
+    serializeJson(json, Serial);
+#else
+    DynamicJsonBuffer jsonBuffer;
+    // Parse JSON string
+    JsonObject& json = jsonBuffer.parseObject(buf.get());
+    // Test if parsing succeeds.
+    if (!json.success())
+    {
+      Serial.println("JSON parseObject() failed");
+      return false;
+    }
+    json.printTo(Serial);
+#endif
+
+    // Parse all config file parameters, override
+    // local config variables with parsed values
+    if (json.containsKey("mic_login"))
+    {
+      strcpy(m_login, json["mic_login"]);
+    }
+
+    if (json.containsKey("mic_pass"))
+    {
+      strcpy(m_pass, json["mic_pass"]);
+    }
+
+    if (json.containsKey("mic_port"))
+    {
+      strcpy(m_port, json["mic_port"]);
+    }
+  }
+  Serial.println("\nConfig file was successfully parsed");
+  return true;
+}
+
+
+//return true - ok, false - error
+bool mount_fs(void) {
+
+  if (!FileFS.begin(true)) {
+
+
+    Serial.println(F("LittleFS failed! Already tried formatting."));
+  
+    if (!FileFS.begin())
+    {     
+      // prevents debug info from the library to hide err message.
+      delay(100);
+      
+      Serial.println(F("LittleFS failed!. Please use SPIFFS or EEPROM. Stay forever"));
+
+      return false;
+    }
+    
+  }
+   else {
+     Serial.println(F("LittleFS mount OK!"));
+     return true;
+   }
+  return true;
 }

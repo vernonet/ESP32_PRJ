@@ -6,7 +6,7 @@
   You can find the ip address from the UART terminal, or from the program on your smartphone - "bonjour browser".
   The microphone works much better than a microphone based on ESP8266.
   Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>, <a href="https://github.com/khoih-prog/ESP_WiFiManager" rel="nofollow">ESP_WiFiManager</a>.
-  Tested on Arduino ESP32 release 1.0.6, 2.0.0, 2.0.1.
+  Tested on Arduino ESP32 release 1.0.6 ???, 2.0.0, 2.0.1.
   Tested sample rate 16000Hz, 22500Hz.
   Bit-Depth: 24 or 16.
   
@@ -21,6 +21,7 @@
   The following libraries need to be installed:
   - <a href="https://github.com/khoih-prog/ESP_WiFiManager" rel="nofollow">ESP_WiFiManager</a>
   - <a href="https://github.com/arduino-libraries/NTPClient" rel="nofollow">NTPClient</a>
+  - <a href="https://github.com/bblanchon/ArduinoJson" rel="nofollow">ArduinoJson</a>
 
   
 
