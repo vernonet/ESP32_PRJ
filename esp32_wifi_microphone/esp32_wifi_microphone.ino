@@ -210,7 +210,18 @@ void setup(void) {
   if (Router_SSID == "")
   {
     Serial.println("We haven't got any access point credentials, so get them now");
+    Serial.println("It is necessary to wait a bit until the WIFI-MIC access point appears");
+    Serial.println("Starting configuration portal: AP SSID = " + ssid + ", Pass = " + password );
     digitalWrite(PIN_LED, LED_ON); // Turn led on as we are in configuration mode.
+    
+
+    ESP_WMParameter p_m_login("mic_login", "mic Login", USER_OTA, 12);  
+    ESP_WMParameter p_m_pass("mic_pass", "mic password", PASS_OTA, 12);
+    ESP_WMParameter p_m_port("mic_port", "server port", SERVER_PORT, 8);
+
+    ESP_wifiManager.addParameter(&p_m_login);
+    ESP_wifiManager.addParameter(&p_m_pass);
+    ESP_wifiManager.addParameter(&p_m_port);
 
     //it starts an access point
     //and goes into a blocking loop awaiting configuration
@@ -218,8 +229,13 @@ void setup(void) {
       Serial.println("Not connected to WiFi but continuing anyway.");
     else {
       Serial.println("WiFi connected...:)");
-      //launchWeb(0);
     }
+
+    strcpy(m_login, p_m_login.getValue());
+    strcpy(m_pass, p_m_pass.getValue());
+    strcpy(m_port, p_m_port.getValue());
+    // Writing JSON config file to flash for next boot
+    writeConfigFile();
   }
 
   digitalWrite(PIN_LED, LED_OFF); // Turn led off as we are not in configuration mode.
