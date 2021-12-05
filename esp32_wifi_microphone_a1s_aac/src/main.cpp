@@ -20,7 +20,6 @@
 #include "soc/timer_group_reg.h"
 #include <ArduinoJson.h> 
 
-#define USE_LITTLEFS    true
 #include "FS.h"
 #include <LittleFS.h>
 FS* filesystem =      &LittleFS;
@@ -100,7 +99,6 @@ uint8_t temprature_sens_read();
 const i2s_port_t I2S_PORT = I2S_NUM_0;
 uint8_t signal_gain = SIGNAL_GAIN;
 volatile uint32_t wait_reset = 0;
-uint32_t temp_buf_f[44/4]; //for header
 String ssid = "wifi_mic_ap";
 const char* password = PASS_CONF_PORTAL;     //password for config portal
 // SSID and PW for your Router
@@ -239,7 +237,18 @@ void setup(void) {
   if (Router_SSID == "")
   {
     Serial.println("We haven't got any access point credentials, so get them now");
+    Serial.println("It is necessary to wait a bit until the WIFI-MIC access point appears");
+    Serial.println("Starting configuration portal: AP SSID = " + ssid + ", Pass = " + password );
     digitalWrite(PIN_LED, LED_ON); // Turn led on as we are in configuration mode.
+    
+
+    ESP_WMParameter p_m_login("mic_login", "mic Login", USER_OTA, 12);  
+    ESP_WMParameter p_m_pass("mic_pass", "mic password", PASS_OTA, 12);
+    ESP_WMParameter p_m_port("mic_port", "server port", SERVER_PORT, 8);
+
+    ESP_wifiManager.addParameter(&p_m_login);
+    ESP_wifiManager.addParameter(&p_m_pass);
+    ESP_wifiManager.addParameter(&p_m_port);
 
     //it starts an access point
     //and goes into a blocking loop awaiting configuration
@@ -248,6 +257,12 @@ void setup(void) {
     else {
       Serial.println("WiFi connected...:)");
     }
+
+    strcpy(m_login, p_m_login.getValue());
+    strcpy(m_pass, p_m_pass.getValue());
+    strcpy(m_port, p_m_port.getValue());
+    // Writing JSON config file to flash for next boot
+    writeConfigFile();
   }
 
   digitalWrite(PIN_LED, LED_OFF); // Turn led off as we are not in configuration mode.
@@ -388,7 +403,6 @@ void loop(void) {
     }
     else
       Serial.println("No stored Credentials. No timeout");
-    
     
     ESP_WMParameter p_m_login("mic_login", "mic Login", USER_OTA, 12);  
     ESP_WMParameter p_m_pass("mic_pass", "mic password", PASS_OTA, 12);
@@ -799,7 +813,7 @@ bool readConfigFile(void)
       Serial.println("JSON parseObject() failed");
       return false;
     }
-    serializeJsonPretty(json, Serial);
+    serializeJson(json, Serial);
 #else
     DynamicJsonBuffer jsonBuffer;
     // Parse JSON string
@@ -839,17 +853,13 @@ bool readConfigFile(void)
 bool mount_fs(void) {
 
   if (!FileFS.begin(true)) {
-
-
     Serial.println(F("LittleFS failed! Already tried formatting."));
   
     if (!FileFS.begin())
     {     
       // prevents debug info from the library to hide err message.
       delay(100);
-      
       Serial.println(F("LittleFS failed!. Please use SPIFFS or EEPROM. Stay forever"));
-
       return false;
     }
     
