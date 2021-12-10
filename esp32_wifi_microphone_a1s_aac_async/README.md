@@ -6,7 +6,7 @@
   Initially, you need to connect to the access point "wifi-mic" and configure the access settings.
   You can find the ip address from the UART terminal, or from the program on your smartphone - "bonjour browser".
   The microphone works much better than a microphone based on ESP8266.  
-  Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>, <a href="https://github.com/khoih-prog/ESP_WiFiManager"    rel="nofollow">ESP_WiFiManager</a>, <a href="https://github.com/pschatzmann/arduino-audio-tools" rel="nofollow">Arduino Audio Tools</a>, <a href="https://github.com/pschatzmann/arduino-fdk-aac" rel="nofollow">Arduino AAC Encoding and Decoding Library</a>.  
+  Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>, <a href="https://github.com/khoih-prog/ESPAsync_WiFiManager"    rel="nofollow">ESPAsync_WiFiManager</a>, <a href="https://github.com/me-no-dev/ESPAsyncWebServer" rel="nofollow">ESPAsyncWebServer</a>, <a href="https://github.com/me-no-dev/AsyncTCP" rel="nofollow">AsyncTCP</a>, <a href="https://github.com/pschatzmann/arduino-audio-tools" rel="nofollow">Arduino Audio Tools</a>, <a href="https://github.com/pschatzmann/arduino-fdk-aac" rel="nofollow">Arduino AAC Encoding and Decoding Library</a>.  
   The project was created in  PlatformIO IDE with VS Code (framework arduino), project can also be compiled in arduino ide.   
   To be able to resize the stack, you need to edit file - "C: \ Users \ <user> \ .platformio \ packages \ framework-arduinoespressif32 \ tools \ sdk \ include \ config \ sdkconfig.h" :  
   replace 
