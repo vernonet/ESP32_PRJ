@@ -26,6 +26,7 @@
 
   I rebuilt the arduino libraries, and put them in a separate folder, these files need to be replaced.
   Rebuild utility - <a href="https://github.com/espressif/esp32-arduino-lib-builder" rel="nofollow">esp32-arduino-lib-builder</a>  
+  When listening to the microphone, noise may appear (poor quality of the Internet connection?), this problem has not yet been resolved.
 
 
 
