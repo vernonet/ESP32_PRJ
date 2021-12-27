@@ -824,7 +824,7 @@ void handle_scan(AsyncWebServerRequest *request)
       Serial.println(" Stop read samples");
       xSemaphoreGive(mutex_wav_stream);
       digitalWrite(PIN_LED, !digitalRead(PIN_LED));     //indicate process    
-      vTaskDelay(90 / portTICK_PERIOD_MS);   //10  70  90
+      vTaskDelay(90 / portTICK_PERIOD_MS);   //10  70  //90 for SAMPLE_RATE 22050
   }
 }
 
