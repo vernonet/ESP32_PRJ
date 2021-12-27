@@ -147,6 +147,7 @@ AsyncClient *client_ = nullptr;
 AsyncWebServer * server;
 AsyncWebServer * webServer_async;
 TaskHandle_t i2sMemsToBuffTaskHandle;
+SemaphoreHandle_t mutex_wav_stream;
 
 //flag to use from web update to reboot the ESP
 bool shouldReboot = false;
@@ -167,6 +168,7 @@ void handle_upload(AsyncWebServerRequest *request, String filename, size_t index
 void handle_upd_frm(AsyncWebServerRequest *request);
 void handle_log(AsyncWebServerRequest *request);
 void handle_info(AsyncWebServerRequest *request);
+//void handle_scan(AsyncWebServerRequest *request);
 //void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
 bool writeConfigFile(void);
 bool readConfigFile(void);
@@ -187,7 +189,7 @@ i2s_config_t i2s_config = {
   .intr_alloc_flags = (ESP_INTR_FLAG_LEVEL1 | ESP_INTR_FLAG_SHARED),        // Interrupt level 1
   .dma_buf_count = BUF_CNT,                        // number of buffers
   .dma_buf_len = SAMPLE_BUFFER_SIZE,               // samples per buffer
-  .use_apll = true,
+ // .use_apll = true,
   .tx_desc_auto_clear = true
 };
 // The pin config as per the setup
@@ -217,7 +219,7 @@ void setup(void) {
 #endif
   delay(500);
   Serial.begin(BAUDRATE);
-  Serial.print("\nStarting...\n\rcompile date: ");
+  Serial.print("\nStarting...\r\ncompile date: ");
   Serial.println(compile_date);
  
   if (!mount_fs() || !readConfigFile())
@@ -376,12 +378,13 @@ void loop(void) {
         sprintf(strr, "...starting %s %02d:%02d\n", date_, timeClient.getHours(), timeClient.getMinutes());
         log_page = String(strr); 
         starting = false;
+        mutex_wav_stream  = xSemaphoreCreateMutex();
         free_mem8  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
         free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
       }
       //Print complete date:
       char str[18];
-      sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\n\r", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
+      sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\r\n", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
       Serial.printf("%s", str);    
       if (WiFi.status() != WL_CONNECTED) {
         Serial.println("NO WIFI, try to connect");
@@ -448,26 +451,27 @@ void loop(void) {
     delete webServer_async;
   }
 
-  if (stream_active && client_connected)
-  {
-    // for watchdog timer
-    // TIMERG0.wdt_wprotect = TIMG_WDT_WKEY_VALUE;
-    // TIMERG0.wdt_feed = 1;
-    // TIMERG0.wdt_wprotect = 0;
+  // if (stream_active && client_connected)
+  // {
+  //   // for watchdog timer
+  //   // TIMERG0.wdt_wprotect = TIMG_WDT_WKEY_VALUE;
+  //   // TIMERG0.wdt_feed = 1;
+  //   // TIMERG0.wdt_wprotect = 0;
+  //   //digitalWrite(PIN_LED, !digitalRead(PIN_LED)); 
+  // }
 
-    //digitalWrite(PIN_LED, !digitalRead(PIN_LED)); 
+  if (stream_active && client_->disconnected())
+  {
+    stream_active = false;
+    vTaskSuspend(i2sMemsToBuffTaskHandle);
+    Serial.print("\r\nclient disconected\r\n");
+    char strr[18];
+    sprintf(strr, "%02d:%02d", timeClient.getHours(), timeClient.getMinutes());
+    log_page += String(strr) + String(" client disconected ") + String("\n");
+    i2s_stop(I2S_PORT);
+    client_ = nullptr;
+    digitalWrite(PIN_LED, LED_OFF);
   }
-    else if (stream_active && !client_connected)
-    {
-      stream_active = false;
-      vTaskSuspend(i2sMemsToBuffTaskHandle);
-      Serial.print("\n\rclient disconected\n\r");
-      char strr[18];
-      sprintf(strr, "%02d:%02d", timeClient.getHours(), timeClient.getMinutes());
-      log_page += String(strr) + String(" client disconected ") + String("\n");
-      i2s_stop(I2S_PORT);
-      digitalWrite(PIN_LED, LED_OFF);
-   }
    vTaskDelay(10 / portTICK_PERIOD_MS);
 #else
 
@@ -512,6 +516,7 @@ void createWebServer(int webtype)
   server->on("/info", HTTP_GET, handle_info);
   server->on("/rec.wav", HTTP_GET, handle_rec_wav);
   server->on("/log", HTTP_GET, handle_log);
+  //server->on("/scan", HTTP_GET,handle_scan);
   }
 }
 
@@ -545,12 +550,12 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
   client_ = request->client();
   if (client_)
   {
-    client_connected = true;
+    //client_connected = true;
     wav_stream.reset();
     stream_active = true;
     Serial.print("New client conected - IP ");
     Serial.print(client_->remoteIP());
-    Serial.printf(" PORT %d\n\r", client_->remotePort());
+    Serial.printf(" PORT %d\r\n", client_->remotePort());
     char strr[18];
     sprintf(strr, "%s %02d:%02d", date_, timeClient.getHours(), timeClient.getMinutes());
     if (log_page.length() >= (LOG_SIZE - 100))
@@ -593,7 +598,8 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
     free_mem8 = heap_caps_get_free_size(MALLOC_CAP_8BIT);
     free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
 
-    Serial.println("New response ");
+    //Serial.println("New response ");
+    //Serial.printf("new client -> 0x%x\r\n", request->client());
 
     // beginChunkedResponse
     AsyncWebServerResponse *response = request->beginResponse("audio/x-wav", 100, [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
@@ -601,12 +607,19 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
         uint32_t sze, aviable_;
         uint32_t space = client_->space(), client_mss = client_->getMss();
         uint16_t block_size;
-      
-        aviable = wav_stream.available();  
+
+        if (xSemaphoreTake(mutex_wav_stream, 3 / portTICK_PERIOD_MS) != pdTRUE)
+        {
+          Serial.println("RESPONSE_TRY_AGAIN - mutex busy");
+          return RESPONSE_TRY_AGAIN;
+        }
+
+        aviable = wav_stream.available();
         if (aviable < 4096)
         {
-          //////aviable = wav_stream.available(); 
-          Serial.printf("RESPONSE_TRY_AGAIN  aviable %d\n\r", aviable);
+          //////aviable = wav_stream.available();
+          Serial.printf("RESPONSE_TRY_AGAIN  aviable %d\r\n", aviable);
+          xSemaphoreGive(mutex_wav_stream);
           return RESPONSE_TRY_AGAIN;
         }
         else
@@ -627,10 +640,12 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
             else
               block_size = SEND_BLOCK_SIZE_MIN;
 
-            Serial.printf("index %d aviable %d bytes heap %d block_size %d mss %d space %d\n\r", index, aviable, heap_caps_get_free_size(MALLOC_CAP_8BIT), block_size, client_mss, space);
+            
+            Serial.printf("index %d aviable %d bytes heap %d block_size %d mss %d space %d\r\n", index, aviable, heap_caps_get_free_size(MALLOC_CAP_8BIT), block_size, client_mss, space);
             sze = wav_stream.readBytes(buffer, block_size);
             //////aviable -= sze;
           }
+          xSemaphoreGive(mutex_wav_stream);
         }
      
      return sze; });
@@ -744,22 +759,72 @@ void handle_log(AsyncWebServerRequest *request)
     request->send(response);
 }
 
-void i2sMemsToBuffTask(void *param)
+void handle_scan(AsyncWebServerRequest *request)
 {
-  I2SSampler *sampler = (I2SSampler *)param;
-  uint32_t sze;
-  int samples_read;
-  
-  while (true)
+  if (strlen(m_login) > 0)
   {
-    //  TIMERG0.wdt_wprotect = TIMG_WDT_WKEY_VALUE;
-    //  TIMERG0.wdt_feed = 1;
-    //  TIMERG0.wdt_wprotect = 0;
+    authenticate = true;
+  }
+
+  if (authenticate && !request->authenticate(m_login, m_pass))
+    return request->requestAuthentication();
+
+  {
+    String json = "[";
+    int n = WiFi.scanComplete();
+    if (n == -2)
+    {
+      WiFi.scanNetworks(true, true);
+    }
+    else if (n)
+    {
+      for (int i = 0; i < n; ++i)
+      {
+        if (i)
+          json += ",";
+        json += "{";
+        json += "\"rssi\":" + String(WiFi.RSSI(i));
+        json += ",\"ssid\":\"" + WiFi.SSID(i) + "\"";
+        json += ",\"bssid\":\"" + WiFi.BSSIDstr(i) + "\"";
+        json += ",\"channel\":" + String(WiFi.channel(i));
+        json += ",\"secure\":" + String(WiFi.encryptionType(i));
+        //json += ",\"hidden\":" + String(WiFi.isHidden(i) ? "true" : "false");
+        json += "}";
+      }
+      WiFi.scanDelete();
+      if (WiFi.scanComplete() == -2)
+      {
+        WiFi.scanNetworks(true);
+      }
+    }
+    json += "]";
+    request->send(200, "application/json", json);
+    json = String();
+  }
+}
+
+  void i2sMemsToBuffTask(void *param)
+  {
+    I2SSampler *sampler = (I2SSampler *)param;
+    uint32_t sze;
+    int samples_read;
+
+    while (true)
+    {
+      //  TIMERG0.wdt_wprotect = TIMG_WDT_WKEY_VALUE;
+      //  TIMERG0.wdt_feed = 1;
+      //  TIMERG0.wdt_wprotect = 0;
       
-      samples_read = i2sSampler->read(samples, SAMPLE_BUFFER_SIZE*4, BITS_PER_SAMPLE);  
+      samples_read = sampler->read(samples, SAMPLE_BUFFER_SIZE*4, BITS_PER_SAMPLE);  
+      while (xSemaphoreTake(mutex_wav_stream, portMAX_DELAY) != pdTRUE){
+        vTaskDelay(5 / portTICK_PERIOD_MS);
+      }
+      Serial.print("Start read samples ->");
       if (samples_read) wav_stream.write((uint8_t*)samples, samples_read * (BITS_PER_SAMPLE/8)); 
+      Serial.println(" Stop read samples");
+      xSemaphoreGive(mutex_wav_stream);
       digitalWrite(PIN_LED, !digitalRead(PIN_LED));     //indicate process    
-      vTaskDelay(50 / portTICK_PERIOD_MS);   //10  70
+      vTaskDelay(90 / portTICK_PERIOD_MS);   //10  70  90
   }
 }
 
