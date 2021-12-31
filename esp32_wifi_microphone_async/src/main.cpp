@@ -16,7 +16,7 @@
 #include "soc/timer_group_reg.h"
 #include <ArduinoJson.h> 
 #include <AsyncTCP.h>
-#include <ESPAsync_WiFiManager.h>              //https://github.com/khoih-prog/ESPAsync_WiFiManager
+#include <ESPAsync_WiFiManager.h> 
 #include "AudioTools.h"
 #include "AudioTools/Buffers.h"
 #include "AudioTools/AudioStreams.h"
@@ -39,7 +39,7 @@ uint8_t temprature_sens_read();
 
 // I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S I2S
 // SPH0645, INMP441 MEMS MICROPHONE
-//insert in vlc  "http://wifi-mic.local:8080/rec.wav" or "http://<user>:<pass>@wifi-mic.local:8080/rec.aac" or "http://ip:8080/rec.aac"   ip - ip address of mic
+//insert in vlc  "http://wifi-mic.local:8080/rec.wav" or "http://<user>:<pass>@wifi-mic.local:8080/rec.wav" or "http://ip:8080/rec.wav"   ip - ip address of mic
 //for ota update  http://wifi-mic.local:8080/upd_frm 
 //for info        http://wifi-mic.local:8080/info
 
@@ -81,7 +81,7 @@ uint8_t temprature_sens_read();
 #define LOG_SIZE                   (0x4000)
 
 #define SEND_BLOCK_SIZE_MAX        (2048)
-#define SEND_BLOCK_SIZE_MIN        (1024)
+#define SEND_BLOCK_SIZE_MIN        (2048)  //1024
 
 #define WIFI_CONNECT_TIMEOUT      30000L
 #define WHILE_LOOP_DELAY          200L
@@ -615,10 +615,10 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
         }
 
         aviable = wav_stream.available();
-        if (aviable < 4096)
+        if (aviable < 4096 || space <= 4096)
         {
           //////aviable = wav_stream.available();
-          Serial.printf("RESPONSE_TRY_AGAIN  aviable %d\r\n", aviable);
+          //Serial.printf("RESPONSE_TRY_AGAIN  aviable %d\r\n", aviable);
           xSemaphoreGive(mutex_wav_stream);
           return RESPONSE_TRY_AGAIN;
         }
@@ -641,7 +641,7 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
               block_size = SEND_BLOCK_SIZE_MIN;
 
             
-            Serial.printf("index %d aviable %d bytes heap %d block_size %d mss %d space %d\r\n", index, aviable, heap_caps_get_free_size(MALLOC_CAP_8BIT), block_size, client_mss, space);
+            //Serial.printf("index %d aviable %d bytes heap %d block_size %d mss %d space %d\r\n", index, aviable, heap_caps_get_free_size(MALLOC_CAP_8BIT), block_size, client_mss, space);
             sze = wav_stream.readBytes(buffer, block_size);
             //////aviable -= sze;
           }
@@ -819,9 +819,9 @@ void handle_scan(AsyncWebServerRequest *request)
       while (xSemaphoreTake(mutex_wav_stream, portMAX_DELAY) != pdTRUE){
         vTaskDelay(5 / portTICK_PERIOD_MS);
       }
-      Serial.print("Start read samples ->");
+      //Serial.print("Start read samples ->");
       if (samples_read) wav_stream.write((uint8_t*)samples, samples_read * (BITS_PER_SAMPLE/8)); 
-      Serial.println(" Stop read samples");
+      //Serial.println(" Stop read samples");
       xSemaphoreGive(mutex_wav_stream);
       digitalWrite(PIN_LED, !digitalRead(PIN_LED));     //indicate process    
       vTaskDelay(90 / portTICK_PERIOD_MS);   //10  70  //90 for SAMPLE_RATE 22050
