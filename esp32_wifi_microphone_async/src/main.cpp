@@ -132,6 +132,7 @@ bool authenticate=false;
 char temp_[6];
 char date_[11];
 String log_page;
+__NOINIT_ATTR char log_str[100];
 uint32_t free_mem8 = 0, free_mem32 = 0;
 
 using namespace audio_tools;
@@ -169,6 +170,7 @@ void handle_upd_frm(AsyncWebServerRequest *request);
 void handle_log(AsyncWebServerRequest *request);
 void handle_info(AsyncWebServerRequest *request);
 //void handle_scan(AsyncWebServerRequest *request);
+//void handle_restart(AsyncWebServerRequest *request);
 //void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
 bool writeConfigFile(void);
 bool readConfigFile(void);
@@ -219,9 +221,10 @@ void setup(void) {
 #endif
   delay(500);
   Serial.begin(BAUDRATE);
-  Serial.print("\nStarting...\r\ncompile date: ");
+  Serial.print("\r\nStarting...\r\ncompile date: ");
   Serial.println(compile_date);
- 
+  if (strncmp(log_str, "Last client", 11) == 0) // If the last client caused a restart  ESP32.
+    Serial.println(log_str);
   if (!mount_fs() || !readConfigFile())
   {
     Serial.println(F("Failed to read ConfigFile, using default values"));
@@ -375,8 +378,10 @@ void loop(void) {
       sprintf(date_, "%02d/%02d/%04d", monthDay,currentMonth,currentYear);
       if (starting){
         char strr[30];
-        sprintf(strr, "...starting %s %02d:%02d\n", date_, timeClient.getHours(), timeClient.getMinutes());
-        log_page = String(strr); 
+        sprintf(strr, "...starting %s %02d:%02d\r\n", date_, timeClient.getHours(), timeClient.getMinutes());
+        log_page = String(strr);
+        if (strncmp(log_str, "Last client", 11) == 0)  //If the last client caused a restart  ESP32.
+          log_page += String(log_str);
         starting = false;
         mutex_wav_stream  = xSemaphoreCreateMutex();
         free_mem8  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
@@ -464,9 +469,13 @@ void loop(void) {
   {
     stream_active = false;
     vTaskSuspend(i2sMemsToBuffTaskHandle);
-    Serial.print("\r\nclient disconected\r\n");
-    char strr[18];
-    sprintf(strr, "%02d:%02d", timeClient.getHours(), timeClient.getMinutes());
+    Serial.print(" <---> client disconected\r\n");
+    char strr[18] = "--/--/---- 00:00";
+    if (timeClient.isTimeSet())
+    {
+      sprintf(strr, "%02d:%02d", timeClient.getHours(), timeClient.getMinutes());
+      sprintf((char *)log_str + strlen(log_str) - 2, " <---> %02d:%02d\r\n", timeClient.getHours(), timeClient.getMinutes());
+    }
     log_page += String(strr) + String(" client disconected ") + String("\n");
     i2s_stop(I2S_PORT);
     client_ = nullptr;
@@ -517,6 +526,7 @@ void createWebServer(int webtype)
   server->on("/rec.wav", HTTP_GET, handle_rec_wav);
   server->on("/log", HTTP_GET, handle_log);
   //server->on("/scan", HTTP_GET,handle_scan);
+  //server->on("/restart", HTTP_GET,handle_restart);
   }
 }
 
@@ -555,9 +565,15 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
     stream_active = true;
     Serial.print("New client conected - IP ");
     Serial.print(client_->remoteIP());
-    Serial.printf(" PORT %d\r\n", client_->remotePort());
-    char strr[18];
-    sprintf(strr, "%s %02d:%02d", date_, timeClient.getHours(), timeClient.getMinutes());
+    Serial.printf(" PORT %d", client_->remotePort());
+    sprintf(log_str, "Last client IP %s PORT %d ", client_->remoteIP().toString().c_str(), client_->remotePort());
+    //Serial.println(log_str);
+    char strr[18] = "--/--/---- 00:00";
+    if (timeClient.isTimeSet())
+    {
+      sprintf(strr, "%s %02d:%02d", date_, timeClient.getHours(), timeClient.getMinutes());
+      sprintf((char*)log_str + strlen(log_str), "%s %02d:%02d\r\n", date_, timeClient.getHours(), timeClient.getMinutes());
+    }
     if (log_page.length() >= (LOG_SIZE - 100))
       log_page = "";
     // if (log_page. length() == 0) log_page = F("<div class='text'><pre>");
@@ -801,6 +817,20 @@ void handle_scan(AsyncWebServerRequest *request)
     request->send(200, "application/json", json);
     json = String();
   }
+}
+
+void handle_restart(AsyncWebServerRequest *request)
+{
+  if (strlen(m_login) > 0)
+  {
+    authenticate = true;
+  }
+  if (authenticate && !request->authenticate(m_login, m_pass))
+    return request->requestAuthentication();
+
+  request->send(200, "text", "ESP32 restarting...");
+  delay(100);
+  ESP.restart();
 }
 
   void i2sMemsToBuffTask(void *param)
