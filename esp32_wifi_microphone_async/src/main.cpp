@@ -16,7 +16,8 @@
 #include "soc/timer_group_reg.h"
 #include <ArduinoJson.h> 
 #include <AsyncTCP.h>
-#include <ESPAsync_WiFiManager.h> 
+#include <ESPAsync_WiFiManager.h>               //https://github.com/khoih-prog/ESPAsync_WiFiManager
+#include <ESPAsync_WiFiManager-Impl.h>          //https://github.com/khoih-prog/ESPAsync_WiFiManager
 #include "AudioTools.h"
 #include "AudioTools/Buffers.h"
 #include "AudioTools/AudioStreams.h"
