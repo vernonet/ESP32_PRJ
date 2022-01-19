@@ -16,7 +16,8 @@
 #include "soc/timer_group_reg.h"
 #include <ArduinoJson.h> 
 #include <AsyncTCP.h>
-#include <ESPAsync_WiFiManager.h>              //https://github.com/khoih-prog/ESPAsync_WiFiManager
+#include <ESPAsync_WiFiManager.h>               //https://github.com/khoih-prog/ESPAsync_WiFiManager
+#include <ESPAsync_WiFiManager-Impl.h>          //https://github.com/khoih-prog/ESPAsync_WiFiManager#howto-fix-multiple-definitions-linker-error
 #if !( USING_ESP32_S2 || USING_ESP32_C3 )
   DNSServer dnsServer;
 #endif 
