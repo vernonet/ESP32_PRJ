@@ -834,28 +834,32 @@ void handle_restart(AsyncWebServerRequest *request)
   ESP.restart();
 }
 
-  void i2sMemsToBuffTask(void *param)
-  {
-    I2SSampler *sampler = (I2SSampler *)param;
-    uint32_t sze;
-    int samples_read;
+// Task to write samples into stream
+void i2sMemsToBuffTask(void *param)
+{
+  I2SSampler *sampler = (I2SSampler *)param;
+  uint32_t sze;
+  int samples_read;
 
-    while (true)
+  while (true)
+  {
+    //  TIMERG0.wdt_wprotect = TIMG_WDT_WKEY_VALUE;
+    //  TIMERG0.wdt_feed = 1;
+    //  TIMERG0.wdt_wprotect = 0;
+
+    samples_read = sampler->read(samples, SAMPLE_BUFFER_SIZE * 4, BITS_PER_SAMPLE);
+    while (xSemaphoreTake(mutex_wav_stream, portMAX_DELAY) != pdTRUE)
     {
-      //  TIMERG0.wdt_wprotect = TIMG_WDT_WKEY_VALUE;
-      //  TIMERG0.wdt_feed = 1;
-      //  TIMERG0.wdt_wprotect = 0;
-      
-      samples_read = sampler->read(samples, SAMPLE_BUFFER_SIZE*4, BITS_PER_SAMPLE);  
-      while (xSemaphoreTake(mutex_wav_stream, portMAX_DELAY) != pdTRUE){
-        vTaskDelay(5 / portTICK_PERIOD_MS);
-      }
-      //Serial.print("Start read samples ->");
-      if (samples_read) wav_stream.write((uint8_t*)samples, samples_read * (BITS_PER_SAMPLE/8)); 
-      //Serial.println(" Stop read samples");
-      xSemaphoreGive(mutex_wav_stream);
-      digitalWrite(PIN_LED, !digitalRead(PIN_LED));     //indicate process    
-      vTaskDelay(90 / portTICK_PERIOD_MS);   //10  70  //90 for SAMPLE_RATE 22050
+      vTaskDelay(5 / portTICK_PERIOD_MS);
+    }
+    // Serial.print("Start read samples ->");
+    if (samples_read)
+      wav_stream.write((uint8_t *)samples, samples_read * (BITS_PER_SAMPLE / 8));
+    // Serial.println(" Stop read samples");
+    xSemaphoreGive(mutex_wav_stream);
+    digitalWrite(PIN_LED, !digitalRead(PIN_LED)); // indicate process
+    //delay ms 120 for SAMPLE_RATE 16000, 90 for SAMPLE_RATE 22050, 59 for SAMPLE_RATE 33000
+    vTaskDelay(((SAMPLE_BUFFER_SIZE*4*1000)/SAMPLE_RATE - 3) / portTICK_PERIOD_MS);  
   }
 }
 
