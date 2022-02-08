@@ -853,8 +853,9 @@ void i2sMemsToBuffTask(void *param)
       vTaskDelay(5 / portTICK_PERIOD_MS);
     }
     // Serial.print("Start read samples ->");
-    if (samples_read)
+    if (samples_read) {
       wav_stream.write((uint8_t *)samples, samples_read * (BITS_PER_SAMPLE / 8));
+    }  
     // Serial.println(" Stop read samples");
     xSemaphoreGive(mutex_wav_stream);
     digitalWrite(PIN_LED, !digitalRead(PIN_LED)); // indicate process
