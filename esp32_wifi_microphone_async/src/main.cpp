@@ -24,6 +24,7 @@
 #if !( USING_ESP32_S2 || USING_ESP32_C3 )
   DNSServer dnsServer;
 #endif 
+#include "esp32/rom/rtc.h"
 
 #include "FS.h"
 #include <LittleFS.h>
@@ -176,6 +177,8 @@ void handle_info(AsyncWebServerRequest *request);
 bool writeConfigFile(void);
 bool readConfigFile(void);
 bool mount_fs(void);
+const char * reset_reson_str(esp_reset_reason_t val);
+String ESP32GetResetReason(uint32_t cpu_no);
 
 
 I2SSampler *i2sSampler = NULL;
@@ -362,36 +365,29 @@ void loop(void) {
 
   if (con_flag && !stream_active) {
     //server.handleClient();
-    if (tme < 1) {
-      timeClient.update();
-      unsigned long epochTime = timeClient.getEpochTime();
-       //Get a time structure
-      struct tm *ptm = gmtime ((time_t *)&epochTime); 
-      int monthDay = ptm->tm_mday;
-      int currentMonth = ptm->tm_mon+1;
-      int currentYear = ptm->tm_year+1900;
-      //get internal temp of ESP32
-      uint8_t temp_farenheit= temprature_sens_read();
-      //convert farenheit to celcius
-      double temp = ( temp_farenheit - 32 ) / 1.8;
-      memset(temp_, 0x30, sizeof temp_);
-      sprintf(temp_, "%.4lg",temp);
-      sprintf(date_, "%02d/%02d/%04d", monthDay,currentMonth,currentYear);
-      if (starting){
-        char strr[30];
-        sprintf(strr, "...starting %s %02d:%02d\r\n", date_, timeClient.getHours(), timeClient.getMinutes());
-        log_page = String(strr);
-        if (strncmp(log_str, "Last client", 11) == 0)  //If the last client caused a restart  ESP32.
-          log_page += String(log_str);
-        starting = false;
-        mutex_wav_stream  = xSemaphoreCreateMutex();
-        free_mem8  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-        free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
+    if (tme == 0)
+    {
+      if (!(timeClient.isTimeSet()))
+      {
+        timeClient.update();
       }
-      //Print complete date:
-      char str[18];
-      sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\r\n", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
-      Serial.printf("%s", str);    
+      unsigned long epochTime = timeClient.getEpochTime();
+      // Get a time structure
+      struct tm *ptm = gmtime((time_t *)&epochTime);
+      int monthDay = ptm->tm_mday;
+      int currentMonth = ptm->tm_mon + 1;
+      int currentYear = ptm->tm_year + 1900;
+      sprintf(date_, "%02d/%02d/%04d", monthDay, currentMonth, currentYear);
+      // get internal temp of ESP32
+      uint8_t temp_farenheit = temprature_sens_read();
+      // convert farenheit to celcius
+      double temp = (temp_farenheit - 32) / 1.8;
+      memset(temp_, 0x30, sizeof temp_);
+      sprintf(temp_, "%.4lg", temp);
+      // // Print complete date:
+      // char str[18];
+      // sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\r\n", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
+      // Serial.printf("%s", str);    
       if (WiFi.status() != WL_CONNECTED) {
         Serial.println("NO WIFI, try to connect");
         WiFi.mode(WIFI_STA);
@@ -402,8 +398,25 @@ void loop(void) {
         WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str());
       }
     }
+    if (starting){
+        char strr[30];
+        sprintf(strr, "...starting %s %02d:%02d\r\n", date_, timeClient.getHours(), timeClient.getMinutes());
+        log_page = String("<div class='text'><pre>") + String(strr);
+        //log_page += String("ESP reset reason - ") + String(reset_reson_str(esp_reset_reason())) + String("\n");
+        log_page += String("ESP reset reason rtc - ") + ESP32GetResetReason(0) + String("\n");
+        if (strncmp(log_str, "Last client", 11) == 0)  //If the last client caused a restart  ESP32.
+          log_page += String(log_str);
+        starting = false;
+        mutex_wav_stream  = xSemaphoreCreateMutex();
+        free_mem8  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+        free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
+      }
     tme++;
     if (tme > 6000) tme = 0;
+    // if (tme > 6000) {
+    //    if (timeClient.isTimeSet()) tme = 1;
+    //       else tme = 0;
+    // }
   }
 
   // is configuration portal requested?
@@ -1011,4 +1024,47 @@ bool mount_fs(void) {
      return true;
    }
   return true;
+}
+
+const char * reset_reson_str(esp_reset_reason_t val)
+{
+
+    switch (val)
+    {
+    case ESP_RST_UNKNOWN:   return "UNKNOWN";
+    case ESP_RST_POWERON:   return "POWERON";
+    case ESP_RST_EXT:       return "EXT";
+    case ESP_RST_SW:        return "SW";
+    case ESP_RST_PANIC:     return "PANIC";
+    case ESP_RST_INT_WDT:   return "INT_WDT";
+    case ESP_RST_TASK_WDT:  return "TASK_WDT";
+    case ESP_RST_WDT:       return "WDT";
+    case ESP_RST_DEEPSLEEP: return "DEEPSLEEP";
+    case ESP_RST_BROWNOUT:  return "BROWNOUT";
+    case ESP_RST_SDIO:      return "SDIO";
+    default:
+        return "Unknown esp_reset_reason_t";
+    }
+}
+
+String ESP32GetResetReason(uint32_t cpu_no) {
+	
+  switch (rtc_get_reset_reason(cpu_no)) {
+    case POWERON_RESET          : return F("Vbat power on reset");                              // 1
+    case SW_RESET               : return F("Software reset digital core");                      // 3
+    case OWDT_RESET             : return F("Legacy watch dog reset digital core");              // 4
+    case DEEPSLEEP_RESET        : return F("Deep Sleep reset digital core");                    // 5
+    case SDIO_RESET             : return F("Reset by SLC module, reset digital core");          // 6
+    case TG0WDT_SYS_RESET       : return F("Timer Group0 Watch dog reset digital core");        // 7
+    case TG1WDT_SYS_RESET       : return F("Timer Group1 Watch dog reset digital core");        // 8
+    case RTCWDT_SYS_RESET       : return F("RTC Watch dog Reset digital core");                 // 9
+    case INTRUSION_RESET        : return F("Instrusion tested to reset CPU");                   // 10
+    case TGWDT_CPU_RESET        : return F("Time Group reset CPU");                             // 11
+    case SW_CPU_RESET           : return F("Software reset CPU");                               // 12
+    case RTCWDT_CPU_RESET       : return F("RTC Watch dog Reset CPU");                          // 13
+    case EXT_CPU_RESET          : return F("or APP CPU, reseted by PRO CPU");                   // 14
+    case RTCWDT_BROWN_OUT_RESET : return F("Reset when the vdd voltage is not stable");         // 15
+    case RTCWDT_RTC_RESET       : return F("RTC Watch dog reset digital core and rtc module");  // 16            
+  }
+  return F("NO_MEAN");                                                                          // 0 and undefined
 }
