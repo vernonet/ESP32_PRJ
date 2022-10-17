@@ -7,7 +7,7 @@
   The microphone works much better than a microphone based on ESP8266.
   The project was created in  PlatformIO IDE with VS Code (framework arduino), project can also be compiled in arduino ide.
   Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>, , <a href="https://github.com/khoih-prog/ESPAsync_WiFiManager"    rel="nofollow">ESPAsync_WiFiManager</a>, <a href="https://github.com/me-no-dev/ESPAsyncWebServer" rel="nofollow">ESPAsyncWebServer</a>, <a href="https://github.com/me-no-dev/AsyncTCP" rel="nofollow">AsyncTCP</a>, <a href="https://github.com/pschatzmann/arduino-audio-tools" rel="nofollow">Arduino Audio Tools</a>.
-  Tested on Arduino ESP32 release 1.0.6 ???, 2.0.0 - 2.0.3....
+  Tested on Arduino ESP32 release 1.0.6 ???, 2.0.0 - 2.0.3....(>2.0.3 - no sound).  
   Tested sample rate 22500Hz.
   Bit-Depth: 16.
   
