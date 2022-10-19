@@ -51,7 +51,11 @@ uint8_t temprature_sens_read();
 #define BUF_CNT                    16      // Number of buffers in the I2S circular buffer   
 #define SAMPLE_RATE                22050  //22050 //33000  //16000
 #define BITS_PER_SAMPLE            (16)   // 16, maybe 24  
-#define I2S_MIC_CHANNEL            I2S_CHANNEL_FMT_ONLY_LEFT // most microphones will probably default to left channel but you may need to tie the L/R pin low
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(2, 0, 4)
+  #define I2S_MIC_CHANNEL            I2S_CHANNEL_FMT_ONLY_RIGHT // most microphones will probably default to left channel but you may need to tie the L/R pin low
+#else
+  #define I2S_MIC_CHANNEL            I2S_CHANNEL_FMT_ONLY_LEFT
+#endif  
 #if (0)
   //esp32a1s
   #define I2S_MIC_SERIAL_CLOCK       GPIO_NUM_18
@@ -595,6 +599,10 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
     if (!(log_page.startsWith("<div class='text'><pre>")))
       log_page = String("<div class='text'><pre>") + log_page;
     log_page.replace("</pre></div>", ""); // delete old "</pre></div>"
+    if (!start_rec)
+    { //sizeof tcp buff to log
+      log_page += String("TCP_buff_size ") + String(client_->space()) + String(" bytes\n");
+    }
     log_page += String(strr) + String(" client conected IP ") + client_->remoteIP().toString() + String(" <---> ");
     if (!start_rec)
     { // if first connections
