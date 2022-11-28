@@ -1,10 +1,13 @@
-<NUL>PSRAM test - OK!
+---------------------------------------------------------------
+CFG_TUSB_DEBUG              2 
+---------------------------------------------------------------
+
+PSRAM test - OK!
 USBD Bus Reset : Full Speed
 
 USBD Setup Received 80 06 00 01 00 00 40 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
@@ -16,101 +19,91 @@ USBD Xfer Complete on EP 80 with 0 bytes
 
 USBD Setup Received 80 06 00 01 00 00 12 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 FF 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032080b000201  Control total data length is 141 bytes
-  Queue EP 80 with 64 bytes ...
+  buffer 09028d000201008032080b000201  Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
   Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
   Queue EP 80 with 13 bytes ...
 USBD Xfer Complete on EP 80 with 13 bytes
   Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
+USBD Xfer Complete on EP 00 with 0 bytes<CR><NUL>
 USBD Setup Received 80 06 03 03 09 04 FF 00 
   Get Descriptor String[3]
-  buffer 1203310031003200320033003300  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 1203310031003200320033003300  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 03 00 00 FF 00 
   Get Descriptor String[0]
-  buffer 04030904  Control total data length is 4 bytes
-  Queue EP 80 with 4 bytes ...
+  buffer 04030904  Queue EP 80 with 4 bytes ...
 USBD Xfer Complete on EP 80 with 4 bytes
   Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 wi<NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL>
+USBD Xfer Complete on EP 00 with 0 bytes
+
 USBD Setup Received 80 06 02 03 09 04 FF 00 
   Get Descriptor String[2]
-  buffer 12034d00690063005f0031005f00  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12034d00690063005f0031005f00  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 by<NUL><NUL><NUL><NUL><NUL>
+USBD Xfer Complete on EP 00 with 0 bytes
+
 USBD Setup Received 80 06 00 06 00 00 0A 00 
   Get Descriptor Device Qualifier
   Stall EP0
 
 USBD Setup Received 80 06 00 01 00 00 12 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with<NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL>
+USBD Xfer Complete on EP 00 with 0 bytes
+
 USBD Setup Received 80 06 00 03 00 00 FF 00 
   Get Descriptor String[0]
-  buffer 04030904  Control total data length is 4 bytes
-  Queue EP 80 with 4 bytes ...
+  buffer 04030904  Queue EP 80 with 4 bytes ...
 USBD Xfer Complete on EP 80 with 4 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 03 03 09 04 FF 00 
   Get Descriptor String[3]
-  buffer 1203310031003200320033003300  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 1203310031003200320033003300  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 01 03 09 04 FF 00 
   Get Descriptor String[1]
-  buffer 180343007500730074006f006d00  Control total data length is 24 bytes
-  Queue EP 80 with 24 bytes ...
+  buffer 180343007500730074006f006d00  Queue EP 80 with 24 bytes ...
 USBD Xfer Complete on EP 80 with 24 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 02 03 09 04 FF 00 
   Get Descriptor String[2]
-  buffer 12034d00690063005f0031005f00  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12034d00690063005f0031005f00  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 09 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032  Control total data length is 9 bytes
-  Queue EP 80 with 9 bytes ...
+  buffer 09028d000201008032  Queue EP 80 with 9 bytes ...
 USBD Xfer Complete on EP 80 with 9 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 8D 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032080b000201  Control total data length is 141 bytes
-  Queue EP 80 with 64 bytes ...
+  buffer 09028d000201008032080b000201  Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
   Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
@@ -121,83 +114,85 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 03 00 00 FF 00 
   Get Descriptor String[0]
-  buffer 04030904  Control total data length is 4 bytes
-  Queue EP 80 with 4 bytes ...
+  buffer 04030904  Queue EP 80 with 4 bytes ...
 USBD Xfer Complete on EP 80 with 4 bytes
   Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
+USBD Xfer Complete on EP 00 <NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL>
 USBD Setup Received 80 06 01 03 09 04 FF 00 
   Get Descriptor String[1]
-  buffer 180343007500730074006f006d00  Control total data length is 24 bytes
-  Queue EP 80 with 24 bytes ...
+  buffer 180343007500730074006f006d00  Queue EP 80 with 24 bytes ...
 USBD Xfer Complete on EP 80 with 24 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 02 03 09 04 FF 00 
   Get Descriptor String[2]
-  buffer 12034d00690063005f0031005f00  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12034d00690063005f0031005f00  Queue EP 80 with 18 bytes ...
+USBD Xfer Complete on EP 80 with 18 bytes
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Comple<NUL><NUL><NUL>on EP 00 with 0 bytes
+onUSBD Setup Received 80 06 03 03 09 04 FF 00 
+  Get Descriptor String[3]
+  buffer 1203310031003200320033003300  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
-USBD Setup Received 80 06 03 03 09 04 FF 00 
-  Get Descriptor String[3]
-  buffer 1203310031003200320033003300  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
-USBD Xfer Complete on EP 80 with 18 bytes
+USBD Setup Received 80 06 04 03 09 04 FF 00 
+  Get Descriptor String[4]
+  buffer 0a035500410043003200  Queue EP 80 with 10 bytes ...
+USBD Xfer Complete on EP 80 with 10 bytes
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received 80 06 04 03 09 04 FF 00 
+  Get Descriptor String[4]
+  buffer 0a035500410043003200  Queue EP 80 with 10 bytes ...
+USBD Xfer Complete on EP 80 with 10 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 01 00 00 12 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 09 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032  Control total data length is 9 bytes
-  Queue EP 80 with 9 bytes ...
+  buffer 09028d000201008032  Queue EP 80 with 9 bytes ...
 USBD Xfer Complete on EP 80 with 9 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 8D 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032080b000201  Control total data length is 141 bytes
-  Queue EP 80 with 64 bytes ...
+  buffer 09028d000201008032080b000201  Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
   Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
   Queue EP 80 with 13 bytes ...
 USBD Xfer Complete on EP 80 with 13 bytes
   Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
+USBD Xfer Complete on EP 00 with 0 bytes<NUL><NUL>
 USBD Setup Received 80 06 00 01 00 00 12 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP <NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL>
+USBD Xfer Complete on EP 00 with 0 bytes
+
 USBD Setup Received 80 06 00 02 00 00 09 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032  Control total data length is 9 bytes
-  Queue EP 80 with 9 bytes ...
+  buffer 09028d000201008032  Queue EP 80 with 9 bytes ...
 USBD Xfer Complete on EP 80 with 9 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 8D 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032080b000201  Control total data length is 141 bytes
-  Queue EP 80 with 64 bytes ...
+  buffer 09028d000201008032080b000201  Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
   Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
@@ -209,8 +204,7 @@ USBD Bus Reset : Full Speed
 
 USBD Setup Received 80 06 00 01 00 00 40 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
@@ -222,16 +216,14 @@ USBD Xfer Complete on EP 80 with 0 bytes
 
 USBD Setup Received 80 06 00 01 00 00 12 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 01 00 00 40 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
@@ -239,8 +231,7 @@ USBD Bus Reset : Full Speed
 
 USBD Setup Received 80 06 00 01 00 00 40 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
@@ -252,24 +243,21 @@ USBD Xfer Complete on EP 80 with 0 bytes
 
 USBD Setup Received 80 06 00 01 00 00 12 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 01 00 00 12 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 FF 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032080b000201  Control total data length is 141 bytes
-  Queue EP 80 with 64 bytes ...
+  buffer 09028d000201008032080b000201  Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
   Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
@@ -280,24 +268,21 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 03 03 09 04 FF 00 
   Get Descriptor String[3]
-  buffer 1203310031003200320033003300  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 1203310031003200320033003300  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 03 00 00 FF 00 
   Get Descriptor String[0]
-  buffer 04030904  Control total data length is 4 bytes
-  Queue EP 80 with 4 bytes ...
+  buffer 04030904  Queue EP 80 with 4 bytes ...
 USBD Xfer Complete on EP 80 with 4 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 02 03 09 04 FF 00 
   Get Descriptor String[2]
-  buffer 12034d00690063005f0031005f00  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12034d00690063005f0031005f00  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
@@ -308,24 +293,21 @@ USBD Setup Received 80 06 00 06 00 00 0A 00
 
 USBD Setup Received 80 06 00 01 00 00 12 00 
   Get Descriptor Device
-  buffer 12010002ef020140feca10400001  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12010002ef020140feca10400001  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 09 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032  Control total data length is 9 bytes
-  Queue EP 80 with 9 bytes ...
+  buffer 09028d000201008032  Queue EP 80 with 9 bytes ...
 USBD Xfer Complete on EP 80 with 9 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 02 00 00 8D 00 
   Get Descriptor Configuration[0]
-  buffer 09028d000201008032080b000201  Control total data length is 141 bytes
-  Queue EP 80 with 64 bytes ...
+  buffer 09028d000201008032080b000201  Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
   Queue EP 80 with 64 bytes ...
 USBD Xfer Complete on EP 80 with 64 bytes
@@ -336,17 +318,15 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 00 09 01 00 00 00 00 00 
   Set Configuration
-REQ_SET_CONFIGURATION
-  Process Set Configure Request
   AUDIO opened
   Bind EP 81 to driver id 0
   Queue EP 80 with 0 bytes ...
-USBD Xfer Complete on EP 80 with 0 bytes
-
+USBD Xfer Complete on EP 80<NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL><NUL>
 USBD Setup Received 01 0B 00 00 01 00 00 00 
   Set Interface
   AUDIO control request
   Set itf: 1 - alt: 0
+Set interface 1 alt 0
   Queue EP 80 with 0 bytes ...
 USBD Xfer Complete on EP 80 with 0 bytes
 
@@ -354,62 +334,56 @@ USBD Setup Received 01 0B 00 00 01 00 00 00
   Set Interface
   AUDIO control request
   Set itf: 1 - alt: 0
+Set interface 1 alt 0
   Queue EP 80 with 0 bytes ...
 USBD Xfer Complete on EP 80 with 0 bytes
 
 USBD Setup Received 80 06 02 03 09 04 04 00 
   Get Descriptor String[2]
-  buffer 12034d00  Control total data length is 4 bytes
-  Queue EP 80 with 4 bytes ...
+  buffer 12034d00  Queue EP 80 with 4 bytes ...
 USBD Xfer Complete on EP 80 with 4 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 02 03 09 04 12 00 
   Get Descriptor String[2]
-  buffer 12034d00690063005f0031005f00  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12034d00690063005f0031005f00  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 00 00 00 00 00 02 00 
   Get Status
-  buffer 0000  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
+  buffer 0000  Queue EP 80 with 2 bytes ...
 USBD Xfer Complete on EP 80 with 2 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 00 03 00 00 04 00 
   Get Descriptor String[0]
-  buffer 04030904  Control total data length is 4 bytes
-  Queue EP 80 with 4 bytes ...
+  buffer 04030904  Queue EP 80 with 4 bytes ...
 USBD Xfer Complete on EP 80 with 4 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 02 03 09 04 02 00 
   Get Descriptor String[2]
-  buffer 1203  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
+  buffer 1203  Queue EP 80 with 2 bytes ...
 USBD Xfer Complete on EP 80 with 2 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received 80 06 02 03 09 04 12 00 
   Get Descriptor String[2]
-  buffer 12034d00690063005f0031005f00  Control total data length is 18 bytes
-  Queue EP 80 with 18 bytes ...
+  buffer 12034d00690063005f0031005f00  Queue EP 80 with 18 bytes ...
 USBD Xfer Complete on EP 80 with 18 bytes
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 02 00 02 00 02 08 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume range of channel: 0
-  buffer 0100a6ff5a000100  Control total data length is 8 bytes
-  Queue EP 80 with 8 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume range of channel: 0
+  buffer 0100a6ff5a000100  Queue EP 80 with 8 bytes ...
 USBD Xfer Complete on EP 80 with 8 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -417,9 +391,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 02 01 02 00 02 08 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume range of channel: 1
-  buffer 0100a6ff5a000100  Control total data length is 8 bytes
-  Queue EP 80 with 8 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume range of channel: 1
+  buffer 0100a6ff5a000100  Queue EP 80 with 8 bytes ...
 USBD Xfer Complete on EP 80 with 8 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -427,19 +400,31 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 02 00 01 00 04 00 01 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 1 entityID -> 4    Clock Source unit    Get Sample Freq. range
-  buffer 010080bb000080bb000000000000  Control total data length is 14 bytes
-  Queue EP 80 with 14 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 1 entityID -> 4    Clock Source unit    Get Sample Freq. range
+  buffer 010080bb000080bb000000000000  Queue EP 80 with 14 bytes ...
 USBD Xfer Complete on EP 80 with 14 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
+USBD Setup Received 80 06 04 03 09 04 02 00 
+  Get Descriptor String[4]
+  buffer 0a03  Queue EP 80 with 2 bytes ...
+USBD Xfer Complete on EP 80 with 2 bytes
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received 80 06 04 03 09 04 0A 00 
+  Get Descriptor String[4]
+  buffer 0a035500410043003200  Queue EP 80 with 10 bytes ...
+USBD Xfer Complete on EP 80 with 10 bytes
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -447,9 +432,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -457,9 +441,17 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 02 00 02 02 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
-  buffer 0000  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
+  buffer 0a00  Queue EP 80 with 2 bytes ...
+USBD Xfer Complete on EP 80 with 2 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 01 02 00 02 02 00 
+  AUDIO control request
+  channelNum -> 1 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
+  buffer 0a00  Queue EP 80 with 2 bytes ...
 USBD Xfer Complete on EP 80 with 2 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -467,59 +459,17 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 01 00 02 01 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
-  buffer 00  Control total data length is 1 bytes
-  Queue EP 80 with 1 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
+  buffer 00  Queue EP 80 with 1 bytes ...
 USBD Xfer Complete on EP 80 with 1 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
-USBD Setup Received A1 01 01 02 00 02 02 00 
-  AUDIO control request
-  channelNum -> 1 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
-  buffer 0000  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
-USBD Xfer Complete on EP 80 with 2 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
 USBD Setup Received A1 01 01 01 00 02 01 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
-  buffer 00  Control total data length is 1 bytes
-  Queue EP 80 with 1 bytes ...
-USBD Xfer Complete on EP 80 with 1 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
-USBD Setup Received A1 01 00 02 00 01 06 00 
-  AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
-USBD Xfer Complete on EP 80 with 6 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
-USBD Setup Received A1 01 01 02 00 02 02 00 
-  AUDIO control request
-  channelNum -> 1 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
-  buffer 0000  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
-USBD Xfer Complete on EP 80 with 2 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
-USBD Setup Received A1 01 01 01 00 02 01 00 
-  AUDIO control request
-  channelNum -> 1 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
-  buffer 00  Control total data length is 1 bytes
-  Queue EP 80 with 1 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
+  buffer 00  Queue EP 80 with 1 bytes ...
 USBD Xfer Complete on EP 80 with 1 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -527,29 +477,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
-USBD Xfer Complete on EP 80 with 6 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
-USBD Setup Received A1 01 00 02 00 01 06 00 
-  AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
-USBD Xfer Complete on EP 80 with 6 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
-USBD Setup Received A1 01 00 02 00 01 06 00 
-  AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -557,29 +486,17 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 02 00 02 02 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
-  buffer 0000  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
+  buffer 0a00  Queue EP 80 with 2 bytes ...
 USBD Xfer Complete on EP 80 with 2 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
-USBD Setup Received A1 01 00 02 00 01 06 00 
-  AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
-USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 01 00 02 01 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
-  buffer 00  Control total data length is 1 bytes
-  Queue EP 80 with 1 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
+  buffer 00  Queue EP 80 with 1 bytes ...
 USBD Xfer Complete on EP 80 with 1 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -587,9 +504,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -597,9 +513,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -607,9 +522,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -617,29 +531,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
-USBD Xfer Complete on EP 80 with 6 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
-USBD Setup Received A1 01 00 02 00 01 06 00 
-  AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
-USBD Xfer Complete on EP 80 with 6 bytes
-  AUDIO control complete
-  Queue EP 00 with 0 bytes ...
-USBD Xfer Complete on EP 00 with 0 bytes
-
-USBD Setup Received A1 01 00 02 00 01 06 00 
-  AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -647,19 +540,26 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 02 00 02 02 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
-  buffer 0000  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
+  buffer 0a00  Queue EP 80 with 2 bytes ...
 USBD Xfer Complete on EP 80 with 2 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 00 02 00 01 06 00 
+  AUDIO control request
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
+USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
 USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 01 00 02 01 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
-  buffer 00  Control total data length is 1 bytes
-  Queue EP 80 with 1 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
+  buffer 00  Queue EP 80 with 1 bytes ...
 USBD Xfer Complete on EP 80 with 1 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -667,9 +567,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -677,9 +576,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -687,9 +585,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -697,9 +594,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -707,9 +603,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -717,9 +612,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 02 00 02 02 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
-  buffer 0000  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
+  buffer 0a00  Queue EP 80 with 2 bytes ...
 USBD Xfer Complete on EP 80 with 2 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -727,9 +621,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 01 00 02 01 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
-  buffer 00  Control total data length is 1 bytes
-  Queue EP 80 with 1 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
+  buffer 00  Queue EP 80 with 1 bytes ...
 USBD Xfer Complete on EP 80 with 1 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -737,9 +630,44 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 00 02 00 01 06 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
-  buffer 010000000000  Control total data length is 6 bytes
-  Queue EP 80 with 6 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
+USBD Xfer Complete on EP 80 with 6 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 00 02 00 01 06 00 
+  AUDIO control request
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
+USBD Xfer Complete on EP 80 with 6 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 00 02 00 01 06 00 
+  AUDIO control request
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
+USBD Xfer Complete on EP 80 with 6 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 00 02 00 01 06 00 
+  AUDIO control request
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
+USBD Xfer Complete on EP 80 with 6 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 00 02 00 01 06 00 
+  AUDIO control request
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
 USBD Xfer Complete on EP 80 with 6 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -747,9 +675,8 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 02 00 02 02 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
-  buffer 0000  Control total data length is 2 bytes
-  Queue EP 80 with 2 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
+  buffer 0a00  Queue EP 80 with 2 bytes ...
 USBD Xfer Complete on EP 80 with 2 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -757,9 +684,35 @@ USBD Xfer Complete on EP 00 with 0 bytes
 
 USBD Setup Received A1 01 01 01 00 02 01 00 
   AUDIO control request
-  channelNum -> 1 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
-  buffer 00  Control total data length is 1 bytes
-  Queue EP 80 with 1 bytes ...
+  channelNum -> 1 itf -> 0 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
+  buffer 00  Queue EP 80 with 1 bytes ...
+USBD Xfer Complete on EP 80 with 1 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 00 02 00 01 06 00 
+  AUDIO control request
+  channelNum -> 0 itf -> 0 ctrlSel -> 2 entityID -> 1    Input terminal    Get terminal connector
+  buffer 010000000000  Queue EP 80 with 6 bytes ...
+USBD Xfer Complete on EP 80 with 6 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 01 02 00 02 02 00 
+  AUDIO control request
+  channelNum -> 1 itf -> 0 ctrlSel -> 2 entityID -> 2    Feature unit    Get Volume of channel: 1
+  buffer 0a00  Queue EP 80 with 2 bytes ...
+USBD Xfer Complete on EP 80 with 2 bytes
+  AUDIO control complete
+  Queue EP 00 with 0 bytes ...
+USBD Xfer Complete on EP 00 with 0 bytes
+
+USBD Setup Received A1 01 01 01 00 02 01 00 
+  AUDIO control request
+  channelNum -> 1 itf -> 0 ctrlSel -> 1 entityID -> 2    Feature unit    Get Mute of channel: 1
+  buffer 00  Queue EP 80 with 1 bytes ...
 USBD Xfer Complete on EP 80 with 1 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -770,7 +723,9 @@ USBD Setup Received 01 0B 01 00 01 00 00 00
   AUDIO control request
   Set itf: 1 - alt: 1
   Open EP 81 with Size = 98
-  audio_write  Queue EP 81 with 96 bytes ...
+  audio_write
+  Queue EP 81 with 96 bytes ...
+Set interface 1 alt 1
   Queue EP 80 with 0 bytes ...
 USBD Xfer Complete on EP 80 with 0 bytes
 
@@ -778,15 +733,15 @@ USBD Setup Received 01 0B 00 00 01 00 00 00
   Set Interface
   AUDIO control request
   Set itf: 1 - alt: 0
-usbd_edpt_close 1379: ASSERT FAILED
+  CLOSING Endpoint: 0x81
+usbd_edpt_close 1366: ASSERT FAILED  lib/tinyusb-master/src/device/usbd.c
+Set interface 1 alt 0
   Queue EP 80 with 0 bytes ...
-USBD Xfer Complete on EP 80 with 0 bytes
-
+USBD Xfer Complete on EP 80 0 bytes
 USBD Setup Received A1 01 00 01 00 04 04 00 
   AUDIO control request
-  channelNum -> 0 ctrlSel -> 1 entityID -> 4    Clock Source unit    Get Sample Freq.
-  buffer 80bb0000  Control total data length is 4 bytes
-  Queue EP 80 with 4 bytes ...
+  channelNum -> 0 itf -> 0 ctrlSel -> 1 entityID -> 4    Clock Source unit    Get Sample Freq.
+  buffer 80bb0000  Queue EP 80 with 4 bytes ...
 USBD Xfer Complete on EP 80 with 4 bytes
   AUDIO control complete
   Queue EP 00 with 0 bytes ...
@@ -797,15 +752,3594 @@ USBD Setup Received 01 0B 01 00 01 00 00 00
   AUDIO control request
   Set itf: 1 - alt: 1
   Open EP 81 with Size = 98
-  audio_write  Queue EP 81 with 96 bytes ...
-usbd_edpt_xfer 1260: ASSERT FAILED
+  audio_write
+  Queue EP 81 with 96 bytes ...
+usbd_edpt_xfer 1247: ASSERT FAILED  lib/tinyusb-master/src/device/usbd.c
   Queue EP 80 with 0 bytes ...
 USBD Xfer Complete on EP 80 with 0 bytes
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
+USBD Xfer Complete on EP 81 with 96 bytes
+  AUDIO xfer callback
+  audio_write
+  Queue EP 81 with 96 bytes ...
 
 USBD Setup Received 01 0B 00 00 01 00 00 00 
   Set Interface
   AUDIO control request
   Set itf: 1 - alt: 0
-usbd_edpt_close 1379: ASSERT FAILED
+  CLOSING Endpoint: 0x81
+usbd_edpt_close 1366: ASSERT FAILED  lib/tinyusb-master/src/device/usbd.c
+Set interface 1 alt 0
   Queue EP 80 with 0 bytes ...
 USBD Xfer Complete on EP 80 with 0 bytes
