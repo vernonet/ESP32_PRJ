@@ -1,8 +1,8 @@
 # usb microphone on esp32-s2
 
-  In project uses an  I2S microphone INMP441, WEMOS S2 mini.
+  In project uses an  I2S microphone INMP441, <a href="https://www.wemos.cc/en/latest/s2/s2_mini.html" rel="nofollow">WEMOS S2 mini</a>.
   The project was created in  PlatformIO IDE with VS Code (framework arduino).
-  Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>, , <a href="https://github.com/hathach/tinyusb"    rel="nofollow">tinyusb</a>.
+  Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>, <a href="https://github.com/hathach/tinyusb"    rel="nofollow">tinyusb</a>.
   Tested on Arduino ESP32 release 2.0.5.  
   Tested sample rate 48000Hz.
   Bit-Depth: 16.
