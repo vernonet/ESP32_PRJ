@@ -18,7 +18,7 @@
   - RX   -   GPIO_NUM_18  (not used)
   
   
-  ...While it works partially (transfer of sound data is only once), use "CFG_TUSB_DEBUG=1 or 0".
+  ...While it works partially (transfer of sound data is only once - seems to have solved this problem), use "CFG_TUSB_DEBUG=1 or 0".
   With "CFG_TUSB_DEBUG=2" you will not be able to record the sound.
   Works only on windows 10-11 (probably linux), older versions of windows need a driver with support for audio class 2.0.
 
