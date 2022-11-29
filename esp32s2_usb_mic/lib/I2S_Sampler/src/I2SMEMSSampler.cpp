@@ -43,12 +43,6 @@ int I2SMEMSSampler::read(int16_t *samples, int count, uint8_t bps)
         {
             if (bps  == 16) {
                 samples[sample_index] = ((raw_samples[i]) >> 13) >>signal_gain;
-                // int16_t tmp =  ((raw_samples[i]) >> 13) >>signal_gain;
-                // uint8_t * d_buff_16 = (uint8_t *)&samples[sample_index];
-                // *d_buff_16   = (uint8_t)((tmp)& 0xFF);
-                // d_buff_16++;
-                // *d_buff_16 = (uint8_t)((tmp>>8) & 0xFF);
-                
             }
               else if (bps  == 24) {
                   tmp_samples = (raw_samples[i]  << 3)>>signal_gain;

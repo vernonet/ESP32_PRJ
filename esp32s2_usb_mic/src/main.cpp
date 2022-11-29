@@ -54,7 +54,7 @@
 #define BAUDRATE                   (BAUDRATE_)
 
 #define SAMPLE_BUFFER_SIZE         512    //Length of one buffer, in 32-bit words.  //512 //300  
-#define BUF_CNT                    16      // Number of buffers in the I2S circular buffer   
+#define BUF_CNT                    8      // Number of buffers in the I2S circular buffer   
 #ifndef AUDIO_SAMPLE_RATE
  #define AUDIO_SAMPLE_RATE         48000
 #endif
@@ -77,7 +77,7 @@
 int16_t samples[SAMPLE_BUFFER_SIZE*(BITS_PER_SAMPLE>>3)*2];
 
 const i2s_port_t I2S_PORT = I2S_NUM_0;
-uint8_t signal_gain = SIGNAL_GAIN;
+uint8_t signal_gain;
 
 uint32_t free_mem8 = 0, free_mem32 = 0;
 
@@ -114,10 +114,10 @@ uart_t* UART;
  * - 2500 ms : device is suspended
  */
 enum  {
-  BLINK_STREAMING = 25,
+  BLINK_STREAMING   = 25,
   BLINK_NOT_MOUNTED = 250,
-  BLINK_MOUNTED = 1000,
-  BLINK_SUSPENDED = 2500,
+  BLINK_MOUNTED     = 1000,
+  BLINK_SUSPENDED   = 2500,
 };
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
@@ -129,6 +129,7 @@ uint16_t volume[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1]; 					// +1 for master c
 uint32_t sampFreq;
 uint8_t clkValid;
 uint16_t startVal = 0;
+uint8_t  wr_cnt = 0;
 
 // Range states
 audio_control_range_2_n_t(1) volumeRng[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX+1]; 			// Volume range state
@@ -155,7 +156,7 @@ void setup() {
   //uartSetHwFlowCtrlMode(UART, UART_HW_FLOWCTRL_CTS_RTS, 64);
 
   //testing PSRAM
-  byte *psdRamBuffer = (byte *)ps_malloc(0x10000 * 16 * 1); // test 1Mbytes
+  byte *psdRamBuffer = (byte *)ps_malloc(0x10000 * 16 * 2); // test 1Mbytes
   fill_mem_seed(0xaaaa, psdRamBuffer, sizeof psdRamBuffer, 0x1000);
   if (check_mem_seed(0xaaaa, psdRamBuffer, sizeof psdRamBuffer, 0x1000))
   {
@@ -180,8 +181,8 @@ void setup() {
   sampleFreqRng.subrange[0].bMax = AUDIO_SAMPLE_RATE;
   sampleFreqRng.subrange[0].bRes = 0;
 
-  volume[0] =  10;
-  volume[1] =  10;
+  volume[0] =  300; volume[1] =  300;                      
+  signal_gain = 3 - volume[0]/100; 
 
   i2sSampler = new I2SMEMSSampler(I2S_PORT, i2s_mic_pins, i2s_config, false);
   //start sampling from i2s device
@@ -331,6 +332,8 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
 
         volume[channelNum] = (uint16_t) ((audio_control_cur_2_t*) pBuff)->bCur;
 
+        signal_gain = 3 - (((volume[channelNum]/100) > 3) ? 3 : (volume[channelNum]/100)); 
+
         uart_printf("    Set Volume: %d dB of channel: %u\r\n", volume[channelNum], channelNum);
       return true;
 
@@ -446,11 +449,12 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
 
             // Copy values - only for testing - better is version below
             audio_control_range_2_n_t(1) 
-            ret;    
+            ret;  
+            //create 4 volume level  
             ret.wNumSubRanges = 1;
-            ret.subrange[0].bMin = -90;           // -90 dB
-            ret.subrange[0].bMax = 90;		// +90 dB
-            ret.subrange[0].bRes = 1; 		// 1 dB steps
+            ret.subrange[0].bMin = 000;   // -90 dB
+            ret.subrange[0].bMax = 300;		// +90 dB
+            ret.subrange[0].bRes = 100;   // 1 dB steps
         
 
             return tud_audio_buffer_and_schedule_control_xfer(rhport, p_request, (void*) &ret, sizeof(ret));
@@ -524,11 +528,14 @@ bool tud_audio_tx_done_pre_load_cb(uint8_t rhport, uint8_t itf, uint8_t ep_in, u
   (void) cur_alt_setting;
 
   blink_interval_ms = BLINK_STREAMING;
-  uart_printf("  audio_write\r\n");
-  //tud_audio_write ((uint8_t *)&samples[0], (AUDIO_SAMPLE_RATE/1000) * CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX * CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX );  /////////////////////////////////////////////////////////////////////
-  //tud_audio_write ((uint8_t *)&i2s_dummy_buffer[0], (AUDIO_SAMPLE_RATE/1000) * CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX * CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX ); 
-  //tud_audio_write ((uint8_t *)&i2s_dummy_buffer[0], (AUDIO_SAMPLE_RATE/1000)*2);   // подходит тоже
-  tud_audio_write ((uint8_t *)&samples[0], (AUDIO_SAMPLE_RATE/1000)*2);
+  uint8_t tmp[CFG_TUD_AUDIO_EP_SZ_IN_] = {0};
+  if (wr_cnt++>150) {
+    wr_cnt = 0;
+    uart_printf("  audio_write\r\n");
+  }
+  
+  if (mute[0] == 0 && mute[1] == 0) tud_audio_write ((uint8_t *)&samples[0], CFG_TUD_AUDIO_EP_SZ_IN_);
+    else tud_audio_write (tmp, CFG_TUD_AUDIO_EP_SZ_IN_);
 
   return true;
 }
@@ -543,7 +550,7 @@ bool tud_audio_tx_done_post_load_cb(uint8_t rhport, uint16_t n_bytes_copied, uin
 
 
   int samples_read;
-  samples_read = i2sSampler->read(samples, (AUDIO_SAMPLE_RATE/1000) , BITS_PER_SAMPLE);
+  samples_read = i2sSampler->read(samples, (CFG_TUD_AUDIO_EP_SZ_IN_)/2 , BITS_PER_SAMPLE);
 
   return true;
 }

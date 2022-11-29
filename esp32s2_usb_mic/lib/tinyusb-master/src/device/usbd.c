@@ -1239,7 +1239,7 @@ bool usbd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t * buffer, uint16_t 
   uint8_t const dir   = tu_edpt_dir(ep_addr);
 
   // TODO skip ready() check for now since enumeration also use this API
-  // TU_VERIFY(tud_ready());
+  //TU_VERIFY(tud_ready());
 
   TU_LOG(USBD_DBG, "  Queue EP %02X with %u bytes ...\r\n", ep_addr, total_bytes);
 
@@ -1362,17 +1362,16 @@ bool usbd_edpt_stalled(uint8_t rhport, uint8_t ep_addr)
 void usbd_edpt_close(uint8_t rhport, uint8_t ep_addr)
 {
   rhport = _usbd_rhport;
-  TU_LOG(USBD_DBG, "  CLOSING Endpoint: 0x%02X\r\n", ep_addr);  //////////////////////////////////////////////////////////
   TU_ASSERT(dcd_edpt_close, /**/);
-  //TU_LOG(USBD_DBG, "  CLOSING Endpoint: 0x%02X\r\n", ep_addr);
+  TU_LOG(USBD_DBG, "  CLOSING Endpoint: 0x%02X\r\n", ep_addr);
 
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir   = tu_edpt_dir(ep_addr);
 
   dcd_edpt_close(rhport, ep_addr);
-  _usbd_dev.ep_status[epnum][dir].stalled = false;
-  _usbd_dev.ep_status[epnum][dir].busy = false;
-  _usbd_dev.ep_status[epnum][dir].claimed = false;
+  //_usbd_dev.ep_status[epnum][dir].stalled = false;
+  //_usbd_dev.ep_status[epnum][dir].busy = false;
+  //_usbd_dev.ep_status[epnum][dir].claimed = false;
 
   return;
 }
