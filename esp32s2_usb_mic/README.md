@@ -4,7 +4,7 @@
   The project was created in  PlatformIO IDE with VS Code (framework arduino).
   Used source code <a href="https://github.com/atomic14/esp32_audio" rel="nofollow">esp32_audio</a>, <a href="https://github.com/hathach/tinyusb"    rel="nofollow">tinyusb</a>.
   Tested on Arduino ESP32 release 2.0.5.  
-  Tested sample rate 48000Hz.
+  Tested sample rate 16000, 32000, 44100, 48000 Hz.
   Bit-Depth: 16.
   
   Microphone connection: 
