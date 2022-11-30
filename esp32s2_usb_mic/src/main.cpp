@@ -71,8 +71,12 @@
 #define I2S_MIC_SERIAL_DATA GPIO_NUM_14
 
 
-
 #define PRINTF_BUF_SZE           (256)
+
+const uint32_t sample_rates[] = {16000, 32000, 44100, 48000}; //max 48000  (3.2 MHz)
+uint32_t current_sample_rate  = AUDIO_SAMPLE_RATE;
+#define N_SAMPLE_RATES  TU_ARRAY_SIZE(sample_rates)
+
 
 int16_t samples[SAMPLE_BUFFER_SIZE*(BITS_PER_SAMPLE>>3)*2];
 
@@ -176,10 +180,10 @@ void setup() {
   sampFreq = AUDIO_SAMPLE_RATE;
   clkValid = 1;
 
-  sampleFreqRng.wNumSubRanges = 1;
-  sampleFreqRng.subrange[0].bMin = AUDIO_SAMPLE_RATE;
-  sampleFreqRng.subrange[0].bMax = AUDIO_SAMPLE_RATE;
-  sampleFreqRng.subrange[0].bRes = 0;
+  // sampleFreqRng.wNumSubRanges = 1;
+  // sampleFreqRng.subrange[0].bMin = AUDIO_SAMPLE_RATE;
+  // sampleFreqRng.subrange[0].bMax = AUDIO_SAMPLE_RATE;
+  // sampleFreqRng.subrange[0].bRes = 0;
 
   volume[0] =  300; volume[1] =  300;                      
   signal_gain = 3 - volume[0]/100; 
@@ -313,37 +317,54 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
   TU_VERIFY(p_request->bRequest == AUDIO_CS_REQ_CUR);
 
   // If request is for our feature unit
-  if ( entityID == 2 )
+  if (entityID == 2)
   {
-    switch ( ctrlSel )
+    switch (ctrlSel)
     {
-      case AUDIO_FU_CTRL_MUTE:
-        // Request uses format layout 1
-        TU_VERIFY(p_request->wLength == sizeof(audio_control_cur_1_t));
+    case AUDIO_FU_CTRL_MUTE:
+      // Request uses format layout 1
+      TU_VERIFY(p_request->wLength == sizeof(audio_control_cur_1_t));
 
-        mute[channelNum] = ((audio_control_cur_1_t*) pBuff)->bCur;
+      mute[channelNum] = ((audio_control_cur_1_t *)pBuff)->bCur;
 
-        uart_printf("    Set Mute: %d of channel: %u\r\n", mute[channelNum], channelNum);
+      uart_printf("    Set Mute: %d of channel: %u\r\n", mute[channelNum], channelNum);
       return true;
 
-      case AUDIO_FU_CTRL_VOLUME:
-        // Request uses format layout 2
-        TU_VERIFY(p_request->wLength == sizeof(audio_control_cur_2_t));
+    case AUDIO_FU_CTRL_VOLUME:
+      // Request uses format layout 2
+      TU_VERIFY(p_request->wLength == sizeof(audio_control_cur_2_t));
 
-        volume[channelNum] = (uint16_t) ((audio_control_cur_2_t*) pBuff)->bCur;
+      volume[channelNum] = (uint16_t)((audio_control_cur_2_t *)pBuff)->bCur;
 
-        signal_gain = 3 - (((volume[channelNum]/100) > 3) ? 3 : (volume[channelNum]/100)); 
+      signal_gain = 3 - (((volume[channelNum] / 100) > 3) ? 3 : (volume[channelNum] / 100));
 
-        uart_printf("    Set Volume: %d dB of channel: %u\r\n", volume[channelNum], channelNum);
+      uart_printf("    Set Volume: %d dB of channel: %u\r\n", volume[channelNum], channelNum);
       return true;
 
-        // Unknown/Unsupported control
-      default:
-        TU_BREAKPOINT();
+      // Unknown/Unsupported control
+    default:
+      TU_BREAKPOINT();
       return false;
     }
   }
-  return false;    // Yet not implemented
+  if (entityID == UAC2_ENTITY_CLOCK)
+  {
+
+    if (ctrlSel == AUDIO_CS_CTRL_SAM_FREQ)
+    {
+      TU_VERIFY(p_request->wLength == sizeof(audio_control_cur_4_t));
+
+      current_sample_rate = (uint32_t)((audio_control_cur_4_t const *)pBuff)->bCur;
+
+      i2s_stop(I2S_PORT);
+      i2s_set_sample_rates(I2S_PORT, current_sample_rate);
+      i2s_start(I2S_PORT);
+      uart_printf("Clock set current freq: %ld\r\n", current_sample_rate);
+
+      return true;
+    }
+  }
+  return false; // Yet not implemented
 }
 
 // Invoked when audio class specific get request received for an EP
@@ -480,39 +501,46 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
     uart_printf("    Clock Source unit");
     switch ( ctrlSel )
     {
-      case AUDIO_CS_CTRL_SAM_FREQ:
-        // channelNum is always zero in this case
-        switch ( p_request->bRequest )
+     case AUDIO_CS_CTRL_SAM_FREQ:
+      // channelNum is always zero in this case
+      switch (p_request->bRequest)
+      {
+       case AUDIO_CS_REQ_CUR:
+        uart_printf("    Get Sample Freq.\r\n");
+        return tud_control_xfer(rhport, p_request, &current_sample_rate, sizeof(current_sample_rate));
+
+       case AUDIO_CS_REQ_RANGE:
+        audio_control_range_4_n_t(N_SAMPLE_RATES) rangef;
+        rangef.wNumSubRanges = tu_htole16(N_SAMPLE_RATES);       
+        uart_printf("Clock get %d freq ranges\r\n", N_SAMPLE_RATES);
+        for (uint8_t i = 0; i < N_SAMPLE_RATES; i++)
         {
-          case AUDIO_CS_REQ_CUR:
-            uart_printf("    Get Sample Freq.\r\n");
-            return tud_control_xfer(rhport, p_request, &sampFreq, sizeof(sampFreq));
-
-          case AUDIO_CS_REQ_RANGE:
-            sampleFreqRng.wNumSubRanges = 1;
-            sampleFreqRng.subrange[0].bMin = AUDIO_SAMPLE_RATE;
-            sampleFreqRng.subrange[0].bMax = AUDIO_SAMPLE_RATE;
-            sampleFreqRng.subrange[0].bRes = 0;
-            uart_printf("    Get Sample Freq. range\r\n");
-            return tud_control_xfer(rhport, p_request, (void *)&sampleFreqRng, sizeof(sampleFreqRng));
-
-           // Unknown/Unsupported control
-          default:
-            uart_printf("    Unsupported control\r\n");
-            TU_BREAKPOINT();
-            return false;
+          rangef.subrange[i].bMin = (int32_t)sample_rates[i];
+          rangef.subrange[i].bMax = (int32_t)sample_rates[i];
+          rangef.subrange[i].bRes = 0;
+          uart_printf("Range %d (%d, %d, %d)\r\n", i, (int)rangef.subrange[i].bMin, (int)rangef.subrange[i].bMax, (int)rangef.subrange[i].bRes);
         }
-      break;
+        return tud_audio_buffer_and_schedule_control_xfer(rhport, (tusb_control_request_t const *)p_request, &rangef, sizeof(rangef));
 
-      case AUDIO_CS_CTRL_CLK_VALID:
-        // Only cur attribute exists for this request
-        uart_printf("    Get Sample Freq. valid\r\n");
-        return tud_control_xfer(rhport, p_request, &clkValid, sizeof(clkValid));
-
-      // Unknown/Unsupported control
-      default:
+       // Unknown/Unsupported control
+       default:
+        uart_printf("    Unsupported control\r\n");
         TU_BREAKPOINT();
         return false;
+      }
+     break;
+
+    case AUDIO_CS_CTRL_CLK_VALID:
+      // Only cur attribute exists for this request
+      audio_control_cur_1_t cur_valid;
+      cur_valid.bCur = 1;
+      uart_printf("Clock get is valid %u\r\n", cur_valid.bCur);
+      return tud_audio_buffer_and_schedule_control_xfer(rhport, (tusb_control_request_t const *)p_request, &cur_valid, sizeof(cur_valid));
+
+    // Unknown/Unsupported control
+    default:
+      TU_BREAKPOINT();
+      return false;
     }
   }
 
@@ -529,12 +557,12 @@ bool tud_audio_tx_done_pre_load_cb(uint8_t rhport, uint8_t itf, uint8_t ep_in, u
 
   blink_interval_ms = BLINK_STREAMING;
   uint8_t tmp[CFG_TUD_AUDIO_EP_SZ_IN_] = {0};
-  if (wr_cnt++>150) {
+  if (wr_cnt++>200) {
     wr_cnt = 0;
     uart_printf("  audio_write\r\n");
   }
   
-  if (mute[0] == 0 && mute[1] == 0) tud_audio_write ((uint8_t *)&samples[0], CFG_TUD_AUDIO_EP_SZ_IN_);
+  if (mute[0] == 0 && mute[1] == 0) tud_audio_write ((uint8_t *)&samples[0], (current_sample_rate/1000)*2);  //CFG_TUD_AUDIO_EP_SZ_IN_
     else tud_audio_write (tmp, CFG_TUD_AUDIO_EP_SZ_IN_);
 
   return true;
@@ -550,7 +578,7 @@ bool tud_audio_tx_done_post_load_cb(uint8_t rhport, uint16_t n_bytes_copied, uin
 
 
   int samples_read;
-  samples_read = i2sSampler->read(samples, (CFG_TUD_AUDIO_EP_SZ_IN_)/2 , BITS_PER_SAMPLE);
+  samples_read = i2sSampler->read(samples, (current_sample_rate/1000) , BITS_PER_SAMPLE);  //(CFG_TUD_AUDIO_EP_SZ_IN_)/2
 
   return true;
 }

@@ -1244,8 +1244,8 @@ bool usbd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t * buffer, uint16_t 
   TU_LOG(USBD_DBG, "  Queue EP %02X with %u bytes ...\r\n", ep_addr, total_bytes);
 
   // Attempt to transfer on a busy endpoint, sound like an race condition !
-  TU_ASSERT(_usbd_dev.ep_status[epnum][dir].busy == 0);
-
+  //TU_ASSERT(_usbd_dev.ep_status[epnum][dir].busy == 0); //original
+  TU_VERIFY(_usbd_dev.ep_status[epnum][dir].busy == 0);
   // Set busy first since the actual transfer can be complete before dcd_edpt_xfer()
   // could return and USBD task can preempt and clear the busy
   _usbd_dev.ep_status[epnum][dir].busy = true;
