@@ -29,6 +29,8 @@
 #include "tusb.h"
 
 // Unit numbers are arbitrary selected
+#define UAC2_ENTITY_INPUT               0x01
+#define UAC2_ENTITY_FU                  0x02
 #define UAC2_ENTITY_CLOCK               0x04
 // Microphone path
 #define UAC2_ENTITY_MIC_INPUT_TERMINAL  0x01

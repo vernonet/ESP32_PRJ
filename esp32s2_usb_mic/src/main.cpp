@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <stdio.h>
 #include "esp_heap_caps.h"
-//#include "USB.h"
 #include "tusb.h"
 #include "board.h"
 #include "WiFi.h"
@@ -17,10 +16,6 @@
 
 #include "esp32-hal-uart.h"
 #include "driver/uart.h"
-
-// #include "common/tusb_debug.h"
-// #include "tusb_config.h"
-
 
 
 #ifndef RX1
@@ -130,9 +125,6 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 // Current states
 bool mute[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1]; 				          // +1 for master channel 0
 uint16_t volume[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1]; 					// +1 for master channel 0
-uint32_t sampFreq;
-uint8_t clkValid;
-uint16_t startVal = 0;
 uint8_t  wr_cnt = 0;
 
 // Range states
@@ -160,7 +152,7 @@ void setup() {
   //uartSetHwFlowCtrlMode(UART, UART_HW_FLOWCTRL_CTS_RTS, 64);
 
   //testing PSRAM
-  byte *psdRamBuffer = (byte *)ps_malloc(0x10000 * 16 * 2); // test 1Mbytes
+  byte *psdRamBuffer = (byte *)ps_malloc(0x10000 * 16 * 2); // test 2Mbytes
   fill_mem_seed(0xaaaa, psdRamBuffer, sizeof psdRamBuffer, 0x1000);
   if (check_mem_seed(0xaaaa, psdRamBuffer, sizeof psdRamBuffer, 0x1000))
   {
@@ -177,14 +169,6 @@ void setup() {
   WiFi.mode(WIFI_OFF);
  
   // Init values
-  sampFreq = AUDIO_SAMPLE_RATE;
-  clkValid = 1;
-
-  // sampleFreqRng.wNumSubRanges = 1;
-  // sampleFreqRng.subrange[0].bMin = AUDIO_SAMPLE_RATE;
-  // sampleFreqRng.subrange[0].bMax = AUDIO_SAMPLE_RATE;
-  // sampleFreqRng.subrange[0].bRes = 0;
-
   volume[0] =  300; volume[1] =  300;                      
   signal_gain = 3 - volume[0]/100; 
 
@@ -272,7 +256,7 @@ bool tud_audio_set_req_ep_cb(uint8_t rhport, tusb_control_request_t const * p_re
 
   (void) channelNum; (void) ctrlSel; (void) ep;
 
-  uart_printf( "\r\n  channelNum -> %x ctrlSel -> %x ep -> %x (not implemented)", channelNum, ctrlSel, ep);
+  TU_LOG1( "\r\n  channelNum -> %x ctrlSel -> %x ep -> %x (not implemented)", channelNum, ctrlSel, ep);
 
   return false; 	// Yet not implemented
 }
@@ -293,7 +277,7 @@ bool tud_audio_set_req_itf_cb(uint8_t rhport, tusb_control_request_t const * p_r
 
   (void) channelNum; (void) ctrlSel; (void) itf;
 
-  uart_printf("  channelNum -> %x itf ->%x ctrlSel ->  %x (not implemented)", channelNum, itf, ctrlSel);
+  TU_LOG1("  channelNum -> %x itf ->%x ctrlSel ->  %x (not implemented)", channelNum, itf, ctrlSel);
 
   return false; 	// Yet not implemented
 }
@@ -311,13 +295,14 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
 
   (void) itf;
 
-  uart_printf("  channelNum -> %x itf -> %x ctrlSel -> %x entityID -> %x (implemented parciali)", channelNum, itf, ctrlSel, entityID);
+  TU_LOG1("  channelNum -> %x itf -> %x ctrlSel -> %x entityID -> %x", channelNum, itf, ctrlSel, entityID);
+
 
   // We do not support any set range requests here, only current value requests
   TU_VERIFY(p_request->bRequest == AUDIO_CS_REQ_CUR);
 
   // If request is for our feature unit
-  if (entityID == 2)
+  if (entityID == UAC2_ENTITY_FU)
   {
     switch (ctrlSel)
     {
@@ -327,7 +312,7 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
 
       mute[channelNum] = ((audio_control_cur_1_t *)pBuff)->bCur;
 
-      uart_printf("    Set Mute: %d of channel: %u\r\n", mute[channelNum], channelNum);
+      TU_LOG1("    Set Mute: %d of channel: %u\r\n", mute[channelNum], channelNum);
       return true;
 
     case AUDIO_FU_CTRL_VOLUME:
@@ -338,7 +323,7 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
 
       signal_gain = 3 - (((volume[channelNum] / 100) > 3) ? 3 : (volume[channelNum] / 100));
 
-      uart_printf("    Set Volume: %d dB of channel: %u\r\n", volume[channelNum], channelNum);
+      TU_LOG1("    Set Volume: %d dB of channel: %u\r\n", volume[channelNum], channelNum);
       return true;
 
       // Unknown/Unsupported control
@@ -359,7 +344,7 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
       i2s_stop(I2S_PORT);
       i2s_set_sample_rates(I2S_PORT, current_sample_rate);
       i2s_start(I2S_PORT);
-      uart_printf("Clock set current freq: %ld\r\n", current_sample_rate);
+      TU_LOG1("  Clock set current freq: %ld\r\n", current_sample_rate);
 
       return true;
     }
@@ -381,7 +366,7 @@ bool tud_audio_get_req_ep_cb(uint8_t rhport, tusb_control_request_t const * p_re
 
   //	return tud_control_xfer(rhport, p_request, &tmp, 1);
 
-  uart_printf("  channelNum -> %x ctrlSel -> %x ep -> %x (not implemented)", channelNum, ctrlSel, ep)	;
+  TU_LOG1("  channelNum -> %x ctrlSel -> %x ep -> %x (not implemented)", channelNum, ctrlSel, ep)	;
 
   return false; 	// Yet not implemented
 }
@@ -398,7 +383,7 @@ bool tud_audio_get_req_itf_cb(uint8_t rhport, tusb_control_request_t const * p_r
 
   (void) channelNum; (void) ctrlSel; (void) itf;
 
-  uart_printf("  channelNum -> %x ctrlSel -> %x itf -> %x (not implemented)", channelNum, ctrlSel, itf);
+  TU_LOG1("  channelNum -> %x ctrlSel -> %x itf -> %x (not implemented)", channelNum, ctrlSel, itf);
 
 
   return false; 	// Yet not implemented
@@ -415,12 +400,12 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
   uint8_t itf = TU_U16_LOW(p_request->wIndex); 			// Since we have only one audio function implemented, we do not need the itf value
   uint8_t entityID = TU_U16_HIGH(p_request->wIndex);
 
-  uart_printf("  channelNum -> %x itf -> %x ctrlSel -> %x entityID -> %x", channelNum, itf, ctrlSel, entityID);
+  TU_LOG1("  channelNum -> %x itf -> %x ctrlSel -> %x entityID -> %x", channelNum, itf, ctrlSel, entityID);
   
   // Input terminal (Microphone input)
-  if (entityID == 1)
+  if (entityID == UAC2_ENTITY_INPUT )
   {
-     uart_printf("    Input terminal");
+     TU_LOG1("    Input terminal");
     switch ( ctrlSel )
     {
       case AUDIO_TE_CTRL_CONNECTOR:
@@ -433,7 +418,7 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
         ret_.bmChannelConfig = AUDIO_CHANNEL_CONFIG_NON_PREDEFINED;
         ret_.iChannelNames = 0;
 
-        uart_printf("    Get terminal connector\r\n");
+        TU_LOG1("    Get terminal connector\r\n");
 
         return tud_audio_buffer_and_schedule_control_xfer(rhport, p_request, (void*) &ret_, sizeof(ret_));
       }
@@ -447,26 +432,26 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
   }
 
   // Feature unit
-  if (entityID == 2)
+  if (entityID == UAC2_ENTITY_FU)
   {
-     uart_printf("    Feature unit");
+    TU_LOG1("    Feature unit  ");
     switch ( ctrlSel )
     {
       case AUDIO_FU_CTRL_MUTE:
         // Audio control mute cur parameter block consists of only one byte - we thus can send it right away
         // There does not exist a range parameter block for mute
-        uart_printf("    Get Mute of channel: %u\r\n", channelNum);
+        TU_LOG1("    Get Mute of channel: %u\r\n", channelNum);
         return tud_control_xfer(rhport, p_request, &mute[channelNum], 1);
 
       case AUDIO_FU_CTRL_VOLUME:
         switch ( p_request->bRequest )
         {
           case AUDIO_CS_REQ_CUR:
-            uart_printf("    Get Volume of channel: %u\r\n", channelNum);
+            TU_LOG1("    Get Volume of channel: %u\r\n", channelNum);
             return tud_control_xfer(rhport, p_request, &volume[channelNum], sizeof(volume[channelNum]));
 
           case AUDIO_CS_REQ_RANGE:
-            uart_printf("    Get Volume range of channel: %u\r\n", channelNum);
+            TU_LOG1("    Get Volume range of channel: %u\r\n", channelNum);
 
             // Copy values - only for testing - better is version below
             audio_control_range_2_n_t(1) 
@@ -490,15 +475,15 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
         // Unknown/Unsupported control
       default:
         TU_BREAKPOINT();
-        uart_printf("\r\n");  /////////////////////////////////////////////////////
+        TU_LOG1("\r\n");  /////////////////////////////////////////////////////
         return false;
     }
   }
 
   // Clock Source unit
-  if ( entityID == 4 )
+  if ( entityID == UAC2_ENTITY_CLOCK )
   {
-    uart_printf("    Clock Source unit");
+    TU_LOG1("    Clk Source unit");
     switch ( ctrlSel )
     {
      case AUDIO_CS_CTRL_SAM_FREQ:
@@ -506,25 +491,25 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
       switch (p_request->bRequest)
       {
        case AUDIO_CS_REQ_CUR:
-        uart_printf("    Get Sample Freq.\r\n");
+        TU_LOG1("    Get Sample Freq.\r\n");
         return tud_control_xfer(rhport, p_request, &current_sample_rate, sizeof(current_sample_rate));
 
        case AUDIO_CS_REQ_RANGE:
         audio_control_range_4_n_t(N_SAMPLE_RATES) rangef;
         rangef.wNumSubRanges = tu_htole16(N_SAMPLE_RATES);       
-        uart_printf("Clock get %d freq ranges\r\n", N_SAMPLE_RATES);
+        TU_LOG1("   Clock get %d freq ranges\r\n", N_SAMPLE_RATES);
         for (uint8_t i = 0; i < N_SAMPLE_RATES; i++)
         {
           rangef.subrange[i].bMin = (int32_t)sample_rates[i];
           rangef.subrange[i].bMax = (int32_t)sample_rates[i];
           rangef.subrange[i].bRes = 0;
-          uart_printf("Range %d (%d, %d, %d)\r\n", i, (int)rangef.subrange[i].bMin, (int)rangef.subrange[i].bMax, (int)rangef.subrange[i].bRes);
+          TU_LOG1("  Range %d (%d, %d, %d)\r\n", i, (int)rangef.subrange[i].bMin, (int)rangef.subrange[i].bMax, (int)rangef.subrange[i].bRes);
         }
         return tud_audio_buffer_and_schedule_control_xfer(rhport, (tusb_control_request_t const *)p_request, &rangef, sizeof(rangef));
 
        // Unknown/Unsupported control
        default:
-        uart_printf("    Unsupported control\r\n");
+        TU_LOG1("    Unsupported control\r\n");
         TU_BREAKPOINT();
         return false;
       }
@@ -534,7 +519,7 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
       // Only cur attribute exists for this request
       audio_control_cur_1_t cur_valid;
       cur_valid.bCur = 1;
-      uart_printf("Clock get is valid %u\r\n", cur_valid.bCur);
+      TU_LOG1("Clock get is valid %u\r\n", cur_valid.bCur);
       return tud_audio_buffer_and_schedule_control_xfer(rhport, (tusb_control_request_t const *)p_request, &cur_valid, sizeof(cur_valid));
 
     // Unknown/Unsupported control
@@ -544,7 +529,7 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
     }
   }
 
-  uart_printf("  Unsupported entity: %d\r\n", entityID);
+  TU_LOG1("  Unsupported entity: %d\r\n", entityID);
   return false; 	// Yet not implemented
 }
 
@@ -559,7 +544,7 @@ bool tud_audio_tx_done_pre_load_cb(uint8_t rhport, uint8_t itf, uint8_t ep_in, u
   uint8_t tmp[CFG_TUD_AUDIO_EP_SZ_IN_] = {0};
   if (wr_cnt++>200) {
     wr_cnt = 0;
-    uart_printf("  audio_write\r\n");
+    TU_LOG1("  audio_write\r\n");
   }
   
   if (mute[0] == 0 && mute[1] == 0) tud_audio_write ((uint8_t *)&samples[0], (current_sample_rate/1000)*2);  //CFG_TUD_AUDIO_EP_SZ_IN_
@@ -598,7 +583,7 @@ bool tud_audio_set_itf_cb(uint8_t rhport, tusb_control_request_t const * p_reque
   uint8_t const itf = tu_u16_low(tu_le16toh(p_request->wIndex));
   uint8_t const alt = tu_u16_low(tu_le16toh(p_request->wValue));
 
-  uart_printf("Set interface %d alt %d\r\n", itf, alt);
+  TU_LOG1("Set interface %d alt %d\r\n", itf, alt);
   if (ITF_NUM_AUDIO_STREAMING == itf && alt != 0)
       blink_interval_ms = BLINK_STREAMING;
   if (ITF_NUM_AUDIO_STREAMING == itf && alt == 0)
