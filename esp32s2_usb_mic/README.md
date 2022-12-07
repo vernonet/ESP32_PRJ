@@ -21,6 +21,7 @@
   ... Use "CFG_TUSB_DEBUG=1 or 0".
   With "CFG_TUSB_DEBUG=2" you will not be able to record the sound.
   Works only on windows 10-11 ,Linux (tested on Linux Mint), older versions of windows need a driver with support for audio class 2.0.
+  The microphone work in USB Audio Class 2.0 mode (UAC2).
 
 
 # License
