@@ -1,4 +1,4 @@
-# usb microphone on esp32-s2
+# usb microphone on esp32-s2 UAC1 UAC2
 
   This project is similar to <a href="https://github.com/vernonet/ESP32_PRJ/tree/main/esp32s2_usb_mic" rel="nofollow">esp32s2_usb_mic</a>
   but it supports two audio modes - USB Audio Class 1.0 and 2.0 (also known as UAC1 and UAC2). At startup, the device will try to connect in mode UAC2,
