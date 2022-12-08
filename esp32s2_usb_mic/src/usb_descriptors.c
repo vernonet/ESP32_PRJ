@@ -26,6 +26,8 @@
 //#include "tusb.h"
 #include "usb_descriptors.h"
 
+char id_str[9] = {0};
+
 
 /* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
  * Same VID/PID with different interface e.g MSC (first), then CDC (later) will possibly cause system error on PC.
@@ -135,30 +137,44 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
 
   uint8_t chr_count;
 
-  if ( index == 0)
+  if (index == 0)
   {
     memcpy(&_desc_str[1], string_desc_arr[0], 2);
     chr_count = 1;
-  }else
+  }
+  else
   {
     // Convert ASCII string into UTF-16
 
-    if ( !(index < sizeof(string_desc_arr)/sizeof(string_desc_arr[0])) ) return NULL;
+    if (!(index < sizeof(string_desc_arr) / sizeof(string_desc_arr[0])))
+      return NULL;
 
-    const char* str = string_desc_arr[index];
-
-    // Cap at max char
-    chr_count = (uint8_t) strlen(str);
-    if ( chr_count > 31 ) chr_count = 31;
-
-    for(uint8_t i=0; i<chr_count; i++)
+    const char *str;
+    if (index == 3) // get the device serial number  from MAC address
     {
-      _desc_str[1+i] = str[i];
+      uint8_t chip_id[8] = {0};
+      esp_efuse_mac_get_default(&chip_id[0]);
+      uint32_t id = (chip_id[4] << 24) | (chip_id[5] << 16) | (chip_id[6] << 8) | (chip_id[7]);
+      sprintf(id_str, "%u", id);
+      str = (const char *)&id_str;
+    }
+    else
+    {
+      str = string_desc_arr[index];
+    }
+    // Cap at max char
+    chr_count = (uint8_t)strlen(str);
+    if (chr_count > 31)
+      chr_count = 31;
+
+    for (uint8_t i = 0; i < chr_count; i++)
+    {
+      _desc_str[1 + i] = str[i];
     }
   }
 
   // first byte is length (including header), second byte is string type
-  _desc_str[0] = (uint16_t) ((TUSB_DESC_STRING << 8 ) | (2*chr_count + 2));
+  _desc_str[0] = (uint16_t)((TUSB_DESC_STRING << 8) | (2 * chr_count + 2));
 
   return _desc_str;
 }

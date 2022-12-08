@@ -73,7 +73,7 @@ uint32_t current_sample_rate  = AUDIO_SAMPLE_RATE;
 #define N_SAMPLE_RATES  TU_ARRAY_SIZE(sample_rates)
 
 
-int16_t samples[SAMPLE_BUFFER_SIZE*(BITS_PER_SAMPLE>>3)*2];
+int16_t samples[(CFG_TUD_AUDIO_EP_SZ_IN_/2)*(BITS_PER_SAMPLE>>3)];
 
 const i2s_port_t I2S_PORT = I2S_NUM_0;
 uint8_t signal_gain;
@@ -126,6 +126,7 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 bool mute[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1]; 				          // +1 for master channel 0
 uint16_t volume[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1]; 					// +1 for master channel 0
 uint8_t  wr_cnt = 0;
+uint32_t wr_cnt_LF = 0;
 
 // Range states
 audio_control_range_2_n_t(1) volumeRng[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX+1]; 			// Volume range state
@@ -134,10 +135,6 @@ audio_control_range_4_n_t(1) sampleFreqRng; 						// Sample frequency range stat
 
 void led_blinking_task(void);
 void audio_task(void);
-
-void i2sMemsToUsbTask(void *param);
-static void usbEventCallback(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
-
 int uart_printf(const char *c, ...);
 static void fill_mem_seed(int seed, void *mem, int len, int block_size);
 static bool check_mem_seed(int seed, void *mem, int len, int block_size);
@@ -304,6 +301,7 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
   // If request is for our feature unit
   if (entityID == UAC2_ENTITY_FU)
   {
+    TU_LOG1("    Feature unit  ");
     switch (ctrlSel)
     {
     case AUDIO_FU_CTRL_MUTE:
@@ -334,17 +332,21 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
   }
   if (entityID == UAC2_ENTITY_CLOCK)
   {
-
+    TU_LOG1("    Clk source unit  ");
     if (ctrlSel == AUDIO_CS_CTRL_SAM_FREQ)
     {
       TU_VERIFY(p_request->wLength == sizeof(audio_control_cur_4_t));
 
       current_sample_rate = (uint32_t)((audio_control_cur_4_t const *)pBuff)->bCur;
 
+      // i2sSampler->stop();
+      // i2s_config.sample_rate = current_sample_rate;
+      // i2sSampler = new I2SMEMSSampler(I2S_PORT, i2s_mic_pins, i2s_config, false);
+      // i2sSampler->start();
       i2s_stop(I2S_PORT);
       i2s_set_sample_rates(I2S_PORT, current_sample_rate);
       i2s_start(I2S_PORT);
-      TU_LOG1("  Clock set current freq: %ld\r\n", current_sample_rate);
+      TU_LOG1(" Clock set current freq: %ld\r\n", current_sample_rate);
 
       return true;
     }
@@ -542,9 +544,18 @@ bool tud_audio_tx_done_pre_load_cb(uint8_t rhport, uint8_t itf, uint8_t ep_in, u
 
   blink_interval_ms = BLINK_STREAMING;
   uint8_t tmp[CFG_TUD_AUDIO_EP_SZ_IN_] = {0};
-  if (wr_cnt++>200) {
+  if (wr_cnt++ > 500)
+  {
+    if (wr_cnt_LF == 0)
+      TU_LOG1("\r\n  ");
+    else
+      TU_LOG1(".");
+    wr_cnt_LF++;
+    if (wr_cnt_LF > 100)
+    {
+      wr_cnt_LF = 0;
+    }
     wr_cnt = 0;
-    TU_LOG1("  audio_write\r\n");
   }
   
   if (mute[0] == 0 && mute[1] == 0) tud_audio_write ((uint8_t *)&samples[0], (current_sample_rate/1000)*2);  //CFG_TUD_AUDIO_EP_SZ_IN_
@@ -583,11 +594,13 @@ bool tud_audio_set_itf_cb(uint8_t rhport, tusb_control_request_t const * p_reque
   uint8_t const itf = tu_u16_low(tu_le16toh(p_request->wIndex));
   uint8_t const alt = tu_u16_low(tu_le16toh(p_request->wValue));
 
-  TU_LOG1("Set interface %d alt %d\r\n", itf, alt);
+  TU_LOG1("  Set interface %d alt %d\r\n", itf, alt);
   if (ITF_NUM_AUDIO_STREAMING == itf && alt != 0)
       blink_interval_ms = BLINK_STREAMING;
   if (ITF_NUM_AUDIO_STREAMING == itf && alt == 0)
       blink_interval_ms = BLINK_MOUNTED;
+      wr_cnt_LF = 0;
+      TU_LOG1("\r\n");
   
   if(alt != 0)
   {
