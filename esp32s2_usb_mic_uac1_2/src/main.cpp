@@ -62,9 +62,9 @@
 #endif
 #define SIGNAL_GAIN                (0)// 0 - max gain, 2 - no gain
 
-#define I2S_MIC_SERIAL_CLOCK GPIO_NUM_12
-#define I2S_MIC_LEFT_RIGHT_CLOCK GPIO_NUM_13
-#define I2S_MIC_SERIAL_DATA GPIO_NUM_14
+#define I2S_MIC_SERIAL_CLOCK       GPIO_NUM_12
+#define I2S_MIC_LEFT_RIGHT_CLOCK   GPIO_NUM_13
+#define I2S_MIC_SERIAL_DATA        GPIO_NUM_14
 
 
 #define PRINTF_BUF_SZE           (256)
@@ -126,7 +126,7 @@ static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 // Current states
 bool mute[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1]; 				          // +1 for master channel 0
 uint16_t volume[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1]; 					// +1 for master channel 0
-uint32_t sampFreq;
+uint32_t sampFreq, wr_cnt_LF = 0;
 int16_t ret_min_max = 0;
 uint16_t  wr_cnt = 0;
 bool uac1_active = false;  ///////////////////////////////////
@@ -156,11 +156,11 @@ void setup() {
   fill_mem_seed(0xaaaa, psdRamBuffer, sizeof psdRamBuffer, 0x1000);
   if (check_mem_seed(0xaaaa, psdRamBuffer, sizeof psdRamBuffer, 0x1000))
   {
-    TU_LOG1("PSRAM test - OK!\r\n");
+    TU_LOG1("  PSRAM test - OK!\r\n");
   }
   else
   {
-    TU_LOG1("PSRAM test - ERROR!\r\n");
+    TU_LOG1("  PSRAM test - ERROR!\r\n");
   }
   uartFlush(UART);
   free(psdRamBuffer);
@@ -322,14 +322,15 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
 
   (void) itf;
 
-  TU_LOG1("  channelNum -> %x itf -> %x ctrlSel -> %x entityID -> %x", channelNum, itf, ctrlSel, entityID);
+  TU_LOG1("  channelNum -> %x itf -> %x ctrlSel -> %x entityID -> %x bRequest -> %x", channelNum, itf, ctrlSel, entityID, p_request->bRequest);
 
   // We do not support any set range requests here, only current value requests
-  //TU_VERIFY(p_request->bRequest == AUDIO_CS_REQ_CUR);
+  TU_VERIFY(p_request->bRequest == AUDIO_CS_REQ_CUR);
 
   // If request is for our feature unit
-  if (entityID == 2 || entityID == UAC1_ENTITY_MIC_FEATURE_UNIT)
+  if (entityID == UAC2_ENTITY_MIC_FEATURE_UNIT || entityID == UAC1_ENTITY_MIC_FEATURE_UNIT)
   {
+    TU_LOG1("     Feature unit  ");
     switch (ctrlSel)
     {
     case AUDIO_FU_CTRL_MUTE:
@@ -362,7 +363,7 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
   }
   if (entityID == UAC2_ENTITY_CLOCK)
   {
-
+    TU_LOG1("    Clock source unit");
     if (ctrlSel == AUDIO_CS_CTRL_SAM_FREQ)  //change sample_rate for UAC2
     {
       TU_VERIFY(p_request->wLength == sizeof(audio_control_cur_4_t));
@@ -376,7 +377,7 @@ bool tud_audio_set_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
       i2s_stop(I2S_PORT);
       i2s_set_sample_rates(I2S_PORT, current_sample_rate);
       i2s_start(I2S_PORT);
-      TU_LOG1("Clock set current freq: %ld\r\n", current_sample_rate);
+      TU_LOG1(" Clock set current freq: %ld\r\n", current_sample_rate);
 
       return true;
     }
@@ -466,7 +467,7 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
   // Feature unit
   if (entityID == UAC2_ENTITY_MIC_FEATURE_UNIT || entityID == UAC1_ENTITY_MIC_FEATURE_UNIT)
   {
-     TU_LOG1("    Feature unit");
+     TU_LOG1("    Feature unit  ");
     switch ( ctrlSel )
     {
       case AUDIO_FU_CTRL_MUTE:
@@ -553,7 +554,7 @@ bool tud_audio_get_req_entity_cb(uint8_t rhport, tusb_control_request_t const * 
           rangef.subrange[i].bMin = (int32_t)sample_rates[i];
           rangef.subrange[i].bMax = (int32_t)sample_rates[i];
           rangef.subrange[i].bRes = 0;
-          TU_LOG1("Range %d (%d, %d, %d)\r\n", i, (int)rangef.subrange[i].bMin, (int)rangef.subrange[i].bMax, (int)rangef.subrange[i].bRes);
+          TU_LOG1("  Range %d (%d, %d, %d)\r\n", i, (int)rangef.subrange[i].bMin, (int)rangef.subrange[i].bMax, (int)rangef.subrange[i].bRes);
         }
         return tud_audio_buffer_and_schedule_control_xfer(rhport, (tusb_control_request_t const *)p_request, &rangef, sizeof(rangef));
 
@@ -592,11 +593,21 @@ bool tud_audio_tx_done_pre_load_cb(uint8_t rhport, uint8_t itf, uint8_t ep_in, u
 
   blink_interval_ms = BLINK_STREAMING;
   uint8_t tmp[CFG_TUD_AUDIO_EP_SZ_IN_] = {0};
-  if (wr_cnt++>500) {
+
+  if (wr_cnt++ > 500)
+  {
+    if (wr_cnt_LF == 0)
+      TU_LOG1("\r\n  ");
+    else
+      TU_LOG1(".");
+    wr_cnt_LF++;
+    if (wr_cnt_LF > 100)
+    {
+      wr_cnt_LF = 0;
+    }
     wr_cnt = 0;
-    TU_LOG1("  audio_write\r\n");
   }
-  
+
   if (mute[0] == 0 && mute[1] == 0) tud_audio_write ((uint8_t *)&samples[0], (current_sample_rate/1000)*2);  //CFG_TUD_AUDIO_EP_SZ_IN_
     else tud_audio_write (tmp, CFG_TUD_AUDIO_EP_SZ_IN_);
 
@@ -633,16 +644,20 @@ bool tud_audio_set_itf_cb(uint8_t rhport, tusb_control_request_t const * p_reque
   uint8_t const alt = tu_u16_low(tu_le16toh(p_request->wValue));
   uint8_t leght= (p_request->wLength);
 
-  TU_LOG1("  Set interface main %d alt %d   leght -> %d\r\n", itf, alt, leght);
   if (ITF_NUM_AUDIO_STREAMING == itf && alt != 0)
       blink_interval_ms = BLINK_STREAMING;
-  if (ITF_NUM_AUDIO_STREAMING == itf && alt == 0)
+  if (ITF_NUM_AUDIO_STREAMING == itf && alt == 0) {
       blink_interval_ms = BLINK_MOUNTED;
+      wr_cnt_LF = 0;
+      TU_LOG1("\r\n");
+  }
   
   if(alt != 0)
   {
     //
   }
+
+  TU_LOG1("  Set interface main %d alt %d   leght -> %d\r\n", itf, alt, leght);
 
   return true;
 }
@@ -666,8 +681,6 @@ void led_blinking_task(void)
   digitalWrite(PIN_LED, (uint8_t)led_state);
   led_state = 1 - led_state; // toggle
 }
-
-
 
 
 

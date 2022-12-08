@@ -25,8 +25,10 @@
 
 //#include "tusb.h"
 #include "usb_descriptors.h"
+//#include "esp_mac.h"
 
 extern bool uac1_active;
+char id_str[9] = {0};
 
 /* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
  * Same VID/PID with different interface e.g MSC (first), then CDC (later) will possibly cause system error on PC.
@@ -196,8 +198,26 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
     if ( !(index < sizeof(string_desc_arr_uac1)/sizeof(string_desc_arr_uac1[0])) ) return NULL;
 
     const char* str;
-    if (uac1_active) str = string_desc_arr_uac1[index];
-       else str = string_desc_arr_uac2[index];
+    if (index == 3)    //get the device serial number  from MAC address
+    {
+      uint8_t chip_id[8] = {0};
+      esp_efuse_mac_get_default(&chip_id[0]);
+      uint32_t id = (chip_id[4]<<24) | (chip_id[5]<<16) | (chip_id[6]<<8) | (chip_id[7]);
+      if (uac1_active) id++;
+      sprintf(id_str, "%u", id);
+      str = (const char*)&id_str;
+    }
+    else
+    {
+      if (uac1_active)
+      {
+        str = string_desc_arr_uac1[index];
+      }
+      else
+      {
+        str = string_desc_arr_uac2[index];
+      }
+    }
 
     // Cap at max char
     chr_count = (uint8_t) strlen(str);
