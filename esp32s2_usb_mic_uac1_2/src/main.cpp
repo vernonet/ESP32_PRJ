@@ -722,7 +722,7 @@ static bool check_mem_seed(int seed, void *mem, int len, int block_size)
         for (int ii = 0; ii < block_size/4; ii++) {
           uint32_t ex = rand_r(&rseed);
           if (ex != *p) {
-             Serial.printf("check_mem_seed: %x has 0x%08x expected 0x%08x\n", i*block_size+((char*)p-(char*)mem), *p, ex);
+             TU_LOG1("check_mem_seed: %x has 0x%08x expected 0x%08x\n", i*block_size+((char*)p-(char*)mem), *p, ex);
              return false;
           }
           p++;
