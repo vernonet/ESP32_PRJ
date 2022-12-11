@@ -122,7 +122,7 @@ char const* string_desc_arr [] =
 {
     (const char[]) { 0x09, 0x04 }, 	// 0: is supported language is English (0x0409)
     "Custom_Corp",                  // 1: Manufacturer
-    "Mic_1_Ch",    	               	// 2: Product
+    "Mic_1_Ch",    	                // 2: Product
     "11223344",                     // 3: Serials, should use chip ID
     "UAC2",                 	    	// 4: Audio Interface
 };
