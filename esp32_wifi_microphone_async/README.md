@@ -28,6 +28,7 @@
   I rebuilt the arduino libraries, and put them in a separate folder, these files need to be replaced.
   Rebuild utility - <a href="https://github.com/espressif/esp32-arduino-lib-builder" rel="nofollow">esp32-arduino-lib-builder</a>  
   Also I slightly changed the "ESPAsync_WiFiManager" library, mainly related to the chip esp32s2.
+  On the wemos s2 mini (esp32s2) board, the device is unstable, there are interference from the wifi module (probably can be eliminated).
 
 
 
