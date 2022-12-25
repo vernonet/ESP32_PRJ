@@ -1,13 +1,15 @@
 #pragma once
+
+#include "AudioConfig.h"
+
 /**
  * @brief Public generic methods 
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
 
-
-/// stops any further processing by spinning in an endless loop
-void stop() {
+/// stops any further processing by spinning in an endless loop  @ingroup basic
+inline void stop() {
   #ifdef EXIT_ON_STOP
     exit(0);
   #else
@@ -17,10 +19,12 @@ void stop() {
   #endif
 }
 
-/// Executes heap_caps_check_integrity_all()
-inline static void checkMemory(bool stackCheck=false) {
+/// Executes heap_caps_check_integrity_all()  @ingroup basic
+inline static void checkMemory(bool memoryCheck=false) {
     #ifdef ESP32
         assert(heap_caps_check_integrity_all(true)); 
-        if (stackCheck) printf("stack available: %d \n'", uxTaskGetStackHighWaterMark(NULL));
+        if (memoryCheck) printf("==> Available stack: %d - heap: %d\n", uxTaskGetStackHighWaterMark(NULL), ESP.getFreeHeap());
     #endif    
 }
+
+

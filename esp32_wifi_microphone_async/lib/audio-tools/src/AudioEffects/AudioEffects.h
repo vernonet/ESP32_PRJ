@@ -1,79 +1,151 @@
 #pragma once
 
-#include "AudioTools/SoundGenerator.h"
-#include "AudioTools/Vector.h"
+#include "AudioBasic/Collections.h"
+#include "AudioEffects/SoundGenerator.h"
 #include "AudioEffects/AudioEffect.h"
-#include "AudioEffects/AudioEffectsSuite.h"
-#ifdef  USE_STK
-#include "AudioEffects/STKEffects.h"
-#endif
+
+/** 
+ * @defgroup effects Effects
+ * @ingroup dsp
+ * @brief Audio Effects  
+**/
+
 
 namespace audio_tools {
 
 /**
- * @brief AudioEffects
+ * @brief AudioEffects: the template class describes the input audio to which the effects are applied: 
+ * e.g. SineWaveGenerator, SquareWaveGenerator, GeneratorFromStream etc. 
+ * We support only one channel of int16_t data!
+ * 
+ * We subclass the AudioEffects from GeneratorT so that we can use this class with the GeneratedSoundStream 
+ * class to output the audio.
+ *   
+ * @ingroup effects
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
 
-class AudioEffects : public SoundGenerator<effect_t>  {
 
+template <class GeneratorT>
+class AudioEffects : public SoundGenerator<effect_t> {
     public:
         /// Default constructor
-        AudioEffects(SoundGenerator &in){
-            setInput(in);
+        AudioEffects() = default;
+
+        /// Copy constructor
+        AudioEffects(AudioEffects &copy) {
+            TRACEI();
+            // create a copy of the source and all effects
+            p_generator = copy.p_generator;
+            for (int j=0;j<copy.size();j++){
+                effects.push_back(copy[j]->clone());
+            }
+            LOGI("Number of effects %d -> %d", copy.size(), this->size());
         }
 
-        AudioEffects(Stream &in){
-            setInput(in);
+        /// Constructor which is assigning a generator
+        AudioEffects(GeneratorT &generator) {
+            setInput(generator);
         }
 
-        ~AudioEffects(){
-            if (p_stream_gen!=nullptr) delete p_stream_gen;
+        /// Constructor which is assigning a Stream as input. The stream must consist of int16_t values 
+        /// with the indicated number of channels. Type type parameter is e.g.  <GeneratorFromStream<effect_t>
+        AudioEffects(Stream &input, int channels=2, float volume=1.0) {
+            setInput(* (new GeneratorT(input, channels, volume)));
+            owns_generator = true;
         }
 
-
+        /// Destructor
+        virtual ~AudioEffects(){
+            TRACED();
+            if (owns_generator && p_generator!=nullptr){
+                delete p_generator;
+            }
+            for (int j=0;j<effects.size();j++){
+                delete effects[j];
+            }
+        }
+        
         /// Defines the input source for the raw guitar input
-        void setInput(SoundGenerator &in){
-            p_source = &in;
-        }
-
-        /// Defines the input source for the raw guitar input; MEMORY LEAK WARNING use only once!
-        void setInput(Stream &in){
-            // allocate optional adapter class
-            if (p_stream_gen==nullptr){
-                p_stream_gen = new GeneratorFromStream<int16_t>();
-            } 
-            p_stream_gen->setStream(in);
-            p_source = p_stream_gen;
+        void setInput(GeneratorT &in){
+            TRACED();
+            p_generator = &in;
+            // automatically activate this object
+            AudioBaseInfo info;
+            info.channels = 1;
+            info.bits_per_sample = sizeof(effect_t)*8;
+            begin(info);
         }
 
         /// Adds an effect object (by reference)
         void addEffect(AudioEffect &effect){
+            TRACED();
             effects.push_back(&effect);
         }
 
         /// Adds an effect using a pointer
         void addEffect(AudioEffect *effect){
+            TRACED();
             effects.push_back(effect);
+            LOGI("addEffect -> Number of effects: %d", size());
         }
 
         /// provides the resulting sample
-        virtual  effect_t readSample() {
-            effect_t input = p_source->readSample();
-            int size = effects.size();
-            for (int j=0; j<size; j++){
-                input = effects[j]->process(input);
+        effect_t readSample() override {
+            effect_t sample;
+            if (p_generator!=nullptr){
+                sample  = p_generator->readSample();
+                int size = effects.size();
+                for (int j=0; j<size; j++){
+                    sample = effects[j]->process(sample);
+                }
             }
-            return input;
+            return sample;
+        }
+
+        /// deletes all defined effects
+        void clear() {
+            TRACED();
+            effects.clear();
+        }
+
+        /// Provides the actual number of defined effects
+        size_t size() {
+            return effects.size();
+        }
+
+        /// Provides access to the sound generator
+        GeneratorT &generator(){
+            return *p_generator;
+        }
+
+        /// gets an effect by index
+        AudioEffect* operator [](int idx){
+            return effects[idx];
+        }
+
+        /// Finds an effect by id
+        AudioEffect* findEffect(int id){
+            // find AudioEffect
+            AudioEffect* result = nullptr;
+            for (int j=0;j<size();j++){
+                // we assume that ADSRGain is the first effect!
+                if (effects[j]->id()==id){
+                    result = effects[j];
+                }
+                LOGI("--> findEffect -> %d", effects[j]->id());
+            }
+            return result;
         }
 
     protected:
         Vector<AudioEffect*> effects;
-        SoundGenerator *p_source;
-        // optional adapter class to support streams
-        GeneratorFromStream<int16_t> *p_stream_gen = nullptr;
+        GeneratorT *p_generator=nullptr;
+        bool owns_generator = false;
 };
+
+
 
 
 } // namespace

@@ -1,38 +1,39 @@
 #pragma once
 
-#include "AudioTools/Vector.h"
-#include "AudioHttp/StrExt.h"
+#include "AudioBasic/Collections.h"
+#include "AudioBasic/StrExt.h"
+#include "AudioConfig.h"
 #include "AudioHttp/HttpLineReader.h" 
 #include "AudioHttp/Url.h"
 #include "AudioHttp/HttpTypes.h" 
+#ifdef ARDUINO
 #include "Client.h"
-
+#endif
 namespace audio_tools {
 
 // Class Configuration
-const int MaxHeaderLineLength = 200;
 
 // Define relevant header content
-const char* CONTENT_TYPE = "Content-Type";
-const char* CONTENT_LENGTH = "Content-Length";
-const char* CONNECTION = "Connection";
-const char* CON_CLOSE = "close";
-const char* CON_KEEP_ALIVE = "keep-alive";
-const char* TRANSFER_ENCODING = "Transfer-Encoding";
-const char* CHUNKED = "chunked";
-const char* ACCEPT = "Accept";
-const char* ACCEPT_ALL = "*/*";
-const char* SUCCESS = "Success";
-const char* USER_AGENT = "User-Agent";
-const char* DEFAULT_AGENT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
-const char* HOST_C = "Host";
-const char* ACCEPT_ENCODING = "Accept-Encoding";
-const char* IDENTITY = "identity";
-const char* LOCATION = "Location";
+INLINE_VAR const char* CONTENT_TYPE = "Content-Type";
+INLINE_VAR const char* CONTENT_LENGTH = "Content-Length";
+INLINE_VAR const char* CONNECTION = "Connection";
+INLINE_VAR const char* CON_CLOSE = "close";
+INLINE_VAR const char* CON_KEEP_ALIVE = "keep-alive";
+INLINE_VAR const char* TRANSFER_ENCODING = "Transfer-Encoding";
+INLINE_VAR const char* CHUNKED = "chunked";
+INLINE_VAR const char* ACCEPT = "Accept";
+INLINE_VAR const char* ACCEPT_ALL = "*/*";
+INLINE_VAR const char* SUCCESS = "Success";
+INLINE_VAR const char* USER_AGENT = "User-Agent";
+INLINE_VAR const char* DEFAULT_AGENT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+INLINE_VAR const char* HOST_C = "Host";
+INLINE_VAR const char* ACCEPT_ENCODING = "Accept-Encoding";
+INLINE_VAR const char* IDENTITY = "identity";
+INLINE_VAR const char* LOCATION = "Location";
 
 
 // Http methods
-const char* methods[] = {"?","GET","HEAD","POST","PUT","DELETE","TRACE","OPTIONS","CONNECT","PATCH",nullptr};
+INLINE_VAR const char* methods[] = {"?","GET","HEAD","POST","PUT","DELETE","TRACE","OPTIONS","CONNECT","PATCH",nullptr};
 
 /**
  * @brief A individual key - value header line 
@@ -87,6 +88,7 @@ class HttpHeader {
 
         HttpHeader& put(const char* key, const char* value){
             if (value!=nullptr && strlen(value)>0){
+                LOGD("HttpHeader::put %s %s", key, value);
                 HttpHeaderLine *hl = headerLine(key);
                 if (hl==nullptr){
                     LOGE("HttpHeader::put - did not add HttpHeaderLine for %s", key);
@@ -133,8 +135,12 @@ class HttpHeader {
             char *key = (char*)line;
             key[pos] = 0;
 
-            const char *value = line+pos+2;
-            return put((const char*)key,value);
+            // usually there is a leading space - but unfurtunately not always
+            const char *value = line+pos+1;
+            if (value[0]==' '){
+                value = line+pos+2;
+            }
+            return put((const char*)key, value);
         }
 
         // determines a header value with the key
@@ -142,7 +148,7 @@ class HttpHeader {
             for (auto it = lines.begin() ; it != lines.end(); ++it){
                 HttpHeaderLine *line = *it;
                 line->key.trim();
-                if (Str(line->key).equalsIgnoreCase(key)){
+                if (line->key.equalsIgnoreCase(key)){
                     const char* result = line->value.c_str();
                     return line->active ? result : nullptr;
                 }
@@ -220,7 +226,7 @@ class HttpHeader {
             // remove all existing value
             clear();
 
-            char line[MaxHeaderLineLength];   
+            char line[MAX_HTTP_HEADER_LINE_LENGTH];   
             if (in.connected()){
                 if (in.available()==0) {
                     LOGW("Waiting for data...");
@@ -228,11 +234,11 @@ class HttpHeader {
                         delay(500);
                     }
                 }
-                readLine(in, line, MaxHeaderLineLength);
+                readLine(in, line, MAX_HTTP_HEADER_LINE_LENGTH);
                 parse1stLine(line);
                 while (in.available()){
-                    readLine(in, line, MaxHeaderLineLength);
-                    if (isValidStatus()){
+                    readLine(in, line, MAX_HTTP_HEADER_LINE_LENGTH);
+                    if (isValidStatus() || isRedirectStatus()){
                         Str lineStr(line);
                         lineStr.ltrim();
                         if (lineStr.isEmpty()){
@@ -267,6 +273,9 @@ class HttpHeader {
             return status_code >= 200 && status_code < 300;
         }
 
+        bool isRedirectStatus() {
+            return status_code >= 300 && status_code < 400;
+        }
 
     protected:
         int status_code = UNDEFINED;
@@ -295,7 +304,7 @@ class HttpHeader {
                 for (auto it = lines.begin() ; it != lines.end(); ++it){
                     HttpHeaderLine *pt = (*it);
                     if (pt!=nullptr && pt->key.c_str()!=nullptr){
-                        if (strcmp(pt->key.c_str(),key)==0){
+                        if (pt->key.equalsIgnoreCase(key)){
                             pt->active = true;
                             return pt;
                         }
@@ -413,11 +422,11 @@ class HttpReplyHeader : public HttpHeader  {
         // reads the final chunked reply headers 
         void readExt(Client &in) {
             LOGI("HttpReplyHeader::readExt");
-            char line[MaxHeaderLineLength];   
-            readLine(in, line, MaxHeaderLineLength);
+            char line[MAX_HTTP_HEADER_LINE_LENGTH];   
+            readLine(in, line, MAX_HTTP_HEADER_LINE_LENGTH);
             while(strlen(line)!=0){
                 put(line);                
-                readLine(in, line, MaxHeaderLineLength);
+                readLine(in, line, MAX_HTTP_HEADER_LINE_LENGTH);
             }
         }
 

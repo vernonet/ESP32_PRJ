@@ -5,14 +5,19 @@
  * 
  */
 #pragma once
-#include "Arduino.h"
+#ifdef ARDUINO
+#  include "Arduino.h"
+#else
+#  include "AudioLibs/NoArduino.h"
+#endif
 #include <string.h>
 #include <stdint.h>
+#include <assert.h>
 #include "AudioTools/AudioRuntime.h"
 
 // If you don't want to use all the settings from here you can define your own local config settings in AudioConfigLocal.h
 #if __has_include("AudioConfigLocal.h") 
-#incude "AudioConfigLocal.h"
+#include "AudioConfigLocal.h"
 #endif
 
 #define AUDIOTOOLS_VERSION "0.8.0"
@@ -38,18 +43,28 @@
 #define LOG_STREAM Serial
 #endif
 
-//#define CHECK_MEMORY() checkMemory()
-#define CHECK_MEMORY() 
-#define LOG_PRINTF_BUFFER_SIZE 160
+#define LOG_PRINTF_BUFFER_SIZE 256
 #define LOG_METHOD __PRETTY_FUNCTION__
 
+// cheange USE_CHECK_MEMORY to 1 to activate memory checks
+#define USE_CHECK_MEMORY 0
+#if USE_CHECK_MEMORY
+#  define CHECK_MEMORY() checkMemory(true)
+#else
+#  define CHECK_MEMORY() 
+#endif
+
+// Change USE_INLINE_VARS to 1 if inline variables are supported
+#ifndef USE_INLINE_VARS
+#  define USE_INLINE_VARS 0
+#endif
 /**
  * ------------------------------------------------------------------------- 
  * @brief Common Default Settings that can usually be changed in the API
  */
 
 #ifndef DEFAULT_BUFFER_SIZE 
-#define DEFAULT_BUFFER_SIZE 1024 // 2048
+#define DEFAULT_BUFFER_SIZE 1024
 #endif
 
 #ifndef DEFAULT_SAMPLE_RATE 
@@ -77,11 +92,11 @@
 #endif
 
 #ifndef A2DP_BUFFER_SIZE 
-#define A2DP_BUFFER_SIZE 1280
+#define A2DP_BUFFER_SIZE 512
 #endif
 
 #ifndef A2DP_BUFFER_COUNT 
-#define A2DP_BUFFER_COUNT 50
+#define A2DP_BUFFER_COUNT 30
 #endif
 
 #ifndef CODEC_DELAY_MS 
@@ -91,31 +106,30 @@
 #ifndef COPY_DELAY_ON_NODATA 
 #define COPY_DELAY_ON_NODATA 10
 #endif
+
+#ifndef COPY_RETRY_LIMIT 
+#define COPY_RETRY_LIMIT 20
+#endif
+
+#ifndef MAX_HTTP_HEADER_LINE_LENGTH
+#define MAX_HTTP_HEADER_LINE_LENGTH 240
+#endif
+
 /**
  * ------------------------------------------------------------------------- 
  * @brief PWM
  */
 #ifndef PWM_BUFFER_SIZE 
-#define PWM_BUFFER_SIZE 512
+#define PWM_BUFFER_SIZE 1024
 #endif
 
 #ifndef PWM_BUFFERS 
-#define PWM_BUFFERS 10
+#define PWM_BUFFERS 40
 #endif
 
-#ifndef PWM_FREQUENCY 
-#define PWM_FREQUENCY 60000
+#ifndef PWM_AUDIO_FREQUENCY 
+#define PWM_AUDIO_FREQUENCY 30000
 #endif
-
-/**
- * ------------------------------------------------------------------------- 
- * @brief Activate decoders - only after installing them !
- */
-
-//#define USE_HELIX
-//#define USE_FDK
-//#define USE_LAME
-//#define USE_MAD
 
 
 /**
@@ -133,41 +147,63 @@
  * @brief Platform specific Settings
  */
 
-#ifdef ESP32
+//-------ESP32---------
+#if defined(ESP32)  && defined(ARDUINO_ESP32C3_DEV)
+#define ESP32C3
+#define ESP32X
+#endif
+#if defined(ESP32)  && defined(ARDUINO_ESP32S2_DEV)
+#define ESP32S2
+#define ESP32X
+#endif
+#if defined(ESP32)  && defined(ARDUINO_ESP32S3_DEV)
+#define ESP32S3
+#define ESP32X
+#endif
+
+// ----- Regular ESP32 -----
+#if defined(ESP32)  && !defined(ESP32X)
 #include "esp32-hal-log.h"
 // optional libraries
 //#define USE_A2DP
 //#define USE_ESP8266_AUDIO
 
-// Use ESP32 Audio Kit: lyrat=1, ai-tinker=2
-#define USE_AUDIO_KIT 2
 #define USE_PWM
 #define USE_URL_ARDUINO
+#define USE_WIFI
+#define USE_WIFI_CLIENT_SECURE
 #define USE_I2S
 #define USE_AUDIO_SERVER
-#define USE_URLSTREAM_TASK
+#define USE_TYPETRAITS
+#define USE_EFFECTS_SUITE
+#define USE_TIMER
+#define USE_I2S_ANALOG
+#define USE_STREAM_WRITE_OVERRIDE
 
 #define PWM_FREQENCY 30000
-#define PWM_START_PIN 12
+#define PIN_PWM_START 12
 #define PIN_I2S_BCK 14
 #define PIN_I2S_WS 15
 #define PIN_I2S_DATA_IN 32
 #define PIN_I2S_DATA_OUT 22
 #define I2S_USE_APLL false  
-// Default Setting: The mute pin can be switched off by setting it to -1. Or you could drive the LED by assigning LED_BUILTIN
-#define PIN_I2S_MUTE 23
-#define SOFT_MUTE_VALUE LOW  
+// Default Setting: The mute pin can be switched actovated by setting it to a gpio (e.g 23). Or you could drive the LED by assigning LED_BUILTIN
+#define PIN_I2S_MUTE -1
+#define SOFT_MUTE_VALUE 0
 #define PIN_CS SS
 #define PIN_ADC1 34 
-#define PIN_ADC2 35
+#define PIN_ADC2 14
 
 #define I2S_AUTO_CLEAR true
 
 // URLStream
+//#define USE_URLSTREAM_TASK
 #define URL_STREAM_CORE 0
 #define URL_STREAM_PRIORITY 2
 #define URL_STREAM_BUFFER_COUNT 10
 #define STACK_SIZE 30000
+#define URL_CLIENT_TIMEOUT 60000;
+#define URL_HANDSHAKE_TIMEOUT 120000
 
 // Default LED
 #ifndef LED_BUILTIN
@@ -188,96 +224,285 @@ typedef uint32_t eps32_i2s_sample_rate_type;
 
 #endif
 
-//----------------
-#ifdef ESP8266
-#define USE_URL_ARDUINO
-#define USE_I2S
-#define USE_PWM
-#define USE_AUDIO_SERVER
-//#define USE_ESP8266_AUDIO
+//-------ESP32C3, ESP32S3, ESP32S2---------
 
-#define PWM_START_PIN 12
+#if defined(ESP32)  && defined(ESP32X)
+#include "esp32-hal-log.h"
+
+#define USE_PWM
+#define USE_URL_ARDUINO
+#define USE_WIFI
+#define USE_WIFI_CLIENT_SECURE
+#define USE_I2S
+#define USE_AUDIO_SERVER
+//#define USE_URLSTREAM_TASK
+#define USE_TYPETRAITS
+#define USE_EFFECTS_SUITE
+#define USE_TIMER
+#define USE_STREAM_WRITE_OVERRIDE
+
+#define PWM_FREQENCY 30000
+#define PIN_PWM_START 1
+#define PIN_I2S_BCK 6
+#define PIN_I2S_WS 7
+#define PIN_I2S_DATA_OUT 8
+#define PIN_I2S_DATA_IN 9
+#define I2S_USE_APLL false  
+// Default Setting: The mute pin can be switched actovated by setting it to a gpio (e.g 5). Or you could drive the LED by assigning LED_BUILTIN
+#define PIN_I2S_MUTE -1
+#define SOFT_MUTE_VALUE 0
+#define PIN_CS SS
+#define PIN_ADC1 21 
+#define PIN_ADC2 22
+
+#define I2S_AUTO_CLEAR true
+
+// URLStream
+//#define USE_ESP8266_AUDIO
+#define URL_STREAM_CORE 0
+#define URL_STREAM_PRIORITY 2
+#define URL_STREAM_BUFFER_COUNT 10
+#define STACK_SIZE 30000
+#define URL_CLIENT_TIMEOUT 60000;
+#define URL_HANDSHAKE_TIMEOUT 120000
+
+// Default LED
+#ifndef LED_BUILTIN
+# define LED_BUILTIN 13 // pin number is specific to your esp32 board
+#endif
+
+typedef uint32_t eps32_i2s_sample_rate_type;
+
+#endif
+
+//----- ESP8266 -----------
+#ifdef ESP8266
+//#define USE_URL_ARDUINO // commented out because of compile errors
+#define USE_I2S
+#define USE_AUDIO_SERVER
+#define USE_TYPETRAITS
+#define USE_EFFECTS_SUITE
+#define USE_TIMER
+#define USE_URL_ARDUINO
+#define USE_WIFI
+
+#define PIN_PWM_START 12
 #define PIN_I2S_BCK -1
 #define PIN_I2S_WS -1
 #define PIN_I2S_DATA_IN -1
 #define PIN_I2S_DATA_OUT -1
 #define I2S_USE_APLL false  
 #define PIN_I2S_MUTE 23
-#define SOFT_MUTE_VALUE LOW  
+#define SOFT_MUTE_VALUE 0
 #define PIN_CS SS
+
+#define URL_CLIENT_TIMEOUT 60000;
+#define URL_HANDSHAKE_TIMEOUT 120000
+
 #endif
 
-//----------------
-#ifdef ARDUINO_ARDUINO_NANO33BLE
+//------ NANO33BLE ----------
+#if defined(ARDUINO_SEEED_XIAO_NRF52840_SENSE) || defined(ARDUINO_ARDUINO_NANO33BLE)
+#define USE_NANO33BLE 
 #define USE_I2S
 #define USE_PWM
+#define USE_TYPETRAITS
+#define USE_EFFECTS_SUITE
+#define USE_TIMER
 
-#define PWM_START_PIN 6
+#define PIN_PWM_START 6
 #define PIN_I2S_BCK 2
 #define PIN_I2S_WS 1
 #define PIN_I2S_DATA_IN 3
 #define PIN_I2S_DATA_OUT 3
-#define PIN_I2S_MUTE 4
-#define SOFT_MUTE_VALUE LOW  
+// Default Setting: The mute pin can be switched actovated by setting it to a gpio (e.g 4). Or you could drive the LED by assigning LED_BUILTIN
+#define PIN_I2S_MUTE -1
+#define SOFT_MUTE_VALUE 0
 #define PIN_CS SS
 #endif
 
-
-//----------------
-#ifdef ARDUINO_ARCH_RP2040
-//#define USE_ESP8266_AUDIO
-#define USE_I2S
+//----- MBED -----------
+#if defined(ARDUINO_ARCH_MBED_RP2040)
+// install https://github.com/pschatzmann/rp2040-i2s
+#define USE_I2S 1
 #define USE_PWM
+#define USE_ADC_ARDUINO
+#define USE_TYPETRAITS
+#define USE_EFFECTS_SUITE
+#define USE_TIMER
 
-#define PWM_START_PIN 6
-#define PIN_I2S_BCK 1
+#define PIN_ADC_START 26
+#define PIN_PWM_START 6
+#define PIN_I2S_BCK 26
 #define PIN_I2S_WS PIN_I2S_BCK+1
-#define PIN_I2S_DATA_IN 3
-#define PIN_I2S_DATA_OUT 3
-#define PIN_I2S_MUTE 4
-#define SOFT_MUTE_VALUE LOW  
+#define PIN_I2S_DATA_IN 28
+#define PIN_I2S_DATA_OUT 28
+// Default Setting: The mute pin can be switched actovated by setting it to a gpio (e.g 4). Or you could drive the LED by assigning LED_BUILTIN
+#define PIN_I2S_MUTE -1
+#define SOFT_MUTE_VALUE 0
 #define PIN_CS PIN_SPI0_SS
 
+// fix missing __sync_synchronize symbol
+#define FIX_SYNC_SYNCHRONIZE
+#define IRAM_ATTR
+#ifndef ADC_BUFFER_SIZE 
+#define ADC_BUFFER_SIZE 1024
+#endif
+
+#ifndef ADC_BUFFERS 
+#define ADC_BUFFERS 50
+#endif
+
+//#define USE_ESP8266_AUDIO
+
+//----- RP2040 -----------
+#elif defined(ARDUINO_ARCH_RP2040)
+#define USE_I2S 
+#define USE_PWM
+#define USE_ADC_ARDUINO
+#define USE_TYPETRAITS
+#define USE_EFFECTS_SUITE
+#define USE_TIMER
+
+#define PIN_ADC_START 26
+#define PIN_PWM_START 6
+#define PIN_I2S_BCK 26
+#define PIN_I2S_WS PIN_I2S_BCK+1
+#define PIN_I2S_DATA_IN 28
+#define PIN_I2S_DATA_OUT 28
+// Default Setting: The mute pin can be switched actovated by setting it to a gpio (e.g 4). Or you could drive the LED by assigning LED_BUILTIN
+#define PIN_I2S_MUTE -1
+#define SOFT_MUTE_VALUE 0
+#define PIN_CS PIN_SPI0_SS
+
+// fix missing __sync_synchronize symbol
+#define FIX_SYNC_SYNCHRONIZE
 #define IRAM_ATTR
 
+#ifndef ADC_BUFFER_SIZE 
+#define ADC_BUFFER_SIZE 256
 #endif
 
-//----------------
+#ifndef ADC_BUFFERS 
+#define ADC_BUFFERS 100
+#endif
+
+//#define USE_ESP8266_AUDIO
+#endif
+
+// The Pico W has WIFI support
+#ifdef ARDUINO_RASPBERRY_PI_PICO_W
+#  define USE_URL_ARDUINO
+#  define USE_WIFI
+#  define USE_WIFI_CLIENT_SECURE 
+#  define USE_AUDIO_SERVER
+#endif
+
+
+//----- AVR -----------
 #ifdef __AVR__
 #define USE_PWM
-
-#define PWM_START_PIN 6
-#define PIN_CS CS
+#define USE_TIMER
+#include <Ethernet.h>
+#define USE_URL_ARDUINO
+#ifndef assert
+#define assert(T)
 #endif
 
-//----------------
-#ifdef ARDUINO_ARCH_STM32F4
+#define PIN_PWM_START 6
+#define PIN_CS SS
+
+#undef PWM_BUFFER_SIZE
+#define PWM_BUFFER_SIZE 125
+
+#undef DEFAULT_BUFFER_SIZE
+#define DEFAULT_BUFFER_SIZE 125
+
+// logging is using too much memory
+#undef LOG_PRINTF_BUFFER_SIZE 
+#define LOG_PRINTF_BUFFER_SIZE 80
+
+#define NO_TRACED
+#define NO_TRACEI
+
+#endif
+
+//---- STM32 ------------
+#if defined(ARDUINO_ARCH_STM32F4) || defined(ARDUINO_ARCH_STM32)
 #define STM32
 #endif
 
 #ifdef STM32
 #define USE_I2S
 #define USE_PWM
+#define USE_TIMER
+#define USE_ADC_ARDUINO
+#define ADC_BUFFER_SIZE 1024
+#define ADC_BUFFERS 20
 
-#define PWM_START_PIN 6
+#define PIN_ADC_START PA0
+#define PIN_PWM_START PA0
+#define PWM_DEFAULT_TIMER TIM2
+#define PWM_FREQ_TIMER_NO 3
+
+#define PIN_I2S_BCK -1
+#define PIN_I2S_WS -1
+#define PIN_I2S_DATA_IN -1
+#define PIN_I2S_DATA_OUT -1
+#define PIN_I2S_MUTE -1
+#define SOFT_MUTE_VALUE 0
+#define PIN_CS 10
+#endif
+
+//---- SAMD ------------
+
+#ifdef ARDUINO_ARCH_SAMD
+#define USE_I2S
 #define PIN_I2S_BCK 1
 #define PIN_I2S_WS PIN_I2S_BCK+1
 #define PIN_I2S_DATA_IN 3
 #define PIN_I2S_DATA_OUT 3
-#define PIN_I2S_MUTE 4
-#define SOFT_MUTE_VALUE LOW  
-#define PIN_CS 10
+#define PIN_I2S_MUTE -1
+#define SOFT_MUTE_VALUE 0
 #endif
+
+#ifdef ARDUINO_SAMD_MKRWIFI1010
+#include <WiFiNINA.h>
+#define USE_URL_ARDUINO
+#define USE_AUDIO_SERVER
+#endif
+//------ VS1053 ----------
+
+// Default Pins for VS1053
+#define VS1053_CS 5
+#define VS1053_DCS 16
+#define VS1053_DREQ 4
+#define VS1053_RESET 15  
+#define VS1053_CS_SD -1
+
+// use 0 for https://github.com/baldram/ESP_VS1053_Library
+// use 1 for https://github.com/pschatzmann/arduino-vs1053
+#define VS1053_EXT 1
+#define VS1053_DEFAULT_VOLUME 0.7
 
 
 //----------------
-#if defined(__linux__) || defined(_WIN32) || defined(__APPLE__)
-#define USE_URL_ARDUINO
-#define IS_DESKTOP
-#endif
-
 
 #ifdef IS_DESKTOP
 #define USE_URL_ARDUINO
+#define USE_STREAM_WRITE_OVERRIDE
 #endif
 
+#ifndef ARDUINO
+#define USE_STREAM_WRITE_OVERRIDE
+#endif
+
+#if USE_INLINE_VARS && !defined(INGNORE_INLINE_VARS)
+#  define INLINE_VAR inline 
+#else
+#  define INLINE_VAR static 
+#endif
+
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic ignored "-Wvla"

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "AudioConfig.h"
-#include "Stream.h"
-
+#ifdef ARDUINO
+#  include "Stream.h"
+#endif
 // Logging Implementation
 #if USE_AUDIO_LOGGING
 
@@ -16,6 +17,7 @@ static portMUX_TYPE mutex_logger = portMUX_INITIALIZER_UNLOCKED;
 
 /**
  * @brief A simple Logger that writes messages dependent on the log level
+ * @ingroup tools
  * @author Phil Schatzmann
  * @copyright GPLv3
  * 
@@ -51,11 +53,9 @@ class AudioLogger {
         }
 
         void println(){
-            CHECK_MEMORY();
             log_stream_ptr->println(print_buffer);
             print_buffer[0]=0;
             unlock();
-            CHECK_MEMORY();
         }
 
         char* str() {
@@ -123,19 +123,30 @@ class AudioLogger {
                 portEXIT_CRITICAL(&mutex_logger);
             #endif
         }
-
-
 };
 
-}    
+}
 
-#define LOG_OUT(level, ...) snprintf(audio_tools::AudioLogger::instance().prefix(__FILE__,__LINE__, level).str(),LOG_PRINTF_BUFFER_SIZE,__VA_ARGS__); audio_tools::AudioLogger::instance().println();
 
-#define LOGD(...) if (audio_tools::AudioLogger::instance().level()<=audio_tools::AudioLogger::Debug) { LOG_OUT(audio_tools::AudioLogger::Debug, __VA_ARGS__);}
-#define LOGI(...) if (audio_tools::AudioLogger::instance().level()<=audio_tools::AudioLogger::Info) { LOG_OUT(audio_tools::AudioLogger::Info, __VA_ARGS__);}
-#define LOGW(...) if (audio_tools::AudioLogger::instance().level()<=audio_tools::AudioLogger::Warning) { LOG_OUT(audio_tools::AudioLogger::Warning, __VA_ARGS__);}
-#define LOGE(...) if (audio_tools::AudioLogger::instance().level()<=audio_tools::AudioLogger::Error) { LOG_OUT(audio_tools::AudioLogger::Error, __VA_ARGS__);}
+//#define LOG_OUT(level, fmt, ...) {AudioLogger::instance().prefix(__FILE__,__LINE__, level);cont char PROGMEM *fmt_P=F(fmt); snprintf_P(AudioLogger::instance().str(), LOG_PRINTF_BUFFER_SIZE, fmt,  ##__VA_ARGS__); AudioLogger::instance().println();}
+#define LOG_OUT_PGMEM(level, fmt, ...) { \
+    AudioLogger::instance().prefix(__FILE__,__LINE__, level); \
+    snprintf(AudioLogger::instance().str(), LOG_PRINTF_BUFFER_SIZE, PSTR(fmt),  ##__VA_ARGS__); \
+    AudioLogger::instance().println();\
+}
 
+#define LOG_OUT(level, fmt, ...) { \
+    AudioLogger::instance().prefix(__FILE__,__LINE__, level); \
+    snprintf(AudioLogger::instance().str(), LOG_PRINTF_BUFFER_SIZE, fmt,  ##__VA_ARGS__); \
+    AudioLogger::instance().println();\
+}
+
+// Log statments which store the fmt string in Progmem
+#define LOGD(fmt, ...) if (AudioLogger::instance().level()<=AudioLogger::Debug) { LOG_OUT_PGMEM(AudioLogger::Debug, fmt, ##__VA_ARGS__);}
+#define LOGI(fmt, ...) if (AudioLogger::instance().level()<=AudioLogger::Info) { LOG_OUT_PGMEM(AudioLogger::Info, fmt, ##__VA_ARGS__);}
+#define LOGW(fmt, ...) if (AudioLogger::instance().level()<=AudioLogger::Warning) { LOG_OUT_PGMEM(AudioLogger::Warning, fmt, ##__VA_ARGS__);}
+#define LOGE(fmt, ...) if (AudioLogger::instance().level()<=AudioLogger::Error) { LOG_OUT_PGMEM(AudioLogger::Error, fmt, ##__VA_ARGS__);}
+    
 #else
 
 #define LOGD(...) 
@@ -144,3 +155,20 @@ class AudioLogger {
 #define LOGE(...) 
 
 #endif
+
+// Log File and line 
+#ifdef NO_TRACED
+#  define TRACED()
+#else
+#  define TRACED() if (AudioLogger::instance().level()<=AudioLogger::Debug) { LOG_OUT(AudioLogger::Debug, LOG_METHOD);}
+#endif
+
+#ifdef NO_TRACEI
+#  define TRACEI()
+#else 
+#  define TRACEI() if (AudioLogger::instance().level()<=AudioLogger::Info) { LOG_OUT(AudioLogger::Info, LOG_METHOD);}
+#endif
+#define TRACEW() if (AudioLogger::instance().level()<=AudioLogger::Warning) { LOG_OUT(AudioLogger::Warning, LOG_METHOD);}
+#define TRACEE() if (AudioLogger::instance().level()<=AudioLogger::Error) { LOG_OUT(AudioLogger::Error, LOG_METHOD);}
+
+

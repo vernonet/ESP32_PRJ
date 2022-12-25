@@ -5,7 +5,9 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <esp_arduino_version.h>
-#define USE_AVAILABLE_PAGES     true
+#define USE_AVAILABLE_PAGES      true
+#define USE_ESP_WIFIMANAGER_NTP  false
+#define USE_CLOUDFLARE_NTP       false
 #include "I2SMEMSSampler.h"
 #include <ESPmDNS.h>
 #include <NTPClient.h>
@@ -15,16 +17,26 @@
 #include "soc/timer_group_struct.h"
 #include "soc/timer_group_reg.h"
 #include <ArduinoJson.h> 
+#include <ESPAsyncDNSServer.h>
 #include <AsyncTCP.h>
 #include <ESPAsync_WiFiManager.h>               //https://github.com/khoih-prog/ESPAsync_WiFiManager
-#include <ESPAsync_WiFiManager-Impl.h>          //https://github.com/khoih-prog/ESPAsync_WiFiManager#howto-fix-multiple-definitions-linker-error
+//#include <ESPAsync_WiFiManager.hpp> 
+//#include <ESPAsync_WiFiManager-Impl.h>        //https://github.com/khoih-prog/ESPAsync_WiFiManager#howto-fix-multiple-definitions-linker-error
 #include "AudioTools.h"
 #include "AudioTools/Buffers.h"
 #include "AudioTools/AudioStreams.h"
-#if !( USING_ESP32_S2 || USING_ESP32_C3 )
-  DNSServer dnsServer;
-#endif 
+#if ( USING_ESP32_S2 || USING_ESP32_C3 )
+ #include "driver/temp_sensor.h"
+#endif
+//#if !( USING_ESP32_S2 || USING_ESP32_C3 )
+   AsyncDNSServer dnsServer;
+//#endif 
 #include "esp32/rom/rtc.h"
+#if ( USING_ESP32_S2 )
+  #define HWSerial Serial1
+#else
+ #define HWSerial Serial
+#endif
 
 #include "FS.h"
 #include <LittleFS.h>
@@ -56,7 +68,7 @@ uint8_t temprature_sens_read();
 #else
   #define I2S_MIC_CHANNEL            I2S_CHANNEL_FMT_ONLY_LEFT
 #endif  
-#if (0)
+#if (DEV_VARIANT == 0)
   //esp32a1s
   #define I2S_MIC_SERIAL_CLOCK       GPIO_NUM_18
   #define I2S_MIC_LEFT_RIGHT_CLOCK   GPIO_NUM_5
@@ -65,7 +77,7 @@ uint8_t temprature_sens_read();
   #define LED_OFF                    HIGH
   #define PIN_LED                    GPIO_NUM_22
   const int TRIGGER_PIN3 = GPIO_NUM_13;      // short  contact to ground to enter config portal
-#else
+#elif (DEV_VARIANT == 1)
   //esp32dev
   #define I2S_MIC_SERIAL_CLOCK       GPIO_NUM_32
   #define I2S_MIC_LEFT_RIGHT_CLOCK   GPIO_NUM_25
@@ -74,7 +86,19 @@ uint8_t temprature_sens_read();
   #define LED_OFF                    LOW
   #define PIN_LED                    GPIO_NUM_22
   const int TRIGGER_PIN3 = GPIO_NUM_2;      // short  contact to ground to enter config portal
+#elif (DEV_VARIANT == 2)
+  //esp32s2
+  #define I2S_MIC_SERIAL_CLOCK       GPIO_NUM_12
+  #define I2S_MIC_LEFT_RIGHT_CLOCK   GPIO_NUM_13
+  #define I2S_MIC_SERIAL_DATA        GPIO_NUM_14
+  #define LED_ON                     HIGH
+  #define LED_OFF                    LOW
+  #define PIN_LED                    GPIO_NUM_15
+  const int TRIGGER_PIN3 = GPIO_NUM_21;      // short  contact to ground to enter config portal  
+#else 
+ #warning "DEV should equal 0 or 1 or 2"  
 #endif
+
 
 #define SERVER_PORT                "8080"
 #define BAUDRATE                   (BAUDRATE_)
@@ -183,6 +207,9 @@ bool readConfigFile(void);
 bool mount_fs(void);
 const char * reset_reson_str(esp_reset_reason_t val);
 String ESP32GetResetReason(uint32_t cpu_no);
+#if ( USING_ESP32_S2 || USING_ESP32_C3 )
+ void initTempSensor(void);
+#endif 
 
 
 I2SSampler *i2sSampler = NULL;
@@ -228,14 +255,17 @@ void setup(void) {
   WiFi.mode(WIFI_OFF);
 #endif
   delay(500);
-  Serial.begin(BAUDRATE);
-  Serial.print("\r\nStarting...\r\ncompile date: ");
-  Serial.println(compile_date);
+  #if ( USING_ESP32_S2 )
+   initTempSensor();
+  #endif
+  HWSerial.begin(BAUDRATE);
+  HWSerial.print("\r\nStarting...\r\ncompile date: ");
+  HWSerial.println(compile_date);
   if (strncmp(log_str, "Last client", 11) == 0) // If the last client caused a restart  ESP32.
-    Serial.println(log_str);
+    HWSerial.println(log_str);
   if (!mount_fs() || !readConfigFile())
   {
-    Serial.println(F("Failed to read ConfigFile, using default values"));
+    HWSerial.println(F("Failed to read ConfigFile, using default values"));
     strcpy(m_login, USER_OTA);
     strcpy(m_pass, PASS_OTA);
     strcpy(m_port, SERVER_PORT);
@@ -243,11 +273,11 @@ void setup(void) {
 #ifndef NO_WIFI
    unsigned long startedAt = millis();
    webServer_async = new AsyncWebServer(80);
-#if ( USING_ESP32_S2 || USING_ESP32_C3 )
- ESPAsync_WiFiManager ESPAsync_wifiManager(webServer_async, NULL, "wifi-mic");
-#else
+// #if ( USING_ESP32_S2 || USING_ESP32_C3 )
+//  ESPAsync_WiFiManager ESPAsync_wifiManager(webServer_async, NULL, "wifi-mic");
+// #else
  ESPAsync_WiFiManager ESPAsync_wifiManager(webServer_async, &dnsServer, "wifi-mic");
-#endif  
+// #endif  
   ESPAsync_wifiManager.setMinimumSignalQuality(-1);
   // Set static IP, Gateway, Subnetmask, DNS1 and DNS2. New in v1.0.5
   // ESP_wifiManager.setSTAStaticIPConfig(IPAddress(192,168,2,114), IPAddress(192,168,2,1), IPAddress(255,255,255,0), IPAddress(192,168,2,1), IPAddress(8,8,8,8));
@@ -256,14 +286,14 @@ void setup(void) {
   Router_Pass = ESPAsync_wifiManager.WiFi_Pass();  
   //ESP_wifiManager.getSTAStaticIPConfig(WM_STA_IPconfig_);
   //Remove this line if you do not want to see WiFi password printed
-  Serial.println("Stored: SSID = " + Router_SSID + ", Pass = " + Router_Pass);
+  HWSerial.println("Stored: SSID = " + Router_SSID + ", Pass = " + Router_Pass);
   // SSID to uppercase
   ssid.toUpperCase();
   if (Router_SSID == "")
   {
-    Serial.println("We haven't got any access point credentials, so get them now");
-    Serial.println("It is necessary to wait a bit until the WIFI-MIC access point appears");
-    Serial.println("Starting configuration portal: AP SSID = " + ssid + ", Pass = " + password );
+    HWSerial.println("We haven't got any access point credentials, so get them now");
+    HWSerial.println("It is necessary to wait a bit until the WIFI-MIC access point appears");
+    HWSerial.println("Starting configuration portal: AP SSID = " + ssid + ", Pass = " + password );
     digitalWrite(PIN_LED, LED_ON); // Turn led on as we are in configuration mode.
     
     ESPAsync_WMParameter p_m_login("mic_login", "mic Login", USER_OTA, 12);  
@@ -277,9 +307,9 @@ void setup(void) {
     //it starts an access point
     //and goes into a blocking loop awaiting configuration
     if (!ESPAsync_wifiManager.startConfigPortal((const char *) ssid.c_str(), password))
-      Serial.println("Not connected to WiFi but continuing anyway.");
+      HWSerial.println("Not connected to WiFi but continuing anyway.");
     else {
-      Serial.println("WiFi connected...:)");
+      HWSerial.println("WiFi connected...:)");
     }
 
     strcpy(m_login, p_m_login.getValue());
@@ -307,8 +337,8 @@ void setup(void) {
     //WiFi.persistent (false);
     // We start by connecting to a WiFi network
 
-    Serial.print("Connecting to ");
-    Serial.println(Router_SSID);
+    HWSerial.print("Connecting to ");
+    HWSerial.println(Router_SSID);
 
     WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str());
 
@@ -333,14 +363,14 @@ void setup(void) {
     }
   }
 
-  Serial.print("After waiting ");
-  Serial.print((millis() - startedAt) / 1000);
-  Serial.print(" secs more in setup(), connection result is ");
+  HWSerial.print("After waiting ");
+  HWSerial.print((millis() - startedAt) / 1000);
+  HWSerial.print(" secs more in setup(), connection result is ");
 
   if (WiFi.status() == WL_CONNECTED)
   {
-    Serial.print("connected. Local IP: ");
-    Serial.println(WiFi.localIP());
+    HWSerial.print("connected. Local IP: ");
+    HWSerial.println(WiFi.localIP());
     con_flag = true;
     timeClient.begin();
     // GMT +1 = 3600
@@ -355,7 +385,7 @@ void setup(void) {
     digitalWrite(PIN_LED, LED_OFF);
   }
   else
-    Serial.println(ESPAsync_wifiManager.getStatus(WiFi.status()));
+    HWSerial.println(ESPAsync_wifiManager.getStatus(WiFi.status()));
 
 #endif
 }
@@ -383,17 +413,24 @@ void loop(void) {
       int currentYear = ptm->tm_year + 1900;
       sprintf(date_, "%02d/%02d/%04d", monthDay, currentMonth, currentYear);
       // get internal temp of ESP32
-      uint8_t temp_farenheit = temprature_sens_read();
+      #if !( USING_ESP32_S2 || USING_ESP32_C3 )
+       uint8_t temp_farenheit = temprature_sens_read();
+       double temp = (temp_farenheit - 32) / 1.8;
+      #else
+       //uint8_t temp_farenheit = 104;
+       float temp = 0;
+       temp_sensor_read_celsius(&temp); 
+      #endif
       // convert farenheit to celcius
-      double temp = (temp_farenheit - 32) / 1.8;
+      
       memset(temp_, 0x30, sizeof temp_);
       sprintf(temp_, "%.4lg", temp);
       // // Print complete date:
       // char str[18];
       // sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\r\n", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
-      // Serial.printf("%s", str);    
+      // HWSerial.printf("%s", str);    
       if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("NO WIFI, try to connect");
+        HWSerial.println("NO WIFI, try to connect");
         WiFi.mode(WIFI_STA);
        // WiFi.hostname("wifi-mic");
         WiFi.setHostname("wifi-mic");
@@ -426,24 +463,28 @@ void loop(void) {
   // is configuration portal requested?
   if (digitalRead(TRIGGER_PIN3) == LOW)
   {
-    Serial.println("\nConfiguration portal requested.");
+    HWSerial.println("\nConfiguration portal requested.");
     digitalWrite(PIN_LED, LED_ON); // turn the LED on by making the voltage LOW to tell us we are in configuration mode.
 
     //Local intialization. Once its business is done, there is no need to keep it around
-     ESPAsync_WiFiManager ESPAsync_wifiManager(webServer_async, &dnsServer, "wifi-mic-ap");;
+    // #if ( USING_ESP32_S2 || USING_ESP32_C3 )
+    //   ESPAsync_WiFiManager ESPAsync_wifiManager(webServer_async, NULL, "wifi-mic-ap");
+    // #else
+       ESPAsync_WiFiManager ESPAsync_wifiManager(webServer_async, &dnsServer, "wifi-mic-ap");;
+    // #endif 
 
 
     //Check if there is stored WiFi router/password credentials.
     //If not found, device will remain in configuration mode until switched off via webserver.
-    Serial.print("Opening configuration portal. ");
+    HWSerial.print("Opening configuration portal. ");
     Router_SSID = ESPAsync_wifiManager.WiFi_SSID();
     if (Router_SSID != "")
     {
       ESPAsync_wifiManager.setConfigPortalTimeout(60); //If no access point name has been previously entered disable timeout.
-      Serial.println("Got stored Credentials. Timeout 60s");
+      HWSerial.println("Got stored Credentials. Timeout 60s");
     }
     else
-      Serial.println("No stored Credentials. No timeout");
+      HWSerial.println("No stored Credentials. No timeout");
     
     ESPAsync_WMParameter p_m_login("mic_login", "mic Login", USER_OTA, 12);  
     ESPAsync_WMParameter p_m_pass("mic_pass", "mic password", PASS_OTA, 12);
@@ -456,12 +497,12 @@ void loop(void) {
     //and goes into a blocking loop awaiting configuration
     if (!ESPAsync_wifiManager.startConfigPortal((const char *) ssid.c_str(), password))
     {
-      Serial.println("Not connected to WiFi but continuing anyway.");
+      HWSerial.println("Not connected to WiFi but continuing anyway.");
     }
     else
     {
       //if you get here you have connected to the WiFi
-      Serial.println("connected...yeey :):):)");
+      HWSerial.println("connected...yeey :):):)");
     }
 
     strcpy(m_login, p_m_login.getValue());
@@ -472,6 +513,7 @@ void loop(void) {
 
     digitalWrite(PIN_LED, LED_OFF); // Turn led off as we are not in configuration mode.
     delete webServer_async;
+    ESP.restart(); ///////////////////////
   }
 
   // if (stream_active && client_connected)
@@ -487,7 +529,7 @@ void loop(void) {
   {
     stream_active = false;
     vTaskSuspend(i2sMemsToBuffTaskHandle);
-    Serial.print(" <---> client disconected\r\n");
+    HWSerial.print(" <---> client disconected\r\n");
     char strr[18] = "--/--/---- 00:00";
     if (timeClient.isTimeSet())
     {
@@ -523,10 +565,10 @@ void createWebServer(int webtype)
   } else if (webtype == 0) {  //are configured
     server = new AsyncWebServer(atoi(m_port)); 
     if (MDNS.begin("wifi-mic")) {
-      Serial.println("MDNS responder started");
+      HWSerial.println("MDNS responder started");
     }
     else {
-      Serial.println("Error setting up MDNS responder!");
+      HWSerial.println("Error setting up MDNS responder!");
     }
     MDNS.addService("http", "tcp", atoi(m_port));  //orig 80
     //MDNS.addService("osc", "udp", 4500);
@@ -550,16 +592,16 @@ void createWebServer(int webtype)
 
 
 void launchWeb(int webtype) {
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.print("Local IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.print("SoftAP IP: ");
-  Serial.println(WiFi.softAPIP());
+  HWSerial.println("");
+  HWSerial.println("WiFi connected");
+  HWSerial.print("Local IP: ");
+  HWSerial.println(WiFi.localIP());
+  HWSerial.print("SoftAP IP: ");
+  HWSerial.println(WiFi.softAPIP());
   createWebServer(webtype);
   // Start the server
   server->begin();
-  Serial.println("Server started");
+  HWSerial.println("Server started");
 }
 
 
@@ -581,11 +623,11 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
     //client_connected = true;
     wav_stream.reset();
     stream_active = true;
-    Serial.print("New client conected - IP ");
-    Serial.print(client_->remoteIP());
-    Serial.printf(" PORT %d", client_->remotePort());
+    HWSerial.print("New client conected - IP ");
+    HWSerial.print(client_->remoteIP());
+    HWSerial.printf(" PORT %d", client_->remotePort());
     sprintf(log_str, "Last client IP %s PORT %d ", client_->remoteIP().toString().c_str(), client_->remotePort());
-    //Serial.println(log_str);
+    //HWSerial.println(log_str);
     char strr[18] = "--/--/---- 00:00";
     if (timeClient.isTimeSet())
     {
@@ -612,7 +654,11 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
       i2sSampler->start();
       delay(10);
       // set up the i2s sample writer task
-      xTaskCreatePinnedToCore(i2sMemsToBuffTask, "I2S Writer Task", 4096, i2sSampler, 1, &i2sMemsToBuffTaskHandle, 1);
+      #if !( USING_ESP32_S2 || USING_ESP32_C3 )
+        xTaskCreatePinnedToCore(i2sMemsToBuffTask, "I2S Writer Task", 4096, i2sSampler, 1, &i2sMemsToBuffTaskHandle, 1);
+      #else
+        xTaskCreatePinnedToCore(i2sMemsToBuffTask, "I2S Writer Task", 4096, i2sSampler, 1, &i2sMemsToBuffTaskHandle, 0);
+      #endif
     }
     // if any other connections
     else
@@ -636,8 +682,8 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
     free_mem8 = heap_caps_get_free_size(MALLOC_CAP_8BIT);
     free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
 
-    //Serial.println("New response ");
-    //Serial.printf("new client -> 0x%x\r\n", request->client());
+    //HWSerial.println("New response ");
+    //HWSerial.printf("new client -> 0x%x\r\n", request->client());
 
     // beginChunkedResponse
     AsyncWebServerResponse *response = request->beginResponse("audio/x-wav", 100, [](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
@@ -648,7 +694,7 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
 
         if (xSemaphoreTake(mutex_wav_stream, 3 / portTICK_PERIOD_MS) != pdTRUE)
         {
-          Serial.println("RESPONSE_TRY_AGAIN - mutex busy");
+          HWSerial.println(" RESPONSE_TRY_AGAIN - mutex busy");
           return RESPONSE_TRY_AGAIN;
         }
 
@@ -656,7 +702,7 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
         if (aviable < 4096 || space <= 4096)
         {
           //////aviable = wav_stream.available();
-          //Serial.printf("RESPONSE_TRY_AGAIN  aviable %d\r\n", aviable);
+          //HWSerial.printf("RESPONSE_TRY_AGAIN  aviable %d\r\n", aviable);
           xSemaphoreGive(mutex_wav_stream);
           return RESPONSE_TRY_AGAIN;
         }
@@ -679,7 +725,7 @@ void handle_rec_wav(AsyncWebServerRequest *request) {
               block_size = SEND_BLOCK_SIZE_MIN;
 
             
-            //Serial.printf("index %d aviable %d bytes heap %d block_size %d mss %d space %d\r\n", index, aviable, heap_caps_get_free_size(MALLOC_CAP_8BIT), block_size, client_mss, space);
+            //HWSerial.printf("index %d aviable %d bytes heap %d block_size %d mss %d space %d\r\n", index, aviable, heap_caps_get_free_size(MALLOC_CAP_8BIT), block_size, client_mss, space);
             sze = wav_stream.readBytes(buffer, block_size);
             //////aviable -= sze;
           }
@@ -717,22 +763,22 @@ void handle_update(AsyncWebServerRequest *request)
   
 void handle_upload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
     if(!index){
-      Serial.printf("Update Start: %s\n", filename.c_str());
+      HWSerial.printf("Update Start: %s\n", filename.c_str());
       //Update.begin(true);
       if(!Update.begin(UPDATE_SIZE_UNKNOWN)){
-        Update.printError(Serial);
+        Update.printError(HWSerial);
       }
     }
     if(!Update.hasError()){
       if(Update.write(data, len) != len){
-        Update.printError(Serial);
+        Update.printError(HWSerial);
       }
     }
     if(final){
       if(Update.end(true)){
-        Serial.printf("Update Success: %uB\n", index+len);
+        HWSerial.printf("Update Success: %uB\n", index+len);
       } else {
-        Update.printError(Serial);
+        Update.printError(HWSerial);
       }
     }
   
@@ -758,6 +804,7 @@ void handle_upload(AsyncWebServerRequest *request, String filename, size_t index
     page += F("<thead><tr><th>Name</th><th>Value</th></tr></thead><tbody>");
 
     param_info(page, "ESP32 core version    ", String(ESP_ARDUINO_VERSION_MAJOR) + "." + String(ESP_ARDUINO_VERSION_MINOR) + "." + String(ESP_ARDUINO_VERSION_PATCH)); 
+    param_info(page, "Chip Model    ", String(ESP.getChipModel()) + " Rev" + String(ESP.getChipRevision())); 
     param_info(page, "Compil. date of  FW ", String(compile_date));    
     param_info(page, "Flash Chip Size ", (ESP.getFlashChipSize()/1024) + String(" kbytes"));
     param_info(page, "Access Point IP ", (WiFi.softAPIP().toString()));   
@@ -873,11 +920,11 @@ void i2sMemsToBuffTask(void *param)
     {
       vTaskDelay(5 / portTICK_PERIOD_MS);
     }
-    // Serial.print("Start read samples ->");
+    // HWSerial.print("Start read samples ->");
     if (samples_read) {
       wav_stream.write((uint8_t *)samples, samples_read * (BITS_PER_SAMPLE / 8));
     }  
-    // Serial.println(" Stop read samples");
+    // HWSerial.println(" Stop read samples");
     xSemaphoreGive(mutex_wav_stream);
     digitalWrite(PIN_LED, !digitalRead(PIN_LED)); // indicate process
     //delay ms 120 for SAMPLE_RATE 16000, 90 for SAMPLE_RATE 22050, 59 for SAMPLE_RATE 33000
@@ -893,14 +940,14 @@ void i2sMemsToUartTask(void *param)
   while (true)
   {
      int samples_read = sampler->read(samples, SAMPLE_BUFFER_SIZE, BITS_PER_SAMPLE);
-     Serial.write((char *)samples,  samples_read * (BITS_PER_SAMPLE/8));
+     HWSerial.write((char *)samples,  samples_read * (BITS_PER_SAMPLE/8));
      digitalWrite(PIN_LED, !digitalRead(PIN_LED)); 
   }
 }
 
 bool writeConfigFile()
 {
-  Serial.println("Saving config file");
+  HWSerial.println("Saving config file");
 
 #if (ARDUINOJSON_VERSION_MAJOR >= 6)
   DynamicJsonDocument json(1024);
@@ -920,23 +967,23 @@ bool writeConfigFile()
 
   if (!f)
   {
-    Serial.println("Failed to open config file for writing");
+    HWSerial.println("Failed to open config file for writing");
     return false;
   }
 
 #if (ARDUINOJSON_VERSION_MAJOR >= 6)
-  serializeJsonPretty(json, Serial);
+  serializeJsonPretty(json, HWSerial);
   // Write data to file and close it
   serializeJson(json, f);
 #else
-  json.prettyPrintTo(Serial);
+  json.prettyPrintTo(HWSerial);
   // Write data to file and close it
   json.printTo(f);
 #endif
 
   f.close();
 
-  Serial.println("\nConfig file was successfully saved");
+  HWSerial.println("\nConfig file was successfully saved");
   return true;
 }
 
@@ -947,7 +994,7 @@ bool readConfigFile(void)
 
   if (!f)
   {
-    Serial.println("Configuration file not found");
+    HWSerial.println("Configuration file not found");
     return false;
   }
   else
@@ -969,10 +1016,10 @@ bool readConfigFile(void)
     auto deserializeError = deserializeJson(json, buf.get());
     if ( deserializeError )
     {
-      Serial.println("JSON parseObject() failed");
+      HWSerial.println("JSON parseObject() failed");
       return false;
     }
-    serializeJson(json, Serial);
+    serializeJson(json, HWSerial);
 #else
     DynamicJsonBuffer jsonBuffer;
     // Parse JSON string
@@ -980,10 +1027,10 @@ bool readConfigFile(void)
     // Test if parsing succeeds.
     if (!json.success())
     {
-      Serial.println("JSON parseObject() failed");
+      HWSerial.println("JSON parseObject() failed");
       return false;
     }
-    json.printTo(Serial);
+    json.printTo(HWSerial);
 #endif
 
     // Parse all config file parameters, override
@@ -1003,7 +1050,7 @@ bool readConfigFile(void)
       strcpy(m_port, json["mic_port"]);
     }
   }
-  Serial.println("\nConfig file was successfully parsed");
+  HWSerial.println("\nConfig file was successfully parsed");
   return true;
 }
 
@@ -1014,21 +1061,21 @@ bool mount_fs(void) {
   if (!FileFS.begin(true)) {
 
 
-    Serial.println(F("LittleFS failed! Already tried formatting."));
+    HWSerial.println(F("LittleFS failed! Already tried formatting."));
   
     if (!FileFS.begin())
     {     
       // prevents debug info from the library to hide err message.
       delay(100);
       
-      Serial.println(F("LittleFS failed!. Please use SPIFFS or EEPROM. Stay forever"));
+      HWSerial.println(F("LittleFS failed!. Please use SPIFFS or EEPROM. Stay forever"));
 
       return false;
     }
     
   }
    else {
-     Serial.println(F("LittleFS mount OK!"));
+     HWSerial.println(F("LittleFS mount OK!"));
      return true;
    }
   return true;
@@ -1076,3 +1123,13 @@ String ESP32GetResetReason(uint32_t cpu_no) {
   }
   return F("NO_MEAN");                                                                          // 0 and undefined
 }
+
+#if (USING_ESP32_S2 || USING_ESP32_C3)
+void initTempSensor(void)
+{
+  temp_sensor_config_t temp_sensor = TSENS_CONFIG_DEFAULT();
+  temp_sensor.dac_offset = TSENS_DAC_L2; // TSENS_DAC_L2 is default   L4(-40℃ ~ 20℃), L2(-10℃ ~ 80℃) L1(20℃ ~ 100℃) L0(50℃ ~ 125℃)
+  temp_sensor_set_config(temp_sensor);
+  temp_sensor_start();
+}
+#endif

@@ -1,33 +1,27 @@
 #pragma once
 
 #if defined(__arm__)  && __has_include("mbed.h") 
-#include "AudioTimer/AudioTimerDef.h"
+#include "AudioTimer/AudioTimerBase.h"
 #include "mbed.h"
 
 namespace audio_tools {
 
-class TimerAlarmRepeatingMBED;
-TimerAlarmRepeatingMBED *timerAlarmRepeating = nullptr;
-//typedef void (* repeating_timer_callback_t )(void* obj);
+class TimerAlarmRepeatingDriverMBED;
+static TimerAlarmRepeatingDriverMBED *timerAlarmRepeating = nullptr;
 
 /**
  * @brief Repeating Timer functions for repeated execution: Plaease use the typedef TimerAlarmRepeating
- * 
+ * @ingroup platform
  * @author Phil Schatzmann
  * @copyright GPLv3
  * 
  */
-class TimerAlarmRepeatingMBED : public TimerAlarmRepeatingDef {
+class TimerAlarmRepeatingDriverMBED : public TimerAlarmRepeatingDriverBase {
     public:
-    
-        TimerAlarmRepeatingRP2040(TimerFunction function=DirectTimerCallback, int id=0){
+
+        TimerAlarmRepeatingDriverMBED() {
             timerAlarmRepeating = this;
         }
-
-        ~TimerAlarmRepeatingMBED(){
-            end();
-        }
-
 
         /**
          * Starts the alarm timer
@@ -38,10 +32,10 @@ class TimerAlarmRepeatingMBED : public TimerAlarmRepeatingDef {
             // we determine the time in microseconds
             switch(unit){
                 case MS:
-                    ticker.attach(tickerCallback, time * 1000);
+                    ticker.attach_us(tickerCallback, (us_timestamp_t) time * 1000);
                     break;
                 case US:
-                    ticker.attach(tickerCallback, time);
+                    ticker.attach_us(tickerCallback,(us_timestamp_t) time);
                     break;
             }
             return true;
@@ -57,13 +51,14 @@ class TimerAlarmRepeatingMBED : public TimerAlarmRepeatingDef {
         mbed::Ticker ticker;
         repeating_timer_callback_t callback;
 
-        static void tickerCallback(){
-            timerAlarmRepeating->callback(timerAlarmRepeating);
+        inline static void tickerCallback(){
+            timerAlarmRepeating->callback(timerAlarmRepeating->object);
         }
 
 };
 
-typedef  TimerAlarmRepeatingMBED TimerAlarmRepeating;
+/// @brief  use TimerAlarmRepeating!  @ingroup timer_mbed
+using TimerAlarmRepeatingDriver = TimerAlarmRepeatingDriverMBED;
 
 
 }

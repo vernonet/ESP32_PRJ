@@ -1,29 +1,31 @@
 
 #pragma once
 #include "AudioConfig.h"
-#ifdef ARDUINO_AVR_NANO
+#if defined(USE_PWM) && defined(__AVR__)
 #include "AudioPWM/PWMAudioBase.h"
 #include "AudioTimer/AudioTimerAVR.h"
+
 namespace audio_tools {
 
-class PWMAudioStreamAVR;
-typedef PWMAudioStreamAVR PWMAudioStream;
-static PWMAudioStreamAVR *accessAudioPWM = nullptr; 
+class PWMDriverAVR;
+using PWMDriver = PWMDriverAVR;
+static PWMDriverAVR *accessAudioPWM = nullptr; 
 
 
 /**
  * @brief Experimental: Audio output to PWM pins for the AVR. The AVR supports only up to 2 channels. 
+ * @ingroup platform
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
 
-class PWMAudioStreamAVR : public PWMAudioStreamBase {
+class PWMDriverAVR : public DriverPWMBase {
     friend void defaultPWMAudioOutputCallback();
 
     public:
 
-        PWMAudioStreamAVR(){
-            LOGD("PWMAudioStreamAVR");
+        PWMDriverAVR(){
+            LOGD("PWMDriverAVR");
             accessAudioPWM = this;
         }
 
@@ -33,7 +35,7 @@ class PWMAudioStreamAVR : public PWMAudioStreamBase {
 
         // Ends the output
         virtual void end(){
-             LOGD(LOG_METHOD);
+            TRACED();
             noInterrupts(); 
             // stop timer callback
             TCCR1B = 0;
@@ -44,9 +46,8 @@ class PWMAudioStreamAVR : public PWMAudioStreamBase {
             is_timer_started = false;
         }
 
-        /// Setup AVR timer with callback
         void setupTimer() {
-             LOGD(LOG_METHOD);
+             TRACED();
             // CPU Frequency 16 MHz
             // prescaler 1, 256 or 1024 => no prescaling
             uint32_t steps = F_CPU / 8 / audio_config.sample_rate;  // e.g. (16000000/8/44100=>45)
@@ -71,7 +72,7 @@ class PWMAudioStreamAVR : public PWMAudioStreamBase {
 
         /// Setup LED PWM
         void setupPWM(){
-            LOGD(LOG_METHOD);
+            TRACED();
             if (audio_config.channels>2) {
                 LOGW("Max 2 channels supported - you requested %d", audio_config.channels);
                 audio_config.channels = 2;
@@ -83,13 +84,15 @@ class PWMAudioStreamAVR : public PWMAudioStreamBase {
             }
         }
 
+        void startTimer() {}
 
         // Timer 0 is used by Arduino!
         // Timer 1 is used to drive output in sample_rate 
         // => only Timer2 is available for PWM
         void setupPin(int pin){
             switch(pin){
-                case 3:case 11:
+                case 3:
+                case 11:
                     // switch PWM frequency to 62500.00 Hz
                     TCCR2B = TCCR2B & B11111000 | B00000001; 
                     LOGI("PWM Frequency changed for D3 and D11");
@@ -136,7 +139,7 @@ void defaultPWMAudioOutputCallback(){
 /// timer callback: write the next frame to the pins
 ISR(TIMER1_COMPA_vect){
     defaultPWMAudioOutputCallback();
-    TimerAlarmRepeating::tickerCallback();
+    TimerAlarmRepeatingDriverAVR::tickerCallback();
 
 }
 

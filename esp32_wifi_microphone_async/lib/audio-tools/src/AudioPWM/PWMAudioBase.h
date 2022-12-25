@@ -1,11 +1,13 @@
 #pragma once
 
 #include "AudioConfig.h"
+#ifdef USE_PWM
+
 #include "AudioTools.h"
 #include "AudioTools/AudioLogger.h"
-#include "AudioTools/AudioOutput.h"
-#include "AudioTools/Vector.h"
-#include "Stream.h"
+#include "AudioTools/AudioPrint.h"
+#include "AudioTools/AudioTypes.h"
+#include "AudioBasic/Collections.h"
 
 namespace audio_tools {
 
@@ -14,10 +16,11 @@ namespace audio_tools {
 typedef bool (*PWMCallbackType)(uint8_t channels, int16_t* data);
 // Callback used by system
 void defaultPWMAudioOutputCallback();
-// Stream classes
-class PWMAudioStreamESP32;
-class PWMAudioStreamPico;
-class PWMAudioStreamMBED;
+// Driver classes
+class PWMDriverESP32;
+class PWMDriverRP2040;
+class PWMDriverMBED;
+class PWMDriverSTM32;
 
 /**
  * @brief Configuration data for PWM audio output
@@ -25,14 +28,11 @@ class PWMAudioStreamMBED;
  * @copyright GPLv3
  */
 struct PWMConfig : public AudioBaseInfo {
-    friend class PWMAudioStreamESP32;
-    friend class PWMAudioStreamPico;
-    friend class PWMAudioStreamMBED;
 
     PWMConfig(){
         // default basic information
-        sample_rate = 10000;  // sample rate in Hz
-        channels = 2;
+        sample_rate = 8000u;  // sample rate in Hz
+        channels = 1;
         bits_per_sample = 16;
     }
 
@@ -41,24 +41,28 @@ struct PWMConfig : public AudioBaseInfo {
     uint8_t buffers = PWM_BUFFERS; 
 
     // additinal info
-    uint32_t pwm_frequency = PWM_FREQUENCY;  // audable range is from 20 to 20,000Hz (not used by ESP32)
+    uint16_t pwm_frequency = PWM_AUDIO_FREQUENCY;  // audable range is from 20 to 20,000Hz (not used by ESP32)
     uint8_t resolution = 8;     // Only used by ESP32: must be between 8 and 11 -> drives pwm frequency
     uint8_t timer_id = 0;       // Only used by ESP32 must be between 0 and 3
     
 #ifndef __AVR__
-    uint16_t start_pin = PWM_START_PIN; 
+    uint16_t start_pin = PIN_PWM_START; 
 
-    // define all pins by passing an array and updates the channels by the number of pins
-    template<size_t N> 
-    void setPins(int (&array)[N]) {
-         LOGD(LOG_METHOD);
-        int new_channels = sizeof(array)/sizeof(int);
-        if (channels!=new_channels) {
-            LOGI("channels updated to %d", new_channels); 
-            channels = new_channels;
+    /// Defines the pins and the corresponding number of channels (=number of pins)
+    void setPins(Pins &pins){
+        channels = pins.size();
+        pins_data = pins;
+    }
+
+    /// Determines the pins (for all channels)
+    Pins &pins() {
+        if (pins_data.size()==0){
+            pins_data.resize(channels);
+            for (int j=0;j<channels;j++){
+                pins_data[j]=start_pin+j;
+            }
         }
-        pins = array;
-        start_pin = -1; // mark start pin as invalid
+        return pins_data;
     }
 
 #endif
@@ -66,124 +70,56 @@ struct PWMConfig : public AudioBaseInfo {
     void logConfig(){
         LOGI("sample_rate: %d", sample_rate);
         LOGI("channels: %d", channels);
-        LOGI("bits_per_sample: %d", bits_per_sample);
+        LOGI("bits_per_sample: %u", bits_per_sample);
         LOGI("buffer_size: %u", buffer_size);
-        LOGI("pwm_frequency: %u", pwm_frequency);
-        //LOGI("resolution: %d", resolution);
+        LOGI("buffer_count: %u", buffers);
+        LOGI("pwm_frequency: %d", pwm_frequency);
+        LOGI("resolution: %d", resolution);
         //LOGI("timer_id: %d", timer_id);
     }
 
     protected:
-        int *pins = nullptr;
+        Pins pins_data;
 
 
-} default_config;
-
+} INLINE_VAR default_config;
 
 /**
- * @brief Common functionality for PWM output
+ * @brief Base Class for all PWM drivers
  * 
  */
-class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
+class DriverPWMBase {
     public:
-        ~PWMAudioStreamBase(){
-            if (is_timer_started){
-                end();
-            }
-        }
-
-        PWMConfig defaultConfig() {
-            return default_config;
-        }
-
-        PWMConfig config() {
+        PWMConfig &audioInfo(){
             return audio_config;
         }
 
-        // /// Starts the PWMAudio using callbacks
-        bool begin(uint16_t sampleRate, uint8_t channels, PWMCallbackType cb) {
-             LOGD(LOG_METHOD);
-            if (channels>maxChannels()){
-                LOGE("Only max %d channels are supported!",maxChannels());
-                return false;
-            }
-            audio_config.channels = channels;
-            audio_config.sample_rate = sampleRate;
-            user_callback = cb;
-
-            audio_config.logConfig();
-            setupPWM();
-            setupTimer();
-
-            is_timer_started = true;
-            return true;
-        }
-
-        /// updates the sample rate dynamically 
-        virtual void setAudioInfo(AudioBaseInfo info) {
-             LOGI(LOG_METHOD);
-            PWMConfig cfg = audio_config;
-            if (cfg.sample_rate != info.sample_rate
-                || cfg.channels != info.channels
-                || cfg.bits_per_sample != info.bits_per_sample) {
-                cfg.sample_rate = info.sample_rate;
-                cfg.bits_per_sample = info.bits_per_sample;
-                cfg.channels = info.channels;
-                cfg.logInfo();
-                end();
-                begin(cfg);        
-            }
-        }
-
-        /// starts the processing using Streams
-        bool begin(PWMConfig config ){
-             LOGD(LOG_METHOD);
-            this->audio_config = config;
-            if (config.channels>maxChannels()){
+        // restart with prior definitions
+        bool begin(PWMConfig cfg){
+            TRACED();
+            audio_config = cfg;;
+            if (audio_config.channels>maxChannels()){
                 LOGE("Only max %d channels are supported!",maxChannels());
                 return false;
             }             
-            // allocate new buffer
-            if (buffer==nullptr) {
-                LOGI("Allocating new buffer %d * %d bytes",config.buffers, config.buffer_size);
-                buffer = new NBuffer<uint8_t>(config.buffer_size, config.buffers);
-            } else {
-                buffer->reset();
-            }
-            // check allocation
-            if (buffer==nullptr){
-                LOGE("not enough memory to allocate the buffers");
-                return false;
-            }
-
-            audio_config.logConfig();
-            setupPWM();
-            setupTimer();
-
-            return true;
-        }  
-
-        // restart with prior definitions
-        bool begin(){
-             LOGD(LOG_METHOD);
             // allocate buffer if necessary
             if (user_callback==nullptr) {
-                if (buffer==nullptr) {
-                    LOGI("->Allocating new buffer %d * %d bytes",audio_config.buffers, audio_config.buffer_size);
-                    buffer = new NBuffer<uint8_t>(audio_config.buffer_size, audio_config.buffers);
-                } else {
-                    buffer->reset();
+                if (buffer!=nullptr){
+                    delete buffer;
+                    buffer = nullptr;
                 }
+                LOGI("->Allocating new buffer %d * %d bytes",audio_config.buffers, audio_config.buffer_size);
+                buffer = new NBuffer<uint8_t>(audio_config.buffer_size, audio_config.buffers);
             }
+            
             // initialize if necessary
-            if (!is_timer_started){
+            if (!isTimerStarted()){
                 audio_config.logConfig();
                 setupPWM();
                 setupTimer();
             }
 
             // reset class variables
-            is_timer_started = true;
             underflow_count = 0;
             underflow_per_second = 0;
             frame_count = 0;
@@ -191,40 +127,21 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
             
             LOGI("->Buffer available: %d", buffer->available());
             LOGI("->Buffer available for write: %d", buffer->availableForWrite());
-            LOGI("->is_timer_started: %s ", is_timer_started ? "true" : "false");
+            LOGI("->is_timer_started: %s ", isTimerStarted() ? "true" : "false");
             return true;
         } 
-
-        virtual void end(){
-             LOGD(LOG_METHOD);
-            is_timer_started = false;
-        }
-
 
         virtual int availableForWrite() { 
             return buffer==nullptr ? 0 : buffer->availableForWrite();
         }
 
-        virtual void flush() { 
-        }
-
-        // blocking write for a single byte
-        virtual size_t write(uint8_t value) {
-            size_t result = 0;
-            if (buffer->availableForWrite()>1){
-                result = buffer->write(value);
-                startTimer();
-            }
-            return result;
-        }
-
         // blocking write for an array: we expect a singed value and convert it into a unsigned 
         virtual size_t write(const uint8_t *wrt_buffer, size_t size){
             size_t available = min((size_t)availableForWrite(),size);
-            LOGD("write: %zu bytes -> %zu", size, available);
+            LOGD("write: %u bytes -> %u", (unsigned int)size, (unsigned int)available);
             size_t result = buffer->writeArray(wrt_buffer, available);
             if (result!=available){
-                LOGW("Could not write all data: %d -> %d", size, result);
+                LOGW("Could not write all data: %u -> %d", (unsigned int) size, result);
             }
             // activate the timer now - if not already done
             startTimer();
@@ -240,6 +157,32 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
             return frames_per_second;
         }
 
+        inline void updateStatistics(){
+            frame_count++;
+            if (millis()>=time_1_sec){
+                time_1_sec = millis()+1000;
+                frames_per_second = frame_count;
+                underflow_per_second = underflow_count;
+                underflow_count = 0;
+                frame_count = 0;
+            }
+        }
+
+        void setUserCallback(PWMCallbackType cb){
+            user_callback = cb;
+        }
+
+        bool isTimerStarted() {
+            return is_timer_started;
+        }
+
+        virtual void setupPWM()  = 0;
+        virtual void setupTimer()  = 0;
+        virtual void startTimer() = 0;
+        virtual int maxChannels() = 0;
+        virtual int maxOutputValue() = 0;
+        virtual void end() = 0;
+
         virtual void pwmWrite(int channel, int value) = 0;
 
     protected:
@@ -253,39 +196,13 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
         uint32_t time_1_sec;
         bool is_timer_started = false;
 
-        virtual void setupPWM() = 0;
-        virtual void setupTimer() = 0;
-        virtual int maxChannels() = 0;
-        virtual int maxOutputValue() = 0;
-
-
-        /// when we get the first write -> we activate the timer to start with the output of data
-        virtual void startTimer(){
-            if (!is_timer_started){
-                 LOGD(LOG_METHOD);
-                is_timer_started = true;
-            }
-        }
-
-
-        inline void updateStatistics(){
-            frame_count++;
-            if (millis()>=time_1_sec){
-                time_1_sec = millis()+1000;
-                frames_per_second = frame_count;
-                underflow_per_second = underflow_count;
-                underflow_count = 0;
-                frame_count = 0;
-            }
-        }
-
         void playNextFrameCallback(){
-             //LOGD(LOG_METHOD);
+             //TRACED();
             uint8_t channels = audio_config.channels;
             int16_t data[channels];
             if (user_callback(channels, data)){
                 for (uint8_t j=0;j<audio_config.channels;j++){
-                    int value  = map(data[j], -maxValue(16), maxValue(16), 0, 255); 
+                    int value  = map(data[j], -NumberConverter::maxValue(16), NumberConverter::maxValue(16), 0, 255); 
                     pwmWrite(j, value);
                 }
                 updateStatistics();                
@@ -295,8 +212,8 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
 
         /// writes the next frame to the output pins 
         void playNextFrameStream(){
-            if (is_timer_started){
-                 //LOGD(LOG_METHOD);
+            if (isTimerStarted() && buffer!=nullptr){
+                //TRACED();
                 int required = (audio_config.bits_per_sample / 8) * audio_config.channels;
                 if (buffer->available() >= required){
                     for (int j=0;j<audio_config.channels;j++){
@@ -307,13 +224,11 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
                     underflow_count++;
                 }
                 updateStatistics();
-            } else {
-                //LOGE("is_timer_started is false");
-            }
+            } 
         } 
 
         void playNextFrame(){
-             //LOGD(LOG_METHOD);
+            // TRACED();
             if (user_callback!=nullptr){
                 playNextFrameCallback();
             } else {
@@ -321,10 +236,9 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
             }
         }
 
-
         /// determines the next scaled value
         virtual int nextValue() {
-            int result;
+            int result = 0;
             switch(audio_config.bits_per_sample ){
                 case 8: {
                     int16_t value = buffer->read();
@@ -332,7 +246,7 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
                         LOGE("Could not read full data");
                         value = 0;
                     }
-                    result = map(value, -maxValue(8), maxValue(8), 0, maxOutputValue());
+                    result = map(value, -NumberConverter::maxValue(8), NumberConverter::maxValue(8), 0, maxOutputValue());
                     break;
                 }
                 case 16: {
@@ -340,7 +254,7 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
                     if (buffer->readArray((uint8_t*)&value,2)!=2){
                         LOGE("Could not read full data");
                     }
-                    result = map(value, -maxValue(16), maxValue(16), 0, maxOutputValue());
+                    result = map(value, -NumberConverter::maxValue(16), NumberConverter::maxValue(16), 0, maxOutputValue());
                     break;
                 }
                 case 24: {
@@ -348,7 +262,7 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
                     if (buffer->readArray((uint8_t*)&value,3)!=3){
                         LOGE("Could not read full data");
                     }
-                    result = map((int32_t)value, -maxValue(24), maxValue(24), 0, maxOutputValue());
+                    result = map((int32_t)value, -NumberConverter::maxValue(24), NumberConverter::maxValue(24), 0, maxOutputValue());
                     break;
                 }
                 case 32: {
@@ -356,7 +270,7 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
                     if (buffer->readArray((uint8_t*)&value,4)!=4){
                         LOGE("Could not read full data");
                     }
-                    result = map(value, -maxValue(32), maxValue(32), 0, maxOutputValue());
+                    result = map(value, -NumberConverter::maxValue(32), NumberConverter::maxValue(32), 0, maxOutputValue());
                     break;
                 }
             }        
@@ -366,3 +280,4 @@ class PWMAudioStreamBase : public AudioPrint, public AudioBaseInfoDependent {
 
 } // ns
 
+#endif

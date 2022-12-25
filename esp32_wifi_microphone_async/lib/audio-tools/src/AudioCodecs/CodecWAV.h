@@ -1,15 +1,23 @@
 #pragma once
 
-#include "AudioTools/AudioTypes.h"
+#include "AudioCodecs/AudioEncoded.h"
 
 #define WAV_FORMAT_PCM 0x0001
 #define TAG(a, b, c, d) ((static_cast<uint32_t>(a) << 24) | (static_cast<uint32_t>(b) << 16) | (static_cast<uint32_t>(c) << 8) | (d))
 #define READ_BUFFER_SIZE 512
 
+/** 
+ * @defgroup codec-wav wav
+ * @ingroup codecs
+ * @brief Codec wav   
+**/
+
+
 namespace audio_tools {
 
 /**
  * @brief Sound information which is available in the WAV header
+ * @ingroup codec-wav
  * @author Phil Schatzmann
  * @copyright GPLv3
  * 
@@ -22,16 +30,16 @@ struct WAVAudioInfo : AudioBaseInfo {
         bits_per_sample=from.bits_per_sample; 
     }
 
-    int format;
-    int byte_rate;
-    int block_align;
-    bool is_streamed;
-    bool is_valid;
-    uint32_t data_length;
-    uint32_t file_size;
+    int format=WAV_FORMAT_PCM;
+    int byte_rate=0;
+    int block_align=0;
+    bool is_streamed=true;
+    bool is_valid=false;
+    uint32_t data_length=0;
+    uint32_t file_size=0;
 };
 
-const char* wav_mime = "audio/wav";
+INLINE_VAR const char* wav_mime = "audio/wav";
 
 /**
  * @brief Parser for Wav header data
@@ -42,17 +50,13 @@ const char* wav_mime = "audio/wav";
  */
 class WAVHeader  {
     public:
-        WAVHeader(){
-        };
+        WAVHeader() = default;
 
-        void begin(uint8_t* buffer, size_t len){
-            LOGI("WAVHeader len: %u",(unsigned) len);
-
-            this->buffer = buffer;
-            this->len = len;
-            this->data_pos = 0l;
-            
-            memset(&headerInfo, 0, sizeof(WAVAudioInfo));
+        /// Call begin when header data is complete to parse the data
+        void begin(){
+            LOGI("WAVHeader::begin: %u",(unsigned) len);
+            this->data_pos = 0l;            
+            memset((void*)&headerInfo, 0, sizeof(WAVAudioInfo));
             while (!eof()) {
                 uint32_t tag, tag2, length;
                 tag = read_tag();
@@ -125,31 +129,38 @@ class WAVHeader  {
                     seek(length, SEEK_CUR);
                 }
             }
-            logInfo();
-            return;
+            logInfo();        
+            len = 0;
         }
 
+        /// Resets the len
+        void end(){
+            len = 0;
+        }
+
+        /// Adds data to the 44 byte wav header data buffer, returns the index at which the audio starts
+        int write(uint8_t* data, size_t data_len){
+            int write_len = min(data_len, 44 - len);
+            memmove(buffer, data+len, write_len);
+            len+=write_len;
+            LOGI("WAVHeader::write: %u -> %d -> %d",(unsigned) data_len, write_len, (int)len);
+            return write_len;
+        }
+
+        /// Returns true if the header is complete (with 44 bytes)
+        bool isDataComplete() {
+            return len==44;
+        }
 
         // provides the AudioInfo
         WAVAudioInfo &audioInfo() {
             return headerInfo;
         }
 
-        // provides access to the sound data for the first record
-        bool soundData(uint8_t* &data, size_t &len){
-            if (sound_pos > 0){
-                data = buffer + sound_pos;
-                len = max((long) (this->len - sound_pos),0l);
-                sound_pos = 0;
-                return true;
-            }
-            return false;
-        }
-
     protected:
         struct WAVAudioInfo headerInfo;
-        uint8_t* buffer;
-        size_t len;
+        uint8_t buffer[44];
+        size_t len=0;
         size_t data_pos = 0;
         size_t sound_pos = 0;
 
@@ -226,7 +237,7 @@ class WAVHeader  {
  * @brief WAVDecoder - We parse the header data on the first record
  * and send the sound data to the stream which was indicated in the
  * constructor. Only WAV files with WAV_FORMAT_PCM are supported!
- * 
+ * @ingroup codec-wav
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
@@ -237,7 +248,7 @@ class WAVDecoder : public AudioDecoder {
          */
 
         WAVDecoder(){
-            LOGD(LOG_METHOD);
+            TRACED();
             this->audioBaseInfoSupport = nullptr;
         }
 
@@ -247,7 +258,7 @@ class WAVDecoder : public AudioDecoder {
          * @param out_stream Output Stream to which we write the decoded result
          */
         WAVDecoder(Print &out_stream, bool active=true){
-            LOGD(LOG_METHOD);
+            TRACED();
             this->out = &out_stream;
             this->audioBaseInfoSupport = nullptr;
             this->active = active;
@@ -261,7 +272,7 @@ class WAVDecoder : public AudioDecoder {
          */
 
         WAVDecoder(Print &out_stream, AudioBaseInfoDependent &bi){
-            LOGD(LOG_METHOD);
+            TRACED();
             this->out = &out_stream;
             this->audioBaseInfoSupport = &bi;
         }
@@ -277,13 +288,13 @@ class WAVDecoder : public AudioDecoder {
 
 
         void begin() {
-            LOGD(LOG_METHOD);
+            TRACED();
             isFirst = true;
             active = true;
         }
 
         void end() {
-            LOGD(LOG_METHOD);
+            TRACED();
             active = false;
         }
 
@@ -300,65 +311,72 @@ class WAVDecoder : public AudioDecoder {
         }
 
         virtual size_t write(const void *in_ptr, size_t in_size) {
-            LOGD(LOG_METHOD);
+            TRACED();
             size_t result = 0;
             if (active) {
                 if (isFirst){
-                    header.begin((uint8_t*)in_ptr, in_size);
-                    uint8_t *sound_ptr;
-                    size_t len;
-                    if (header.soundData(sound_ptr, len)){
-                        isFirst = false;
-                        isValid = header.audioInfo().is_valid;
+                    // we expect at least the full header
+                    int written = header.write((uint8_t*)in_ptr, in_size);
+                    if (!header.isDataComplete()){
+                        return in_size;
+                    }
+                    // parse header
+                    header.begin();
 
-                        LOGI("WAV sample_rate: %d", header.audioInfo().sample_rate);
-                        LOGI("WAV data_length: %u", (unsigned) header.audioInfo().data_length);
-                        LOGI("WAV is_streamed: %d", header.audioInfo().is_streamed);
-                        LOGI("WAV is_valid: %s", header.audioInfo().is_valid ? "true" :  "false");
-                        
-                        // check format
-                        int format = header.audioInfo().format;
-                        isValid = format == WAV_FORMAT_PCM;
-                        if (format != WAV_FORMAT_PCM){
-                            LOGE("WAV format not supported: %d", format);
-                            isValid = false;
-                        } else {
-                            // update sampling rate if the target supports it
-                            AudioBaseInfo bi;
-                            bi.sample_rate = header.audioInfo().sample_rate;
-                            bi.channels = header.audioInfo().channels;
-                            bi.bits_per_sample = header.audioInfo().bits_per_sample;
-                            // we provide some functionality so that we could check if the destination supports the requested format
-                            if (audioBaseInfoSupport!=nullptr){
-                                isValid = audioBaseInfoSupport->validate(bi);
-                                if (isValid){
-                                    LOGI("isValid: %s", isValid ? "true":"false");
-                                    audioBaseInfoSupport->setAudioInfo(bi);
-                                    // write prm data from first record
-                                    LOGI("WAVDecoder writing first sound data");
-                                    result = out->write(sound_ptr, len);
-                                } else {
-                                    LOGE("isValid: %s", isValid ? "true":"false");
-                                }
+                    size_t len = in_size - written;
+                    uint8_t *sound_ptr = (uint8_t *) in_ptr + written;
+                    isFirst = false;
+                    isValid = header.audioInfo().is_valid;
+
+                    LOGI("WAV sample_rate: %d", header.audioInfo().sample_rate);
+                    LOGI("WAV data_length: %u", (unsigned) header.audioInfo().data_length);
+                    LOGI("WAV is_streamed: %d", header.audioInfo().is_streamed);
+                    LOGI("WAV is_valid: %s", header.audioInfo().is_valid ? "true" :  "false");
+                    
+                    // check format
+                    int format = header.audioInfo().format;
+                    isValid = format == WAV_FORMAT_PCM;
+                    if (format != WAV_FORMAT_PCM){
+                        LOGE("WAV format not supported: %d", format);
+                        isValid = false;
+                    } else {
+                        // update sampling rate if the target supports it
+                        AudioBaseInfo bi;
+                        bi.sample_rate = header.audioInfo().sample_rate;
+                        bi.channels = header.audioInfo().channels;
+                        bi.bits_per_sample = header.audioInfo().bits_per_sample;
+                        // we provide some functionality so that we could check if the destination supports the requested format
+                        if (audioBaseInfoSupport!=nullptr){
+                            isValid = audioBaseInfoSupport->validate(bi);
+                            if (isValid){
+                                LOGI("isValid: %s", isValid ? "true":"false");
+                                audioBaseInfoSupport->setAudioInfo(bi);
+                                // write prm data from first record
+                                LOGI("WAVDecoder writing first sound data");
+                                result = out->write(sound_ptr, len);
+                            } else {
+                                LOGE("isValid: %s", isValid ? "true":"false");
                             }
                         }
                     }
+                    
                 } else if (isValid)  {
                     result = out->write((uint8_t*)in_ptr, in_size);
                 }
             }
+            header.end();
             return result;
         }
 
         /// Alternative API which provides the data from an input stream
         int readStream(Stream &in){
-            LOGD(LOG_METHOD);
+            TRACED();
             uint8_t buffer[READ_BUFFER_SIZE];
             int len = in.readBytes(buffer, READ_BUFFER_SIZE);
             return write(buffer, len);
         }
 
-        virtual operator boolean() {
+        virtual operator bool() {
             return active;
         }
 
@@ -374,6 +392,7 @@ class WAVDecoder : public AudioDecoder {
 
 /**
  * @brief A simple WAV file encoder. 
+ * @ingroup codec-wav
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
@@ -385,13 +404,13 @@ class WAVEncoder : public AudioEncoder {
         }        
 
         // Constructor providing the output stream
-        WAVEncoder(Stream &out){
+        WAVEncoder(Print &out){
             stream_ptr = &out;
             audioInfo = defaultConfig();
         }
 
         // Constructor providing the output stream and the WAVAudioInfo
-        WAVEncoder(Stream &out, WAVAudioInfo ai){
+        WAVEncoder(Print &out, WAVAudioInfo ai){
             stream_ptr = &out;
             setAudioInfo(ai);
         }
@@ -478,9 +497,7 @@ class WAVEncoder : public AudioEncoder {
             }
             if (!header_written){
                 LOGI("Writing Header");
-                writeRiffHeader();
-                writeFMT();
-                writeDataHeader();
+                writeHeader(stream_ptr);
                 header_written = true;
             }
 
@@ -501,7 +518,7 @@ class WAVEncoder : public AudioEncoder {
             return result;
         }
 
-        operator boolean() {
+        operator bool() {
             return is_open;
         }
 
@@ -514,6 +531,12 @@ class WAVEncoder : public AudioEncoder {
             this->offset = offset;
         }
 
+        void writeHeader(Print *out) {
+            writeRiffHeader(out);
+            writeFMT(out);
+            writeDataHeader(out);
+        }
+
     protected:
         Print* stream_ptr;
         WAVAudioInfo audioInfo = defaultConfig();
@@ -522,13 +545,14 @@ class WAVEncoder : public AudioEncoder {
         volatile bool is_open;
         uint32_t offset=0; //adds n empty bytes at the beginning of the data
 
-        void writeRiffHeader(){
+
+        void writeRiffHeader(Print *stream_ptr){
             stream_ptr->write("RIFF",4);
             write32(*stream_ptr, audioInfo.file_size-8);
             stream_ptr->write("WAVE",4);
         }
 
-        void writeFMT(){
+        void writeFMT(Print *stream_ptr){
             uint16_t fmt_len = 16;
             uint32_t byteRate = audioInfo.sample_rate * audioInfo.bits_per_sample * audioInfo.channels / 8;
             uint32_t frame_size = audioInfo.channels * audioInfo.bits_per_sample / 8;
@@ -550,7 +574,7 @@ class WAVEncoder : public AudioEncoder {
             stream.write((uint8_t *) &value, 2);
         }
 
-        void writeDataHeader() {
+        void writeDataHeader(Print *stream_ptr) {
             stream_ptr->write("data",4);
             audioInfo.file_size -=44;
             write32(*stream_ptr, audioInfo.file_size);
@@ -559,7 +583,6 @@ class WAVEncoder : public AudioEncoder {
                 memset(empty,0, offset);
                 stream_ptr->write(empty,offset);  // resolve issue with wrong aligment
             }
-
         }
 
 };

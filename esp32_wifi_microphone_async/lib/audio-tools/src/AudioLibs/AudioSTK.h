@@ -1,13 +1,11 @@
 #pragma once
 
 #include "AudioConfig.h"
-#ifdef USE_STK
-
-#include "Arduino.h"
-#include "freertos/FreeRTOS.h"
-#include "Stk.h"
-#include "Voicer.h"
-#include "Instrmnt.h"
+#include "AudioEffects/AudioEffect.h"
+#ifdef ESP32
+#  include "freertos/FreeRTOS.h"
+#endif
+#include "StkAll.h"
 
 namespace audio_tools {
 
@@ -21,39 +19,41 @@ namespace audio_tools {
  * it was created in 1995. In the 90s the computers had limited processor power and memory available. 
  * In todays world we can get some cheap Microcontrollers, which provide almost the same capabilities.
  *
- * 
+ * @ingroup generator
  * @tparam T 
  */
 
-template <class T>
+template <class StkCls, class T>
 class STKGenerator : public SoundGenerator<T> {
     public:
+        STKGenerator() = default;
+
         // Creates an STKGenerator for an instrument
-        STKGenerator(stk::Instrmnt &instrument) : SoundGenerator<T>() {
+        STKGenerator(StkCls &instrument) : SoundGenerator<T>() {
             this->p_instrument = &instrument;
         }
 
-        // Creates an STKGenerator for a voicer (combination of multiple instruments)
-        STKGenerator(stk::Voicer  &voicer) : SoundGenerator<T>() {
-            this->p_voicer = &voicer;
+        void setInput(StkCls &instrument){
+            this->p_instrument = &instrument;
         }
 
         /// provides the default configuration
         AudioBaseInfo defaultConfig() {
             AudioBaseInfo info;
-            info.channels = 1;
+            info.channels = 2;
             info.bits_per_sample = sizeof(T) * 8;
             info.sample_rate = stk::Stk::sampleRate();
             return info;
         }
 
         /// Starts the processing
-        void begin(AudioBaseInfo cfg){
-             LOGI(LOG_METHOD);
+        bool begin(AudioBaseInfo cfg){
+            TRACEI();
             cfg.logInfo();
             SoundGenerator<T>::begin(cfg);
-            max_value = maxValue(sizeof(T)*8);
+            max_value = NumberConverter::maxValue(sizeof(T)*8);
             stk::Stk::setSampleRate(SoundGenerator<T>::info.sample_rate);
+            return true;
         }
 
         /// Provides a single sample
@@ -61,20 +61,209 @@ class STKGenerator : public SoundGenerator<T> {
             T result = 0;
             if (p_instrument!=nullptr) {
                 result = p_instrument->tick()*max_value;
-            } else if (p_voicer!=nullptr){
-                result = p_voicer->tick()*max_value;
             }
             return result;
         }
 
     protected:
-        stk::Instrmnt *p_instrument=nullptr;
-        stk::Voicer *p_voicer=nullptr;
+        StkCls *p_instrument=nullptr;
         T max_value;
 
+};
+
+/**
+ * @brief STK Stream for Instrument or Voicer
+ * @ingroup dsp
+ */
+template <class StkCls>
+class STKStream : public GeneratedSoundStream<int16_t> {
+    public:
+        STKStream() {
+            GeneratedSoundStream<int16_t>::setInput(generator);          
+        };
+
+        STKStream(StkCls &instrument){
+            generator.setInput(instrument);
+            GeneratedSoundStream<int16_t>::setInput(generator);
+        }
+        void setInput(StkCls &instrument){
+            generator.setInput(instrument);
+            GeneratedSoundStream<int16_t>::setInput(generator);
+        }
+        void setInput(StkCls *instrument){
+            generator.setInput(*instrument);
+            GeneratedSoundStream<int16_t>::setInput(generator);
+        }
+
+        AudioBaseInfo defaultConfig() {
+            AudioBaseInfo info;
+            info.channels = 1;
+            info.bits_per_sample = 16;
+            info.sample_rate = stk::Stk::sampleRate();
+            return info;
+        }
+
+    protected:
+        STKGenerator<StkCls,int16_t> generator;
+
+};
+
+/**
+ * @brief Use any effect from the STK framework: e.g. Chorus, Echo, FreeVerb, JCRev,
+ * PitShift... https://github.com/pschatzmann/Arduino-STK
+ *
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKEffect : public AudioEffect {
+public:
+  STKEffect(stk::Effect &stkEffect) { p_effect = &stkEffect; }
+
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return p_effect->tick(value) * 32767.0;
+  }
+
+protected:
+  stk::Effect *p_effect = nullptr;
+};
+
+/**
+ * @brief Chorus Effect
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKChorus : public AudioEffect, public stk::Chorus {
+public:
+  STKChorus(float baseDelay = 6000) : stk::Chorus(baseDelay) {}
+
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return tick(value) * 32767.0;
+  }
+};
+
+/**
+ * @brief Echo Effect
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKEcho : public AudioEffect, public stk::Echo {
+public:
+  STKEcho(unsigned long maximumDelay = (unsigned long)Stk::sampleRate())
+      : stk::Echo(maximumDelay) {}
+
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return tick(value) * 32767.0;
+  }
+};
+
+/**
+ * @brief Jezar at Dreampoint's FreeVerb, implemented in STK.
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKFreeVerb : public AudioEffect, public stk::FreeVerb {
+public:
+  STKFreeVerb() = default;
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return tick(value) * 32767.0;
+  }
+};
+
+/**
+ * @brief John Chowning's reverberator class.
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKChowningReverb : public AudioEffect, public stk::JCRev {
+public:
+  STKChowningReverb() = default;
+
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return tick(value) * 32767.0;
+  }
+};
+
+/**
+ * @brief CCRMA's NRev reverberator class.
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKNReverb : public AudioEffect, public stk::NRev {
+public:
+  STKNReverb(float t60 = 1.0) : NRev(t60) {}
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return tick(value) * 32767.0;
+  }
+};
+
+/**
+ * @brief Perry's simple reverberator class
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKPerryReverb : public AudioEffect, public stk::PRCRev {
+public:
+  STKPerryReverb(float t60 = 1.0) : PRCRev(t60) {}
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return tick(value) * 32767.0;
+  }
+};
+
+/**
+ * @brief Pitch shifter effect class based on the Lent algorithm
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKLentPitShift : public AudioEffect, public stk::LentPitShift {
+public:
+  STKLentPitShift(float periodRatio = 1.0, int tMax = 512)
+      : stk::LentPitShift(periodRatio, tMax) {}
+
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return tick(value) * 32767.0;
+  }
+};
+
+/**
+ * @brief Pitch shifter effect class based on the Lent algorithm
+ * @ingroup effects
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
+class STKPitShift : public AudioEffect, public stk::PitShift {
+public:
+  STKPitShift() = default;
+  virtual effect_t process(effect_t in) {
+    // just convert between int16 and float
+    float value = static_cast<float>(in) / 32767.0;
+    return tick(value) * 32767.0;
+  }
 };
 
 
 }
 
-#endif

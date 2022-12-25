@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AudioHttp/StrExt.h"
+#include "AudioBasic/StrExt.h"
 #include "AudioTools/AudioLogger.h"
 
 namespace audio_tools {
@@ -15,7 +15,8 @@ namespace audio_tools {
  * -> port: 80
  * -> url: http://pschatzmann.ch:80/path1/path2
  * -> root: http://pschatzmann.ch:80
-* @author Phil Schatzmann
+ * @ingroup http
+ * @author Phil Schatzmann
  * @copyright GPLv3
 
  */

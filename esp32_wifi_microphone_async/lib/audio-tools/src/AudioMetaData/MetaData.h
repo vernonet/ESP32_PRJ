@@ -7,10 +7,18 @@
 #include "AudioMetaData/MetaDataID3.h"
 #include "AudioHttp/HttpRequest.h"
 
+/** 
+ * @defgroup metadata Metadata
+ * @ingroup main
+ * @brief Audio Metadata (Title, Author...)
+**/
+
 namespace audio_tools {
 
 /**
- * @brief ID3 and Icecast/Shoutcast metadata output support
+ * @brief ID3 and Icecast/Shoutcast metadata output support. Just write the audio data 
+ * to an object of this class and receive the metadata via the callback.
+ * @ingroup metadata
  * @author Phil Schatzmann
  * @copyright GPLv3
  * 
@@ -19,6 +27,8 @@ class MetaDataPrint : public AudioPrint {
   public:
 
     MetaDataPrint() = default;
+    MetaDataPrint(MetaDataPrint const&) = delete;
+    MetaDataPrint& operator=(MetaDataPrint const&) = delete;
 
     ~MetaDataPrint(){
         end();
@@ -27,13 +37,13 @@ class MetaDataPrint : public AudioPrint {
 
     /// Defines the callback
     virtual void setCallback(void (*fn)(MetaDataType info, const char* str, int len)) {
-        LOGD(LOG_METHOD);
+        TRACED();
         callback = fn; 
     }
 
     /// Starts the processing - iceMetaint is determined from the HttpRequest
     virtual void begin(HttpRequest &http) {
-        LOGD(LOG_METHOD);
+        TRACED();
         ICYUrlSetup icySetup;
         int metaInt = icySetup.setup(http);
         icySetup.executeCallback(callback);
@@ -57,22 +67,22 @@ class MetaDataPrint : public AudioPrint {
 
     virtual void end() {
         if (callback!=nullptr && meta != nullptr) {
-            LOGD(LOG_METHOD);
+            TRACED();
             meta->end();
         }
     }
 
     /// Provide tha audio data to the API to parse for Meta Data
     virtual size_t write(const uint8_t *data, size_t length){
-        LOGD("%s: %d", LOG_METHOD, length);
+        LOGD("%s: %d", LOG_METHOD, (int)length);
 
         if (callback!=nullptr){
             if (meta!=nullptr){
-                CHECK_MEMORY();
+                //CHECK_MEMORY();
                 if (meta->write(data, length)!=length){
                     LOGE("Did not write all data");
                 }
-                CHECK_MEMORY();
+                //CHECK_MEMORY();
             } else {
                 LOGW("meta is null");
             }

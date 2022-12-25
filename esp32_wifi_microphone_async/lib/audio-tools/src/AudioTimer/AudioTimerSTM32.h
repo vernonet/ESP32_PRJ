@@ -1,39 +1,47 @@
 #pragma once
 
 #if defined(STM32)
-#include "AudioTimer/AudioTimerDef.h"
+#include "AudioTimer/AudioTimerBase.h"
 
 namespace audio_tools {
 
-class TimerAlarmRepeating;
-TimerAlarmRepeating *timerAlarmRepeating = nullptr;
+class TimerAlarmRepeatingDriverSTM32;
+static TimerAlarmRepeatingDriverSTM32 *timerAlarmRepeating = nullptr;
 typedef void (* repeating_timer_callback_t )(void* obj);
 
 /**
  * @brief STM32 Repeating Timer functions for repeated execution: Plaease use the typedef TimerAlarmRepeating
- * 
+ * @ingroup platform
  * @author Phil Schatzmann
  * @copyright GPLv3
- * 
  */
-class TimerAlarmRepeatingSTM32 : public TimerAlarmRepeatingDef {
+class TimerAlarmRepeatingDriverSTM32 : public TimerAlarmRepeatingDriverBase {
     public:
-    
-        TimerAlarmRepeatingSTM32(int timerIdx=1){
-            this->timer = new HardwareTimer(timers[timerIdx]);
-            timer->pause();
+        TimerAlarmRepeatingDriverSTM32(){
+            setTimer(1);
         }
 
-        ~TimerAlarmRepeatingSTM32(){
+        ~TimerAlarmRepeatingDriverSTM32(){
             end();
             delete this->timer;
+        }
+        /// selects the timer: 0 = TIM1, 1 = TIM2,2 = TIM3, 3 = TIM4, 4 = TIM5 
+        void setTimer(int timerIdx) override {
+            if (this->timer!=nullptr){
+                delete this->timer;
+            }
+            this->timer = new HardwareTimer(timers[timerIdx]);
+            timer_index = timerIdx;
+            timer->pause();
         }
 
         /**
          * Starts the alarm timer
          */
         bool begin(repeating_timer_callback_t callback_f, uint32_t time, TimeUnit unit = MS) override {
-            timer->attachInterrupt(std::bind(callback_f, this)); 
+            TRACEI();
+            LOGI("Using timer TIM%d", timer_index+1);
+            timer->attachInterrupt(std::bind(callback_f, object)); 
           
             // we determine the time in microseconds
             switch(unit){
@@ -50,18 +58,20 @@ class TimerAlarmRepeatingSTM32 : public TimerAlarmRepeatingDef {
 
         // ends the timer and if necessary the task
         bool end() override {
+            TRACEI();
             timer->pause();
             return true;
         }
 
     protected:
-        HardwareTimer *timer; 
-        TIM_TypeDef *timers[3] = {TIM1, TIM2, TIM3 };
+        HardwareTimer *timer=nullptr; 
+        int timer_index;
+        TIM_TypeDef *timers[6] = {TIM1, TIM2, TIM3, TIM4, TIM5 };
 
 };
 
-typedef  TimerAlarmRepeatingSTM32 TimerAlarmRepeating;
-
+///  @brief use TimerAlarmRepeating!  @ingroup timer_stm32
+using TimerAlarmRepeatingDriver = TimerAlarmRepeatingDriverSTM32;
 
 }
 

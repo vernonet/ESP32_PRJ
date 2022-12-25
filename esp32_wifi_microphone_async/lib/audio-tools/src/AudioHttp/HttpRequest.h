@@ -6,6 +6,14 @@
 #include "AudioHttp/Url.h"
 #include "AudioTools/AudioLogger.h" 
 
+#ifndef URL_CLIENT_TIMEOUT
+#define URL_CLIENT_TIMEOUT 60000
+#endif
+
+#ifndef URL_HANDSHAKE_TIMEOUT
+#define URL_HANDSHAKE_TIMEOUT 120000
+#endif
+
 namespace audio_tools {
 
 
@@ -21,7 +29,7 @@ namespace audio_tools {
 
 class HttpRequest {
     public:
-        friend class URLStreamDefault;
+        friend class URLStream;
 
         HttpRequest() {
              LOGI("HttpRequest");
@@ -34,7 +42,7 @@ class HttpRequest {
 
         void setClient(Client &client){
             this->client_ptr = &client;
-            this->client_ptr->setTimeout(20000);
+            this->client_ptr->setTimeout(clientTimeout);
         }
 
         // the requests usually need a host. This needs to be set if we did not provide a URL
@@ -164,11 +172,14 @@ class HttpRequest {
         const char *accept = ACCEPT_ALL;
         const char *accept_encoding = nullptr;
         bool is_ready = false;
+        int32_t clientTimeout = URL_CLIENT_TIMEOUT; // 60000;
 
         // opens a connection to the indicated host
-        virtual int connect(const char *ip, uint16_t port) {
-            LOGI("connect %s", ip);
-            return this->client_ptr->connect(ip, port);
+        virtual int connect(const char *ip, uint16_t port, int32_t timeout) {
+            client_ptr->setTimeout(timeout);
+            int is_connected = this->client_ptr->connect(ip, port);
+            LOGI("connected %d timeout %d", is_connected, (int) timeout);
+            return is_connected;
         }
 
         // sends request and reads the reply_header from the server
@@ -180,8 +191,8 @@ class HttpRequest {
             }
             if (!this->connected()){
                 LOGI("process connecting to host %s port %d", url.host(), url.port());
-                bool is_connected = connect(url.host(), url.port());
-                if (!is_connected){
+                int is_connected = connect(url.host(), url.port(), clientTimeout);
+                if (is_connected!=1){
                     LOGE("Connect failed");
                     return -1;
                 }
@@ -205,7 +216,6 @@ class HttpRequest {
             request_header.put(ACCEPT_ENCODING, accept_encoding);
             request_header.put(ACCEPT, accept);
             request_header.put(CONTENT_TYPE, mime);
-            
             request_header.write(*client_ptr);
 
             if (len>0){

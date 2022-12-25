@@ -1,17 +1,23 @@
 #pragma once
 
 #include "AudioMetaData/AbstractMetaData.h"
-#include "AudioHttp/Str.h"
+#include "AudioBasic/Str.h"
 #include "AudioHttp/HttpRequest.h"
 
 namespace audio_tools {
 
+/** 
+ * @defgroup metadata-icy ICY
+ * @ingroup metadata
+ * @brief Icecast/Shoutcast Metadata
+**/
 
 
 /**
- * Icecast/Shoutcast Metadata Handling
+ * @brief Icecast/Shoutcast Metadata Handling.
  * Metadata class which splits the data into audio and metadata. The result is provided via callback methods.
  * see https://www.codeproject.com/Articles/11308/SHOUTcast-Stream-Ripper
+ * @ingroup metadata-icy
  * @author Phil Schatzmann
  * @copyright GPLv3
  */ 
@@ -32,7 +38,7 @@ class MetaDataICY : public AbstractMetaData {
         }
         
         /// Defines the ICE metaint value which is provided by the web call!
-        virtual void setIcyMetaInt(int value){
+        virtual void setIcyMetaInt(int value) override {
             this->mp3_blocksize = value;
         }
 
@@ -41,8 +47,8 @@ class MetaDataICY : public AbstractMetaData {
             callback = fn;
         }
 
-        /// Defines the metadata callback function
-        virtual void setDataCallback(void (*fn)(const uint8_t* str, int len), int bufferLen=1024)  {
+        /// Defines the audio callback function
+        virtual void setAudioDataCallback(void (*fn)(const uint8_t* str, int len), int bufferLen=1024)  {
             dataBuffer = new uint8_t[bufferLen];
             dataCallback = fn;
             dataLen = 0;
@@ -63,7 +69,7 @@ class MetaDataICY : public AbstractMetaData {
         /// Writes the data in order to retrieve the metadata and perform the corresponding callbacks 
         virtual size_t write(const uint8_t *buffer, size_t len) override {
             if (callback!=nullptr){
-                for (int j=0;j<len;j++){
+                for (size_t j=0;j<len;j++){
                     processChar((char)buffer[j]);
                 }
             }
@@ -113,9 +119,14 @@ class MetaDataICY : public AbstractMetaData {
                     metaDataLen = metaSize(ch);
                     LOGI("metaDataLen: %d", metaDataLen);
                     if (metaDataLen>0){
-                        LOGI("Metadata found");
-                        setupMetaData(metaDataLen);
-                        nextStatus = ProcessMetaData;
+                        if (metaDataLen>200){
+                            LOGI("Unexpected metaDataLen -> processed as data");
+                            nextStatus = ProcessData;
+                        } else {
+                            LOGI("Metadata found");
+                            setupMetaData(metaDataLen);
+                            nextStatus = ProcessMetaData;
+                        }
                     } else {
                         LOGI("Data found");
                         nextStatus = ProcessData;
@@ -138,7 +149,7 @@ class MetaDataICY : public AbstractMetaData {
     protected:
         Status nextStatus = ProcessData;
         Status currentStatus = ProcessData;
-        void (*callback)(MetaDataType info, const char* str, int len);
+        void (*callback)(MetaDataType info, const char* str, int len) = nullptr;
         char* metaData=nullptr;
         int totalData = 0;
         int mp3_blocksize = 0;
@@ -178,10 +189,10 @@ class MetaDataICY : public AbstractMetaData {
 
         /// allocates the memory to store the metadata / we support changing sizes
         virtual void setupMetaData(int meta_size) {
-            LOGD(LOG_METHOD);
+            TRACED();
             if (meta_size>0){
                 if (metaData==nullptr){
-                    metaData = new prog_char[meta_size+1];
+                    metaData = new char[meta_size+1];
                     metaDataMaxLen = meta_size;
                     LOGD("metaDataMaxLen: %d", metaDataMaxLen);
                 } else {
@@ -198,12 +209,12 @@ class MetaDataICY : public AbstractMetaData {
 
         /// e.g. StreamTitle=' House Bulldogs - But your love (Radio Edit)';StreamUrl='';
         virtual void processMetaData( char* metaData, int len) {
-            CHECK_MEMORY();
-            LOGD(LOG_METHOD);
+            //CHECK_MEMORY();
+            TRACED();
             metaData[len]=0;
             if (isAscii(metaData, 12)){
                 LOGI("%s", metaData);
-                Str meta(metaData, len);
+                Str meta(metaData,len+1, len);
                 int start = meta.indexOf("StreamTitle=");
                 if (start>=0){
                     start+=12;
@@ -211,11 +222,13 @@ class MetaDataICY : public AbstractMetaData {
                 int end = meta.indexOf("';");
                 if (start>=0 && end>start){
                     metaData[end]=0;
-                    callback(Title, (const char*)metaData+start+1, end-start);
+                    if (callback!=nullptr){
+                        callback(Title, (const char*)metaData+start+1, end-start);
+                    }
                 }   
-                CHECK_MEMORY();
+               // CHECK_MEMORY();
             } else {
-                CHECK_MEMORY();
+               // CHECK_MEMORY();
                 LOGW("Unexpected Data: %s", metaData);
             }
         }
@@ -236,6 +249,7 @@ class MetaDataICY : public AbstractMetaData {
 
 /**
  * @brief Resolve icy-metaint from HttpRequest and execute metadata callbacks
+ * @ingroup metadata-icy
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
@@ -244,10 +258,14 @@ class ICYUrlSetup {
     public:
         /// Fills the metaint from the Http Request and executes metadata callbacks on http reply parameters
         int setup(HttpRequest &http ) {
-            LOGD(LOG_METHOD);
+            TRACED();
             p_http = &http;
             const char* iceMetaintStr = http.reply().get("icy-metaint");
-            LOGI("icy-metaint: %s", iceMetaintStr);
+            if (iceMetaintStr){
+                LOGI("icy-metaint: %s", iceMetaintStr);
+            } else {
+                LOGE("icy-metaint not defined");
+            }
             Str value(iceMetaintStr);
             int iceMetaint = value.toInt();
             return iceMetaint;
@@ -255,7 +273,7 @@ class ICYUrlSetup {
 
         /// Executes the metadata callbacks with data provided from the http request result parameter
         void executeCallback(void (*callback)(MetaDataType info, const char* str, int len)) {
-            LOGI(LOG_METHOD);
+            TRACEI();
             if (callback==nullptr){
                 LOGW("callback not defined")
             }

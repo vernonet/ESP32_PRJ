@@ -1,31 +1,26 @@
 #pragma once
 
 #ifdef __AVR__
-#include "AudioTimer/AudioTimerDef.h"
+#include "AudioTimer/AudioTimerBase.h"
 
 namespace audio_tools {
-
 typedef void (* repeating_timer_callback_t )(void* obj);
-class TimerAlarmRepeating;
-TimerAlarmRepeating *timerAlarmRepeatingRef = nullptr;
+class TimerAlarmRepeatingDriverAVR;
+static TimerAlarmRepeatingDriverAVR *timerAlarmRepeatingRef = nullptr;
 
 
 /**
  * @brief Repeating Timer functions for repeated execution: Plaease use the typedef TimerAlarmRepeating
- * 
+ * @ingroup platform
  * @author Phil Schatzmann
  * @copyright GPLv3
  * 
  */
-class TimerAlarmRepeatingAVR : public TimerAlarmRepeatingDef {
+class TimerAlarmRepeatingDriverAVR : public TimerAlarmRepeatingDriverBase {
     public:
 
-        TimerAlarmRepeatingAVR(){
+        TimerAlarmRepeatingDriverAVR() {
             timerAlarmRepeatingRef = this;
-        }
-
-        ~TimerAlarmRepeatingAVR(){
-            end();
         }
 
         /**
@@ -51,7 +46,7 @@ class TimerAlarmRepeatingAVR : public TimerAlarmRepeatingDef {
 
         // ends the timer and if necessary the task
         bool end() override {
-             LOGD(LOG_METHOD);
+             TRACED();
             noInterrupts(); 
             // end timer callback
             TCCR1B = 0;
@@ -68,7 +63,7 @@ class TimerAlarmRepeatingAVR : public TimerAlarmRepeatingDef {
         repeating_timer_callback_t callback = nullptr;
 
         void setupTimer(uint64_t sample_rate) {
-             LOGD(LOG_METHOD);
+             TRACED();
             // CPU Frequency 16 MHz
             // prescaler 1, 256 or 1024 => no prescaling
             uint32_t steps = F_CPU / 8 / sample_rate;  // e.g. (16000000/8/44100=>45)
@@ -93,7 +88,8 @@ class TimerAlarmRepeatingAVR : public TimerAlarmRepeatingDef {
 
 };
 
-typedef  TimerAlarmRepeatingAVR TimerAlarmRepeating;
+using TimerAlarmRepeatingDriver = TimerAlarmRepeatingDriverAVR;
 
+} // namespace
 
 #endif

@@ -1,10 +1,14 @@
 #pragma once
 
-#if defined(USE_FDK) || defined(USE_DECODERS)
-
-#include "AudioTools/AudioTypes.h"
+#include "AudioCodecs/AudioEncoded.h"
 #include "AACDecoderFDK.h"
 #include "AACEncoderFDK.h"
+
+/** 
+ * @defgroup fdk fdk
+ * @ingroup codecs
+ * @brief FTK AAC Decoder  
+**/
 
 namespace audio_tools {
 
@@ -15,22 +19,23 @@ AudioBaseInfoDependent *audioChangeFDK = nullptr;
  * @brief Audio Decoder which decodes AAC into a PCM stream
  * This is basically just a wrapper using https://github.com/pschatzmann/arduino-fdk-aac
  * which uses AudioBaseInfo and provides the handlig of AudioBaseInfo changes.
+ * @ingroup fdk
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
 class AACDecoderFDK : public AudioDecoder  {
     public:
         AACDecoderFDK(){
-            LOGD(LOG_METHOD);
+            TRACED();
             dec = new aac_fdk::AACDecoderFDK();
         }
 
         AACDecoderFDK(Print &out_stream, int output_buffer_size=2048){
-            LOGD(LOG_METHOD);
+            TRACED();
             dec = new aac_fdk::AACDecoderFDK(out_stream, output_buffer_size);
         }
 
-        ~AACDecoderFDK(){
+        virtual ~AACDecoderFDK(){
             delete dec;
         }
 
@@ -60,7 +65,7 @@ class AACDecoderFDK : public AudioDecoder  {
         }
 
         // write AAC data to be converted to PCM data
-          virtual size_t write(const void *in_ptr, size_t in_size) {
+        virtual size_t write(const void *in_ptr, size_t in_size) {
             return dec->write(in_ptr, in_size);
         }
 
@@ -81,7 +86,7 @@ class AACDecoderFDK : public AudioDecoder  {
 
         // release the resources
         void end(){
-             LOGD(LOG_METHOD);
+             TRACED();
             dec->end();
         }
 
@@ -118,6 +123,7 @@ class AACDecoderFDK : public AudioDecoder  {
 /**
  * @brief Encodes PCM data to the AAC format and writes the result to a stream
  * This is basically just a wrapper using https://github.com/pschatzmann/arduino-fdk-aac
+ * @ingroup fdk
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
@@ -197,8 +203,8 @@ public:
                     - -1: Use ELD SBR auto configurator (default).
                     - 0: Disable Spectral Band Replication.
                     - 1: Enable Spectral Band Replication. */    
-    virtual void setSpecialBandReplication(int eld_sbr){
-        enc->setSpecialBandReplication(eld_sbr);
+    virtual void setSpectralBandReplication(int eld_sbr){
+        enc->setSpectralBandReplication(eld_sbr);
     }
 
      /*!< Bitrate mode. Configuration can be different
@@ -234,7 +240,7 @@ public:
 
     /// Defines the Audio Info
     virtual void setAudioInfo(AudioBaseInfo from) {
-        LOGD(LOG_METHOD);
+        TRACED();
         aac_fdk::AudioInfo info;
         info.channels = from.channels;
         info.sample_rate = from.sample_rate;
@@ -249,7 +255,7 @@ public:
      * @return int 
      */
     virtual void begin(AudioBaseInfo info) {
-        LOGD(LOG_METHOD);
+        TRACED();
         enc->begin(info.channels,info.sample_rate, info.bits_per_sample);
     }
 
@@ -262,7 +268,7 @@ public:
      * @return int 0 => ok; error with negative number
      */
     virtual void begin(int input_channels=2, int input_sample_rate=44100, int input_bits_per_sample=16) {
-        LOGD(LOG_METHOD);
+        TRACED();
         enc->begin(input_channels,input_sample_rate, input_bits_per_sample);
     }
 
@@ -279,7 +285,7 @@ public:
 
     // release resources
     void end(){
-        LOGD(LOG_METHOD);
+        TRACED();
         enc->end();
     }
 
@@ -299,7 +305,7 @@ public:
         return "audio/aac";
     }
 
-    operator boolean(){
+    operator bool(){
         return (bool) *enc;
     }
 
@@ -311,4 +317,3 @@ protected:
 
 }
 
-#endif

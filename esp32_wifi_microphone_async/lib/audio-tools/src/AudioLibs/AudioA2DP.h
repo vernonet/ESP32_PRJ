@@ -25,9 +25,9 @@ namespace audio_tools {
  */
 
 template<typename T>
-class ChannelConverter {
+class A2DPChannelConverter {
     public:
-        ChannelConverter( int16_t (*convert_ptr)(T from)){
+        A2DPChannelConverter( int16_t (*convert_ptr)(T from)){
             this->convert_ptr = convert_ptr;
         }
 
@@ -45,11 +45,11 @@ class ChannelConverter {
 };
 
 class A2DPStream;
-A2DPStream *A2DPStream_self=nullptr;
+static A2DPStream *A2DPStream_self=nullptr;
 // buffer which is used to exchange data
-RingBuffer<uint8_t> *a2dp_buffer = nullptr;
+static RingBuffer<uint8_t> *a2dp_buffer = nullptr;
 // flag to indicated that we are ready to process data
-volatile bool is_a2dp_active = false;
+static bool is_a2dp_active = false;
 
 int32_t a2dp_stream_source_sound_data(Frame* data, int32_t len);
 void a2dp_stream_sink_sound_data(const uint8_t* data, uint32_t len);
@@ -57,13 +57,18 @@ void a2dp_stream_sink_sound_data(const uint8_t* data, uint32_t len);
 enum A2DPStartLogic {StartWhenBufferFull, StartOnConnect};
 enum A2DPNoData {A2DPSilence, A2DPWhoosh};
 
-// Config for A2DP Stream
+/**
+ * @brief Configuration for A2DPStream
+ * @author Phil Schatzmann
+ * @copyright GPLv3
+ */
 class A2DPConfig {
     public:
         A2DPStartLogic startLogic = StartWhenBufferFull;
         A2DPNoData noData = A2DPSilence;
         RxTxMode mode = RX_MODE;
         const char* name = "A2DP"; 
+        bool auto_reconnect = false;
         int bufferSize = A2DP_BUFFER_SIZE * A2DP_BUFFER_COUNT;
 };
 
@@ -71,14 +76,25 @@ class A2DPConfig {
 /**
  * @brief Stream support for A2DP: begin(TX_MODE) uses a2dp_source - begin(RX_MODE) a a2dp_sink
  * The data is in int16_t with 2 channels at 44100 hertz. 
- *
- * Because we support only one instance the class is implemented as singleton!
+ * We support only one instance of the class!
+ * @ingroup io
+ * @author Phil Schatzmann
+ * @copyright GPLv3
  */
-class A2DPStream : public AudioStream, public AudioBaseInfoSource {
+class A2DPStream : public AudioStream {
 
     public:
-        // Release the allocate a2dp_source or a2dp_sink
+        A2DPStream() {
+            TRACED();
+            xSemaphore = xSemaphoreCreateMutex();
+            // A2DPStream can only be used once
+            assert(A2DPStream_self==nullptr);
+            A2DPStream_self = this;
+        }
+
+        /// Release the allocate a2dp_source or a2dp_sink
         ~A2DPStream(){
+            TRACED();
             if (a2dp_source!=nullptr) delete a2dp_source;
             if (a2dp_sink!=nullptr) delete a2dp_sink;      
             A2DPStream_self = nullptr;      
@@ -88,15 +104,6 @@ class A2DPStream : public AudioStream, public AudioBaseInfoSource {
             A2DPConfig cfg;
             cfg.mode = mode;
             return cfg;
-        }
-
-        /// Provides the A2DPStream singleton instance
-        static A2DPStream &instance() {
-            static A2DPStream *ptr;
-            if (ptr==nullptr){
-                ptr = new A2DPStream();
-            }
-            return *ptr;
         }
 
         /// provides access to the 
@@ -134,6 +141,7 @@ class A2DPStream : public AudioStream, public AudioBaseInfoSource {
                 case TX_MODE:
                     LOGI("Starting a2dp_source...");
                     source(); // allocate object
+                    a2dp_source->set_auto_reconnect(cfg.auto_reconnect);
                     a2dp_source->set_volume(volume * 100);
                     a2dp_source->set_on_connection_state_changed(a2dpStateCallback, this);
                     a2dp_source->start((char*)cfg.name, a2dp_stream_source_sound_data);  
@@ -149,6 +157,7 @@ class A2DPStream : public AudioStream, public AudioBaseInfoSource {
                 case RX_MODE:
                     LOGI("Starting a2dp_sink...");
                     sink(); // allocate object
+                    a2dp_sink->set_auto_reconnect(cfg.auto_reconnect);
                     a2dp_sink->set_stream_reader(&a2dp_stream_sink_sound_data, false);
                     a2dp_sink->set_volume(volume * 100);
                     a2dp_sink->set_on_connection_state_changed(a2dpStateCallback, this);
@@ -248,16 +257,23 @@ class A2DPStream : public AudioStream, public AudioBaseInfoSource {
         }
        
         virtual int available() {
-            return a2dp_buffer==nullptr ? 0 : a2dp_buffer->available();
+            // only supported in tx mode
+            if (config.mode!=RX_MODE || a2dp_buffer==nullptr ) return 0;
+            return a2dp_buffer->available();
         }
 
         virtual int availableForWrite() {
-            return a2dp_buffer==nullptr ? 0 : a2dp_buffer->availableForWrite();
+            // only supported in tx mode
+            if (config.mode!=TX_MODE || a2dp_buffer==nullptr ) return 0;
+            // return infor from buffer
+            return a2dp_buffer->availableForWrite();
         }
 
+        // Define the volme (values between 0.0 and 1.0)
         virtual void setVolume(float volume){
             this->volume = volume;
-            if (a2dp!=nullptr) a2dp->set_volume(volume * 100);
+            // 128 is max volume
+            if (a2dp!=nullptr) a2dp->set_volume(volume * 128);
         }
 
         virtual void setNotifyAudioChange (AudioBaseInfoDependent &bi) {
@@ -275,15 +291,8 @@ class A2DPStream : public AudioStream, public AudioBaseInfoSource {
         // semaphore to synchronize acess to the buffer
         SemaphoreHandle_t xSemaphore = NULL;
 
-        A2DPStream() {
-            LOGD(LOG_METHOD);
-            xSemaphore = xSemaphoreCreateMutex();
-
-            A2DPStream_self = this;
-        }
-
         static void a2dpStateCallback(esp_a2d_connection_state_t state, void *caller){
-            LOGD(LOG_METHOD);
+            TRACED();
             A2DPStream *self = (A2DPStream*)caller;
             if (state==ESP_A2D_CONNECTION_STATE_CONNECTED && self->config.startLogic==StartOnConnect){
                  is_a2dp_active = true;

@@ -1,27 +1,28 @@
 #pragma once
 
-#if defined(ARDUINO_ARDUINO_NANO33BLE) 
-
 #include "AudioConfig.h"
+#if defined(USE_NANO33BLE) 
+
 #include "AudioTools/AudioTypes.h"
 #include "AudioTools/Buffers.h"
 #include "AudioTools/AudioLogger.h"
 #include "AudioI2S/I2SConfig.h"
 
+
 namespace audio_tools {
 
-const int i2s_buffer_size = 1024;
-NBuffer<uint8_t> i2s_buffer(i2s_buffer_size, 5);
+INLINE_VAR const int i2s_buffer_size = 1024;
+INLINE_VAR NBuffer<uint8_t> i2s_buffer(i2s_buffer_size, 5);
 
 /**
- *  Mapping Frequency constants to available frequencies
+ *  @brief Mapping Frequency constants to available frequencies
  */
 struct Nano_BLE_freq_info {
   int id;
   double freq; // in mhz
 };
 
-const Nano_BLE_freq_info freq_table[] = {
+INLINE_VAR const Nano_BLE_freq_info freq_table[] = {
   { I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV8, 32.0 / 8 },
   { I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV10, 32 / 10  },
   { I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV11, 32.0 / 11 },
@@ -38,14 +39,14 @@ const Nano_BLE_freq_info freq_table[] = {
 };
 
 /**
- *  Mapping from Ratio Constants to frequency ratios
+ *  @brief Mapping from Ratio Constants to frequency ratios
  */
 struct Nano_BLE_ratio_info {
   int id;
   double ratio;
 };
 
-const Nano_BLE_ratio_info ratio_table[] = {
+INLINE_VAR const Nano_BLE_ratio_info ratio_table[] = {
   { I2S_CONFIG_RATIO_RATIO_32X, 32.0  },
   { I2S_CONFIG_RATIO_RATIO_48X, 48.0  },
   { I2S_CONFIG_RATIO_RATIO_64X, 64.0 },
@@ -61,7 +62,7 @@ const Nano_BLE_ratio_info ratio_table[] = {
  *  I2S Event handler
  */
 
-extern "C" void I2S_IRQHandler(void) {
+extern "C"  void I2S_IRQHandler(void) {
     if(NRF_I2S->EVENTS_TXPTRUPD != 0) {
       // reading from buffer to pins
       NRF_I2S->TXD.PTR = (uint32_t) i2s_buffer.readEnd().address(); // last buffer was processed
@@ -77,14 +78,15 @@ extern "C" void I2S_IRQHandler(void) {
 /**
  * @brief Basic I2S API - for the Arduino Nano BLE Sense
  * @author Phil Schatzmann
+ * @ingroup platform
  * @copyright GPLv3
  */
-class I2SBase {
+class I2SDriverNanoBLE {
   friend class I2SStream;
 
   public:
 
-    I2SBase(){
+    I2SDriverNanoBLE(){
       // register IRQ for I2S
       setupIRQ();
     }
@@ -96,13 +98,14 @@ class I2SBase {
     }
 
     /// starts the DAC with the default config in TX Mode
-    void begin(RxTxMode mode = TX_MODE) {
-        begin(defaultConfig(mode));
+    bool begin(RxTxMode mode = TX_MODE) {
+        return begin(defaultConfig(mode));
     }
 
     /// starts the DAC 
-    void begin(I2SConfig cfg) {
+    bool begin(I2SConfig cfg) {
         LOGD(__func__);
+        this->cfg = cfg;
         setupRxTx(cfg);
         setupClock(cfg);
         setupBitWidth(cfg);
@@ -118,6 +121,15 @@ class I2SBase {
         NRF_I2S->ENABLE = 1;
         // start task
         NRF_I2S->TASKS_START = 1;
+        return true;
+    }
+
+    int available() {
+      return i2s_buffer.available();
+    }
+
+    int availableForWrite() {
+      return i2s_buffer.availableForWrite();
     }
 
     /// stops the I2C and unistalls the driver
@@ -150,12 +162,12 @@ class I2SBase {
     }
 
     void setupIRQ() {
-        LOGD(LOG_METHOD);
+        TRACED();
         NVIC_EnableIRQ(I2S_IRQn);      
     }
 
     void setupRxTx(I2SConfig cfg) {
-        LOGD(LOG_METHOD);
+        TRACED();
         if (cfg.rx_tx_mode == TX_MODE) { 
           // Enable transmission
           NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_Enabled << I2S_CONFIG_TXEN_TXEN_Pos);
@@ -166,7 +178,7 @@ class I2SBase {
     }
 
     void setupClock(I2SConfig cfg){
-        LOGD(LOG_METHOD);
+        TRACED();
         // Enable MCK generator if in master mode
         if (cfg.is_master){
           NRF_I2S->CONFIG.MCKEN = (I2S_CONFIG_MCKEN_MCKEN_Enabled << I2S_CONFIG_MCKEN_MCKEN_Pos);
@@ -191,7 +203,7 @@ class I2SBase {
     }
 
     void setupBitWidth(I2SConfig cfg) {
-        LOGD(LOG_METHOD);
+        TRACED();
         uint16_t swidth = I2S_CONFIG_SWIDTH_SWIDTH_16Bit;
         switch(cfg.bits_per_sample){
           case 8:
@@ -209,7 +221,7 @@ class I2SBase {
     }
 
     void setupMode(I2SConfig cfg){
-        LOGD(LOG_METHOD);
+        TRACED();
         // setup mode
         switch(cfg.i2s_format){
           case I2S_STD_FORMAT:
@@ -231,7 +243,7 @@ class I2SBase {
 
     // setup pins
     void setupPins(I2SConfig cfg){
-        LOGD(LOG_METHOD);
+        TRACED();
         // MCK routed to pin 0
         // if (cfg.is_master){
         //   NRF_I2S->PSEL.MCK = (0 << I2S_PSEL_MCK_PIN_Pos) | (I2S_PSEL_MCK_CONNECT_Connected << I2S_PSEL_MCK_CONNECT_Pos);
@@ -251,13 +263,16 @@ class I2SBase {
 
     // setup initial data pointers
     void setupData(I2SConfig cfg) {
-        LOGD(LOG_METHOD);
+        TRACED();
         NRF_I2S->TXD.PTR = (uint32_t) i2s_buffer.readEnd().address(); // last buffer was processed
         NRF_I2S->RXD.PTR = (uint32_t) i2s_buffer.writeEnd().address(); // last buffer was processed
         NRF_I2S->RXTXD.MAXCNT = i2s_buffer_size;
     }
 
 };
+
+using I2SDriver = I2SDriverNanoBLE;
+
 
 } // namespace
 

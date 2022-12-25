@@ -1,24 +1,27 @@
 #pragma once
 
 #include "AudioConfig.h"
-#include "AudioTools/Int24.h"
+#include "AudioTools/AudioLogger.h"
+#include "AudioBasic/Int24.h"
+#include "AudioBasic/Collections/Vector.h"
 
 namespace audio_tools {
 
 /**
  * @brief Audio Source (TX_MODE) or Audio Sink (RX_MODE)
+ * @ingroup basic
  */
 enum RxTxMode  {UNDEFINED_MODE=0, TX_MODE=1, RX_MODE=2, RXTX_MODE=3 };
-
+INLINE_VAR const char* RxTxModeNames[]={"UNDEFINED_MODE","TX_MODE","RX_MODE","RXTX_MODE" };
 /**
  * @brief Time Units
+ * @ingroup basic
  */
-
 enum TimeUnit {MS, US};
 
 /**
  * @brief Basic Audio information which drives e.g. I2S
- * 
+ * @ingroup basic
  */
 struct AudioBaseInfo {
     AudioBaseInfo() = default;
@@ -33,6 +36,21 @@ struct AudioBaseInfo {
     bool operator!=(AudioBaseInfo alt){
         return !(*this == alt);
     } 
+    
+    void setAudioInfo(AudioBaseInfo info)  {
+      sample_rate = info.sample_rate;
+      channels = info.channels;
+      bits_per_sample = info.bits_per_sample;
+    }
+
+    void copyFrom(AudioBaseInfo info){
+      setAudioInfo(info);
+    }
+
+    AudioBaseInfo& operator= (const AudioBaseInfo& info){
+      setAudioInfo(info);
+      return *this;      
+    }
 
     virtual void logInfo() {
       LOGI("sample_rate: %d", sample_rate);
@@ -43,11 +61,12 @@ struct AudioBaseInfo {
 
 /**
  * @brief Supports changes to the sampling rate, bits and channels
+ * @ingroup basic
  */
 class AudioBaseInfoDependent {
     public:
-      virtual ~AudioBaseInfoDependent(){}
       virtual void setAudioInfo(AudioBaseInfo info)=0;
+      virtual AudioBaseInfo audioInfo() = 0;
       virtual bool validate(AudioBaseInfo &info){
         return true;
       }
@@ -55,95 +74,126 @@ class AudioBaseInfoDependent {
 
 /**
  * @brief Supports the subscription to audio change notifications
+ * @ingroup basic
  */
 class AudioBaseInfoSource {
     public:
-      virtual void setNotifyAudioChange(AudioBaseInfoDependent &bi) = 0;
+      virtual void  setNotifyAudioChange(AudioBaseInfoDependent &bi) = 0;
 };
-
 
 
 /**
  * @brief E.g. used by Encoders and Decoders
- * 
+ * @ingroup basic
  */
 class AudioWriter {
   public: 
-        virtual size_t write(const void *in_ptr, size_t in_size) = 0;
-      virtual operator boolean() = 0;
-};
-
-/**
- * @brief Docoding of encoded audio into PCM data
- * 
- */
-class AudioDecoder : public AudioWriter, public  AudioBaseInfoSource {
-  public: 
-      AudioDecoder() = default;
-      virtual ~AudioDecoder() = default;
+      virtual size_t write(const void *in_ptr, size_t in_size) = 0;
+      virtual void setAudioInfo(AudioBaseInfo from) = 0;
       virtual void setOutputStream(Print &out_stream) = 0;
+      virtual operator bool() = 0;
       virtual void begin() = 0;
       virtual void end() = 0;
-      virtual AudioBaseInfo audioInfo() = 0;
-      virtual void setNotifyAudioChange(AudioBaseInfoDependent &bi) = 0;
 };
 
 /**
- * @brief  Encoding of PCM data
- * 
+ * @brief Tools for calculating timer values
+ * @ingroup timer
  */
-class AudioEncoder : public AudioWriter {
-  public: 
-      AudioEncoder() = default;
-      virtual ~AudioEncoder() = default;
-      virtual void setOutputStream(Print &out_stream) = 0;
-      virtual void setAudioInfo(AudioBaseInfo info) = 0;
-      virtual void begin() = 0;
-      virtual void end() = 0;
-      virtual const char *mime() = 0;
-};
-
-
-/**
- * @brief Dummpy no implmentation Codec. This is used so that we can initialize some pointers to decoders and encoders to make
- * sure that they do not point to null.
- */
-class CodecNOP : public  AudioDecoder, public AudioEncoder {
+class AudioTime {
     public:
-        static CodecNOP *instance() {
-            static CodecNOP self;
-            return &self;
-        } 
-
-        virtual void begin() {}
-        virtual void end() {}
-          virtual void setOutputStream(Print &out_stream) {}
-        virtual void setNotifyAudioChange(AudioBaseInfoDependent &bi) {}
-        virtual void setAudioInfo(AudioBaseInfo info) {}
-
-        virtual AudioBaseInfo audioInfo() {
-            AudioBaseInfo info;
-            return info;
-        }
-        virtual operator boolean() {
-            return false;
-        }
-        virtual int readStream(Stream &in) { 
-            return 0; 
-        };
-
-        // just output silence
-          virtual size_t write(const void *in_ptr, size_t in_size) {
-            memset((void*)in_ptr,0,in_size);
-            return in_size;           
+        /// converts sampling rate to delay in microseconds (μs)
+        static uint32_t toTimeUs(uint32_t samplingRate, uint8_t limit=10){
+            uint32_t result = 1000000l / samplingRate;
+            if (1000000l % samplingRate!=0){
+                result++;
+            }
+            if (result <= limit){
+                LOGW("Time for samplingRate %u -> %u is < %u μs - we rounded up", (unsigned int)samplingRate,  (unsigned int)result,  (unsigned int)limit);
+                result = limit;
+            }
+            return result;
         }
 
-        virtual const char *mime() {
-            return nullptr;
+        static uint32_t toTimeMs(uint32_t samplingRate, uint8_t limit=1){
+            uint32_t result = 1000l / samplingRate;
+            if (1000000l % samplingRate!=0){
+                result++;
+            }
+            if (result <= limit){
+                LOGW("Time for samplingRate %u -> %u is < %u μs - we rounded up", (unsigned int)samplingRate,  (unsigned int)result,  (unsigned int)limit);
+                result = limit;
+            }
+            return result;
         }
-
 };
 
+/**
+ * @brief Converts from a source to a target number with a different type
+ * @ingroup basic
+ */
+class NumberConverter {
+    public:
+        static int32_t convertFrom24To32(int24_t value)  {
+            return value.scale32();
+        }
+
+        static int16_t convertFrom24To16(int24_t value)  {
+            return value.scale16();
+        }
+
+        static float convertFrom24ToFloat(int24_t value)  {
+            return value.scaleFloat();
+        }
+
+        static int16_t convertFrom32To16(int32_t value)  {
+            return static_cast<float>(value) / INT32_MAX * INT16_MAX;
+        }
+
+        static int16_t convert16(int value, int value_bits_per_sample){
+            return value * NumberConverter::maxValue(16) / NumberConverter::maxValue(value_bits_per_sample);
+        }
+
+        static int16_t convert8(int value, int value_bits_per_sample){
+            return value * NumberConverter::maxValue(8) / NumberConverter::maxValue(value_bits_per_sample);
+        }
+
+        /// provides the biggest number for the indicated number of bits
+        static int64_t maxValue(int value_bits_per_sample){
+            switch(value_bits_per_sample){
+                case 8:
+                    return 127;
+                case 16:
+                    return 32767;
+                case 24:
+                    return 8388607;
+                case 32:
+                    return 2147483647;
+
+            }
+            return 32767;
+        }
+};
+
+
+/// @brief Mime type for PCM
+static const char* mime_pcm = "audio/pcm";
+
+
+#ifndef IS_DESKTOP
+/// wait for the Output to be ready  
+inline void waitFor(HardwareSerial &out){
+    while(!out);
+}
+#endif
+
+/// wait for flag to be active  @ingroup basic
+inline void waitFor(bool &flag){
+    while(!flag);
+}
+
+/// Pins  @ingroup basic
+using Pins = Vector<int>;
 
 
 }

@@ -1,18 +1,24 @@
 
 #pragma once
-#if defined(ARDUINO_ARCH_RP2040) && !__has_include("mbed.h") 
+#if defined(ARDUINO_ARCH_RP2040) || defined(ARDUINO_ARCH_MBED_RP2040)
 #include "AudioPWM/PWMAudioBase.h"
 #include "hardware/gpio.h"
 #include "hardware/adc.h"
 #include "hardware/pwm.h"
 #include "pico/time.h"
+#include "hardware/structs/clocks.h"
+#include "hardware/clocks.h"
+#include "hardware/structs/clocks.h"
 
 namespace audio_tools {
 
 // forwrd declaratioin of callback
-class PWMAudioStreamPico;
-typedef PWMAudioStreamPico PWMAudioStream;
-bool defaultPWMAudioOutputCallbackPico(repeating_timer* ptr);
+class PWMDriverRP2040;
+/**
+ * @typedef  DriverPWMBase
+ * @brief Please use DriverPWMBase!
+ */
+using PWMDriver = PWMDriverRP2040;
 
 /**
  * @brief Rasperry Pico Channel to pin assignments
@@ -30,26 +36,26 @@ struct PicoChannelOut {
 /**
  * @brief Audio output for the Rasperry Pico to PWM pins.
    The Raspberry Pi Pico has 8 PWM blocks/slices(1-8) and each PWM block provides up to two PWM outputs(A-B). 
+ * @ingroup platform
  * @author Phil Schatzmann
  * @copyright GPLv3
 
  */
 
-class PWMAudioStreamPico : public PWMAudioStreamBase {
-    friend bool defaultPWMAudioOutputCallbackPico(repeating_timer* ptr);
+class PWMDriverRP2040 : public DriverPWMBase {
+    //friend bool defaultPWMAudioOutputCallbackPico(repeating_timer* ptr);
 
     public:
 
-        PWMAudioStreamPico(){
-            LOGD("PWMAudioStreamPico");
+        PWMDriverRP2040(){
+            TRACED();
         }
 
         /// Ends the output -> resets the timer and the pins
-        void end(){
-             LOGD(LOG_METHOD);
-            if (!cancel_repeating_timer(&timer)){
-                LOGE("cancel_repeating_timer failed")
-            }
+        void end() override {
+            TRACED();
+            ticker.end(); // it does not hurt to call this even if it has not been started
+            is_timer_started = false;
             for(auto pin : pins) {
                 if (pin.gpio!=-1){
                     pwm_set_enabled(pin.slice, false);
@@ -59,12 +65,22 @@ class PWMAudioStreamPico : public PWMAudioStreamBase {
 
     protected:
         Vector<PicoChannelOut> pins;      
-        repeating_timer_t timer;
+        TimerAlarmRepeating ticker;
 
+        virtual void startTimer() override {
+            if (!is_timer_started){
+                TRACED();
+                long wait_time = 1000000l / audio_config.sample_rate;
+                ticker.setCallbackParameter(this);
+                ticker.begin(defaultPWMAudioOutputCallbackPico, wait_time, US);
+                is_timer_started = true;
+            }
+            is_timer_started = true;
+        }
 
         // setup pwm config and all pins
-        void setupPWM(){
-             LOGD(LOG_METHOD);
+        void setupPWM() override {
+            TRACED();
             pwm_config cfg = setupPWMConfig();
             
             // initialize empty pins
@@ -73,13 +89,9 @@ class PWMAudioStreamPico : public PWMAudioStreamBase {
 
             // setup pin values
             for (int j=0;j< audio_config.channels;j++) {
-                int gpio = audio_config.start_pin + j;
                 int channel = j;
-                if (audio_config.pins!=nullptr){
-                    gpio = audio_config.pins[j];
-                }
-                LOGD("-> defining pin %d",gpio);
-
+                int gpio = audio_config.pins()[j];
+                LOGI("PWM pin %d",gpio);
                 pins[channel].slice = pwm_gpio_to_slice_num(gpio);
                 pins[channel].channel = pwm_gpio_to_channel(gpio);
                 pins[channel].audioChannel = j;
@@ -91,13 +103,16 @@ class PWMAudioStreamPico : public PWMAudioStreamBase {
 
         // defines the pwm_config which will be used to drive the pins
         pwm_config setupPWMConfig() {
-             LOGD(LOG_METHOD);
+             TRACED();
             // setup pwm frequency
             pwm_config pico_pwm_config = pwm_get_default_config();
             int wrap_value = maxOutputValue(); // amplitude of square wave (pwm values -amplitude to amplitude) for one byte
             float pwmClockDivider = static_cast<float>(clock_get_hz(clk_sys)) / (audio_config.pwm_frequency * wrap_value);
-            LOGI("->clock speed is %f", static_cast<float>(clock_get_hz(clk_sys)));
-            LOGI("->divider is %f", pwmClockDivider);
+            float clock_speed = static_cast<float>(clock_get_hz(clk_sys));
+            LOGI("->wrap_value = %d", wrap_value);
+            LOGI("->max clock speed = %f", clock_speed);
+            LOGI("->divider = %f", pwmClockDivider);
+            LOGI("->clock speed = %f", clock_speed/pwmClockDivider);
             pwm_config_set_clkdiv(&pico_pwm_config, pwmClockDivider);
             pwm_config_set_clkdiv_mode(&pico_pwm_config, PWM_DIV_FREE_RUNNING);
             //pwm_config_set_phase_correct(&pico_pwm_config, false);
@@ -106,7 +121,7 @@ class PWMAudioStreamPico : public PWMAudioStreamBase {
         } 
 
         // set up pwm 
-        void setupPWMPin(pwm_config &cfg, PicoChannelOut &pinInfo){
+        void setupPWMPin(pwm_config &cfg, PicoChannelOut &pinInfo)  {
              LOGD("%s for gpio %d",LOG_METHOD, pinInfo.gpio);
             // setup pwm pin  
             int gpio = pinInfo.gpio;
@@ -119,43 +134,33 @@ class PWMAudioStreamPico : public PWMAudioStreamBase {
             pwm_set_chan_level(pinInfo.slice, pinInfo.channel, 0); 
         }
 
-        void setupTimer(){
-             LOGD(LOG_METHOD);
-            // setup timer
-            uint32_t time = 1000000UL / audio_config.sample_rate;
-            LOGI("->Timer value %ld us", time);
-
-            if (!add_repeating_timer_us(-time, &defaultPWMAudioOutputCallbackPico, this, &timer)){
-                LOGE("Error: alarm_pool_add_repeating_timer_us failed; no alarm slots available");
-            }
+        void setupTimer() override {
         }
 
         /// The pico supports max 16 pwm pins
-        virtual int maxChannels() {
+        virtual int maxChannels() override{
             return 16;
         };
 
         /// Max pwm output value
-        virtual int maxOutputValue(){
-            return 255;
+        virtual int maxOutputValue()override{
+            return std::pow(audio_config.resolution,2)-1;
         }
         
         /// write a pwm value to the indicated channel. The values are between 0 and 255
-        void pwmWrite(int audioChannel, int value){
+        void pwmWrite(int audioChannel, int value)override{
             pwm_set_chan_level(pins[audioChannel].slice, pins[audioChannel].channel, value);
+        }
+
+        // timed output executed at the sampleRate
+        static void defaultPWMAudioOutputCallbackPico(void* ptr) {
+            PWMDriverRP2040 *self = (PWMDriverRP2040*)  ptr;
+            self->playNextFrame();
         }
 
 };
 
 
-// timed output executed at the sampleRate
-bool defaultPWMAudioOutputCallbackPico(repeating_timer* ptr) {
-    PWMAudioStreamPico *self = (PWMAudioStreamPico*)  ptr->user_data;
-    if (self!=nullptr){
-        self->playNextFrame();
-    }
-    return true;
-}
 
 } // Namespace
 

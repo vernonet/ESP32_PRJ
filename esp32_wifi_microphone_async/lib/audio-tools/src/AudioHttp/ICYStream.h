@@ -2,7 +2,7 @@
 #ifdef USE_URL_ARDUINO
 
 #include "AudioConfig.h"
-#include "AudioHttp/URLStreamESP32.h"
+#include "AudioHttp/URLStreamBuffered.h"
 #include "AudioMetaData/MetaDataICY.h"
 
 namespace audio_tools {
@@ -12,32 +12,42 @@ namespace audio_tools {
  * regular stream functions. The metadata is handled with the help of the MetaDataICY state machine and provided via a callback method.
  * 
  * This is basically just a URLStream with the metadata turned on.
- * 
+ * @ingroup http
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
 
 
-class ICYStreamDefault : public AbstractURLStream {
+class ICYStream : public AbstractURLStream {
         
     public:
-        /// Default constructor
-        ICYStreamDefault(const char* network, const char *password, int readBufferSize=DEFAULT_BUFFER_SIZE) {
-            LOGI(LOG_METHOD);
-            url = new URLStreamDefault(network, password, readBufferSize);
-            if (url==nullptr){
-                LOGE("Not enough memory!");
-            }
+        ICYStream(int readBufferSize=DEFAULT_BUFFER_SIZE){
+            TRACEI();
+            url = new URLStream(readBufferSize);
+            checkUrl();
         }
 
-        ~ICYStreamDefault(){
-            LOGI(LOG_METHOD);
+        ICYStream(Client &clientPar, int readBufferSize=DEFAULT_BUFFER_SIZE){
+            TRACEI();
+            url = new URLStream(clientPar, readBufferSize);
+            checkUrl();
+        }
+
+        /// Default constructor
+        ICYStream(const char* network, const char *password, int readBufferSize=DEFAULT_BUFFER_SIZE) {
+            TRACEI();
+            url = new URLStream(network, password, readBufferSize);
+            checkUrl();
+        }
+
+        ~ICYStream(){
+            TRACEI();
             if (url!=nullptr) delete url;
         }
 
         /// Defines the meta data callback function
         virtual bool setMetadataCallback(void (*fn)(MetaDataType info, const char* str, int len)) override {
-            LOGD(LOG_METHOD);
+            TRACED();
             callback = fn;
             icy.setCallback(fn);
             return true;
@@ -45,7 +55,7 @@ class ICYStreamDefault : public AbstractURLStream {
 
         // Icy http get request to the indicated url 
         virtual bool begin(const char* urlStr, const char* acceptMime=nullptr, MethodID action=GET,  const char* reqMime="", const char*reqData="") override {
-            LOGD(LOG_METHOD);
+            TRACED();
             // accept metadata
             url->httpRequest().header().put("Icy-MetaData","1");
             bool result = url->begin(urlStr, acceptMime, action, reqMime, reqData);
@@ -68,12 +78,12 @@ class ICYStreamDefault : public AbstractURLStream {
 
         /// Ends the processing
         virtual void end() override {
-            LOGD(LOG_METHOD);
+            TRACED();
             url->end();
             icy.end();
         }
 
-        /// provides the available method from the URLStreamDefault
+        /// provides the available method from the URLStream
         virtual int available() override  {
             return url->available();
         }
@@ -136,7 +146,7 @@ class ICYStreamDefault : public AbstractURLStream {
         }
         
         /// not implemented
-        virtual size_t write(const uint8_t *buffer, size_t size) {
+        virtual size_t write(const uint8_t *buffer, size_t size) override {
             LOGE("N/A");
             return 0;
          }
@@ -152,27 +162,17 @@ class ICYStreamDefault : public AbstractURLStream {
 
 
     protected:
-        URLStreamDefault *url = nullptr; 
+        URLStream *url = nullptr; 
         MetaDataICY icy; // icy state machine
         void (*callback)(MetaDataType info, const char* str, int len)=nullptr;
 
-};
-
-#ifndef USE_URLSTREAM_TASK
-/**
- * @brief ICYStream for all environment except ESP32
- * @author Phil Schatzmann
- * @copyright GPLv3
- */
-class ICYStream : public ICYStreamDefault {
-    public:
-        ICYStream(const char* network, const char *password, int readBufferSize=DEFAULT_BUFFER_SIZE)
-        :ICYStreamDefault(network,password,readBufferSize) {            
-            LOGI(LOG_METHOD);
+        void checkUrl() {
+            if (url==nullptr){
+                LOGE("Not enough memory!");
+            }
         }
-};
 
-#endif
+};
 
 } // namespace
 #endif

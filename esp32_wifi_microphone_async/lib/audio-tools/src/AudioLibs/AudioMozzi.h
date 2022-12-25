@@ -30,7 +30,7 @@ struct MozziConfig : AudioBaseInfo {
  * Define your updateAudio() method.
  * Start by calling begin(control_rate)
  * do not call audioHook(); in the loop !
-
+ * @ingroup generator
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
@@ -38,7 +38,7 @@ struct MozziConfig : AudioBaseInfo {
 class MozziGenerator : public SoundGenerator<int16_t> {
     public:
         MozziGenerator(){   
-             LOGD(LOG_METHOD);
+             TRACED();
         }
 
         MozziGenerator(MozziConfig config){
@@ -142,16 +142,17 @@ class MozziGenerator : public SoundGenerator<int16_t> {
  * @brief We use the output functionality of Mozzi to output audio data. We expect the data as array of int16_t with
  * one or two channels. Though we support the setting of a sample rate, we recommend to use the default sample rate
  * from Mozzi which is available with the AUDIO_RATE define.
+ * @ingroup dsp
  */
 class MozziStream : public AudioStream {
 
     public:
         MozziStream(){
-             LOGD(LOG_METHOD);
+             TRACED();
         }
 
         ~MozziStream(){
-             LOGD(LOG_METHOD);
+             TRACED();
             end();
             if (input_ptr!=nullptr){
                 delete input_ptr;
@@ -172,7 +173,7 @@ class MozziStream : public AudioStream {
         // Start Mozzi -  if controlRate > 0 we actiavate the sound generation (=>allow reads); the parameters describe the values if the
         // provided input stream or resulting output stream;
         void begin(MozziConfig cfg){
-              LOGD(LOG_METHOD);
+              TRACED();
             config = cfg;
             Mozzi.setAudioRate(config.sample_rate);
             // in output mode we do not allocate any unnecessary functionality
@@ -184,7 +185,7 @@ class MozziStream : public AudioStream {
         }
 
         void end(){
-             LOGD(LOG_METHOD);
+             TRACED();
             Mozzi.stop();
         }
 

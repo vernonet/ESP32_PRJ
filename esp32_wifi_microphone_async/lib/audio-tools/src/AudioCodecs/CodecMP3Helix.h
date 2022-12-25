@@ -1,9 +1,8 @@
 #pragma once
 
-#if defined(USE_HELIX) || defined(USE_DECODERS)
-
 #include "Stream.h"
-#include "AudioTools/AudioTypes.h"
+#include "AudioCodecs/AudioEncoded.h"
+#include "AudioMetaData/MetaDataFilter.h"
 #include "MP3DecoderHelix.h"
 
 namespace audio_tools {
@@ -14,6 +13,7 @@ AudioBaseInfoDependent *audioChangeMP3Helix=nullptr;
 /**
  * @brief MP3 Decoder using libhelix: https://github.com/pschatzmann/arduino-libhelix
  * This is basically just a simple wrapper to provide AudioBaseInfo and AudioBaseInfoDependent
+ * @ingroup helix
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
@@ -21,8 +21,9 @@ class MP3DecoderHelix : public AudioDecoder  {
     public:
 
         MP3DecoderHelix() {
-            LOGD(LOG_METHOD);
+            TRACED();
             mp3 = new libhelix::MP3DecoderHelix();
+            filter.setDecoder(mp3);
             if (mp3==nullptr){
                 LOGE("Not enough memory for libhelix");
             }
@@ -33,8 +34,9 @@ class MP3DecoderHelix : public AudioDecoder  {
          * @param out_stream 
          */
         MP3DecoderHelix(Print &out_stream){
-            LOGD(LOG_METHOD);
+            TRACED();
             mp3 = new libhelix::MP3DecoderHelix();
+            filter.setDecoder(mp3);
             if (mp3==nullptr){
                 LOGE("Not enough memory for libhelix");
             }
@@ -49,8 +51,9 @@ class MP3DecoderHelix : public AudioDecoder  {
          * @param bi 
          */
         MP3DecoderHelix(Print &out_stream, AudioBaseInfoDependent &bi){
-            LOGD(LOG_METHOD);
+            TRACED();
             mp3 = new libhelix::MP3DecoderHelix();
+            filter.setDecoder(mp3);
             if (mp3==nullptr){
                 LOGE("Not enough memory for libhelix");
             }
@@ -73,16 +76,17 @@ class MP3DecoderHelix : public AudioDecoder  {
 
         /// Starts the processing
         void begin(){
-            LOGD(LOG_METHOD);
+            TRACED();
             if (mp3!=nullptr) {
                 mp3->setDelay(CODEC_DELAY_MS);   
                 mp3->begin();
+                filter.begin();
             } 
         }
 
         /// Releases the reserved memory
         void end(){
-            LOGD(LOG_METHOD);
+            TRACED();
             if (mp3!=nullptr) mp3->end();
         }
 
@@ -102,11 +106,12 @@ class MP3DecoderHelix : public AudioDecoder  {
         /// Write mp3 data to decoder
         size_t write(const void* mp3Data, size_t len) {
             LOGD("%s: %zu", LOG_METHOD, len);
-            return mp3==nullptr ? 0 : mp3->write(mp3Data, len);
+            if (mp3==nullptr) return 0;
+            return use_filter ? filter.write((uint8_t*)mp3Data, len): mp3->write((uint8_t*)mp3Data, len);
         }
 
         /// checks if the class is active 
-        operator boolean(){
+        operator bool(){
             return mp3!=nullptr && (bool) *mp3;
         }
 
@@ -114,13 +119,9 @@ class MP3DecoderHelix : public AudioDecoder  {
             return mp3;
         }
 
-        // void flush(){
-        //     mp3->flush();
-        // }
-
         /// Defines the callback object to which the Audio information change is provided
         void setNotifyAudioChange(AudioBaseInfoDependent &bi){
-            LOGD(LOG_METHOD);
+            TRACED();
             audioChangeMP3Helix = &bi;
             if (mp3!=nullptr)  mp3->setInfoCallback(infoCallback);
         }
@@ -128,7 +129,7 @@ class MP3DecoderHelix : public AudioDecoder  {
         /// notifies the subscriber about a change
         static void infoCallback(MP3FrameInfo &i){
             if (audioChangeMP3Helix!=nullptr){
-                LOGD(LOG_METHOD);
+                TRACED();
                 AudioBaseInfo baseInfo;
                 baseInfo.channels = i.nChans;
                 baseInfo.sample_rate = i.samprate;
@@ -137,14 +138,25 @@ class MP3DecoderHelix : public AudioDecoder  {
             }
         }
 
+        /// Activates a filter that makes sure that helix does not get any metadata segments
+        void setFilterMetaData(bool filter){
+            use_filter = filter;
+        }
+        
+        /// Check if the metadata filter is active
+        bool isFilterMetaData() {
+            return use_filter;
+        }
+
 
     protected:
         libhelix::MP3DecoderHelix *mp3=nullptr;
+        MetaDataFilter<libhelix::MP3DecoderHelix> filter;
+        bool use_filter = false;
 
 };
 
 
 } // namespace
 
-#endif
 

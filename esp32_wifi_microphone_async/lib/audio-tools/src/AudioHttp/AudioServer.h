@@ -3,7 +3,9 @@
 #include "AudioConfig.h"
 #ifdef USE_AUDIO_SERVER
 
+#ifdef ESP32
 #include <WiFi.h>
+#endif
 #include "AudioCodecs/CodecWAV.h"
 #include "AudioTools.h"
 
@@ -16,9 +18,8 @@ typedef void (*AudioServerDataCallback)(Print *out);
  * @brief A simple Arduino Webserver which streams the result 
  * This class is based on the WiFiServer class. All you need to do is to provide the data 
  * with a callback method or from an Arduino Stream:   in -copy> client
-
  * 
- * 
+ * @ingroup http
  * @author Phil Schatzmann
  * @copyright GPLv3
  */
@@ -29,7 +30,12 @@ class AudioServer {
          * @brief Construct a new Audio W A V Server object
          * We assume that the WiFi is already connected
          */
-        AudioServer() = default;
+        AudioServer(int port=80) {
+            // the client returns 0 for avialableForWrite()
+            copier.setCheckAvailableForWrite(false);
+            setupServer(port);
+        }
+
 
         /**
          * @brief Construct a new Audio W A V Server object
@@ -37,9 +43,12 @@ class AudioServer {
          * @param network 
          * @param password 
          */
-        AudioServer(const char* network, const char *password) {
+        AudioServer(const char* network, const char *password, int port=80) {
             this->network = (char*)network;
             this->password = (char*)password;
+            // the client returns 0 for avialableForWrite()
+            copier.setCheckAvailableForWrite(false);
+            setupServer(port);
         }
 
         /**
@@ -49,7 +58,7 @@ class AudioServer {
          * @param contentType Mime Type of result
          */
         void begin(Stream &in, const char* contentType) {
-             LOGD(LOG_METHOD);
+             TRACED();
             this->in = &in;
             this->content_type = contentType;
 
@@ -66,7 +75,7 @@ class AudioServer {
          * @param contentType Mime Type of result
          */
         void begin(AudioServerDataCallback cb, const char* contentType) {
-             LOGD(LOG_METHOD);
+             TRACED();
             this->in =nullptr;
             this->callback = cb;
             this->content_type = contentType;
@@ -137,7 +146,11 @@ class AudioServer {
 
     protected:
         // WIFI
-        WiFiServer server = WiFiServer(80);
+#ifdef ESP32
+        WiFiServer server;
+#else
+        WiFiServer server{80};
+#endif
         WiFiClient client_obj;
         char *password = nullptr;
         char *network = nullptr;
@@ -149,8 +162,13 @@ class AudioServer {
         StreamCopy copier;
         BaseConverter<int16_t> *converter_ptr = nullptr;
 
+        void setupServer(int port) {
+            WiFiServer tmp(port);
+            server = tmp;
+        }
+
         void connectWiFi() {
-             LOGD(LOG_METHOD);
+             TRACED();
             if (WiFi.status() != WL_CONNECTED && network!=nullptr && password != nullptr){
                 WiFi.begin(network, password);
                 //WiFi.setSleep(false);
@@ -165,7 +183,7 @@ class AudioServer {
         }
 
         virtual void sendReplyHeader(){
-             LOGD(LOG_METHOD);
+             TRACED();
             // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
             // and a content-type so the client knows what's coming, then a blank line:
             client_obj.println("HTTP/1.1 200 OK");
@@ -178,7 +196,7 @@ class AudioServer {
         }
 
         virtual void sendReplyContent() {
-             LOGD(LOG_METHOD);
+             TRACED();
             if (callback!=nullptr){
                 // provide data via Callback
                 LOGI("sendReply - calling callback");
@@ -186,7 +204,7 @@ class AudioServer {
                 client_obj.stop();
             } else if (in!=nullptr){
                 // provide data for stream
-                LOGI("sendReply - Returning WAV stream...");
+                LOGI("sendReply - Returning audio stream...");
                 copier.begin(client_obj, *in);
             }
         }
@@ -229,6 +247,7 @@ class AudioServer {
  * with a callback method or from a Stream.
  * 
  * in -copy> client
+ * @ingroup http
  */
 class AudioEncoderServer  : public AudioServer {
 
@@ -238,7 +257,7 @@ class AudioEncoderServer  : public AudioServer {
          * @brief Construct a new Audio W A V Server object
          * We assume that the WiFi is already connected
          */
-        AudioEncoderServer(AudioEncoder *encoder) : AudioServer() {
+        AudioEncoderServer(AudioEncoder *encoder, int port=80) : AudioServer(port) {
             this->encoder = encoder;
         }
 
@@ -248,7 +267,7 @@ class AudioEncoderServer  : public AudioServer {
          * @param network 
          * @param password 
          */
-        AudioEncoderServer(AudioEncoder *encoder, const char* network, const char *password) : AudioServer(network, password) {
+        AudioEncoderServer(AudioEncoder *encoder, const char* network, const char *password, int port=80) : AudioServer(network, password, port) {
             this->encoder = encoder;
         }
 
@@ -267,7 +286,7 @@ class AudioEncoderServer  : public AudioServer {
          * @param channels 
          */
         void begin(Stream &in, int sample_rate, int channels, int bits_per_sample=16, BaseConverter<int16_t> *converter=nullptr) {
-            LOGD(LOG_METHOD);
+            TRACED();
             this->in = &in;
             audio_info.sample_rate = sample_rate;
             audio_info.channels = channels;
@@ -285,7 +304,7 @@ class AudioEncoderServer  : public AudioServer {
          * @param converter 
          */
         void begin(Stream &in, AudioBaseInfo info, BaseConverter<int16_t> *converter=nullptr) {
-            LOGD(LOG_METHOD);
+            TRACED();
             this->in = &in;
             this->audio_info = info;
             encoder->setAudioInfo(audio_info);
@@ -302,7 +321,7 @@ class AudioEncoderServer  : public AudioServer {
          * @param channels 
          */
         void begin(AudioServerDataCallback cb, int sample_rate, int channels, int bits_per_sample=16) {
-            LOGD(LOG_METHOD);
+            TRACED();
             audio_info.sample_rate = sample_rate;
             audio_info.channels = channels;
             audio_info.bits_per_sample = bits_per_sample;
@@ -326,7 +345,7 @@ class AudioEncoderServer  : public AudioServer {
 
 
         virtual void sendReplyContent() {
-            LOGD(LOG_METHOD);
+            TRACED();
             if (callback!=nullptr){
                 encoded_stream.begin(out_ptr(), encoder);
                 // provide data via Callback to encoded_stream
@@ -335,7 +354,7 @@ class AudioEncoderServer  : public AudioServer {
                 client_obj.stop();
             } else if (in!=nullptr){
                 // provide data for stream: in -copy>  encoded_stream -> out
-                LOGI("sendReply - Returning WAV stream...");
+                LOGI("sendReply - Returning encoded stream...");
                 encoded_stream.begin(out_ptr(), encoder);
                 copier.begin(encoded_stream, *in);
             }
@@ -348,6 +367,7 @@ class AudioEncoderServer  : public AudioServer {
  * @brief A simple Arduino Webserver which streams the audio as WAV data. 
  * This class is based on the AudioEncodedServer class. All you need to do is to provide the data 
  * with a callback method or from a Stream.
+ * @ingroup http
  */
 class AudioWAVServer : public AudioEncoderServer {
     public:
@@ -355,7 +375,7 @@ class AudioWAVServer : public AudioEncoderServer {
          * @brief Construct a new Audio W A V Server object
          * We assume that the WiFi is already connected
          */
-        AudioWAVServer() : AudioEncoderServer(new WAVEncoder()){
+        AudioWAVServer(int port=80) : AudioEncoderServer(new WAVEncoder(), port){
         }
 
         /**
@@ -364,7 +384,7 @@ class AudioWAVServer : public AudioEncoderServer {
          * @param network 
          * @param password 
          */
-        AudioWAVServer(const char* network, const char *password) : AudioEncoderServer(new WAVEncoder(), network, password) {
+        AudioWAVServer(const char* network, const char *password, int port=80) : AudioEncoderServer(new WAVEncoder(), network, password, port) {
         }
 
         /// Destructor: release the allocated encoder
