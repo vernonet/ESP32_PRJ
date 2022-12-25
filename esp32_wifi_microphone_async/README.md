@@ -1,6 +1,7 @@
 # wifi microphone on esp32
 
   In project uses an  I2S microphone SPH0645(INMP441), ESP32 module (ESP-WROOM-32, ESP32-A1S, WEMOS S2 mini - work unstable, etc).
+  The module type can be changed  in the file "platformio.ini" in the section [platformio].
   To play audio insert in vlc  "http:\\\wifi-mic.local:8080\rec.wav"  or "http:\\\ip_of_mic:8080\rec.wav".
   Initially, you need to connect to the access point "wifi-mic" and configure the access settings.
   You can find the ip address from the UART terminal, or from the program on your smartphone - "bonjour browser".
