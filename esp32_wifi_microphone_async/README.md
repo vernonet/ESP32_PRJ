@@ -11,7 +11,7 @@
   Tested sample rate 22500Hz.
   Bit-Depth: 16.
   
-  Microphone connection: 
+  Microphone connection for esp32dev: 
   - I2S_MIC_SERIAL_CLOCK      (SCK)      GPIO_NUM_32
   - I2S_MIC_LEFT_RIGHT_CLOCK  (WS)       GPIO_NUM_25
   - I2S_MIC_SERIAL_DATA       (SD)       GPIO_NUM_33
@@ -19,14 +19,15 @@
   
   serial_audio.exe (<a href="https://github.com/vernonet/serial_audio" rel="nofollow">serial_audio</a>)- program for wifi_microphone,  it allows you to testing  microphone through a serial port (uncomment  "//#define NO_WIFI").
   
-  The following libraries need to be installed:
-  - <a href="https://github.com/khoih-prog/ESP_WiFiManager" rel="nofollow">ESP_WiFiManager</a>
+  The following libraries will be installed automatically:
+  - <a href="https://github.com/khoih-prog/ESPAsyncDNSServer" rel="nofollow">ESPAsyncDNSServer</a>
+  - <a href="https://github.com/arduino-libraries/ESPAsyncWebServer" rel="nofollow">ESPAsyncWebServer</a>
   - <a href="https://github.com/arduino-libraries/NTPClient" rel="nofollow">NTPClient</a>
   - <a href="https://github.com/bblanchon/ArduinoJson" rel="nofollow">ArduinoJson</a>  
 
   I rebuilt the arduino libraries, and put them in a separate folder, these files need to be replaced.
   Rebuild utility - <a href="https://github.com/espressif/esp32-arduino-lib-builder" rel="nofollow">esp32-arduino-lib-builder</a>  
-  When listening to the microphone, noise may appear (poor quality of the Internet connection?), this problem has not yet been resolved.
+  Also I slightly changed the "ESPAsync_WiFiManager" library, mainly related to the chip esp32s2.
 
 
 
