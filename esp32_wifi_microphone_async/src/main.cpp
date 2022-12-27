@@ -33,7 +33,11 @@
 //#endif 
 #include "esp32/rom/rtc.h"
 #if ( USING_ESP32_S2 )
-  #define HWSerial Serial1
+  #if ARDUINO_USB_CDC_ON_BOOT
+   #define HWSerial Serial   //usb serial
+  #else
+   #define HWSerial Serial1  //uart serial
+  #endif
 #else
  #define HWSerial Serial
 #endif
