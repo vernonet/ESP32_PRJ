@@ -433,15 +433,15 @@ void loop(void) {
       // char str[18];
       // sprintf(str, "%02d/%02d/%04d %02d:%02d  itemp°C:%.4lg\r\n", monthDay,currentMonth,currentYear,timeClient.getHours(),timeClient.getMinutes(),temp);
       // HWSerial.printf("%s", str);    
-      if (WiFi.status() != WL_CONNECTED) {
-        HWSerial.println("NO WIFI, try to connect");
-        WiFi.mode(WIFI_STA);
-       // WiFi.hostname("wifi-mic");
-        WiFi.setHostname("wifi-mic");
-        //WiFi.persistent (true);
-        //WiFi.setOutputPower(0);
-        WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str());
-      }
+      //if (WiFi.status() != WL_CONNECTED) {
+      //  HWSerial.println("NO WIFI, try to connect");
+      //   WiFi.mode(WIFI_STA);
+      // // WiFi.hostname("wifi-mic");
+      //  WiFi.setHostname("wifi-mic");
+      //  //WiFi.persistent (true);
+      //  //WiFi.setOutputPower(0);
+      //  WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str());
+      //}
     }
     if (starting){
         char strr[30];
@@ -457,7 +457,30 @@ void loop(void) {
         free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
       }
     tme++;
-    if (tme > 6000) tme = 0;
+    if (tme > 6000)
+    {
+        tme = 0;
+        if (WiFi.status() != WL_CONNECTED)
+        {
+          HWSerial.println("NO WIFI, try to connect");
+          WiFi.mode(WIFI_STA);
+          // WiFi.hostname(HOST_NME);
+          WiFi.setHostname(HOST_NME);
+          // WiFi.persistent (true);
+          // WiFi.setOutputPower(0);
+          WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str());
+        }
+        else if (WiFi.status() == WL_CONNECTED)
+        {
+          if (!con_flag) {  //if at startup it was not possible to connect to the wifi
+          con_flag = true;
+          timeClient.begin();
+          timeClient.setTimeOffset(3600 * 2); // for GMT+2
+          timeClient.update();
+          launchWeb(0);
+          }
+        }
+    }
     // if (tme > 6000) {
     //    if (timeClient.isTimeSet()) tme = 1;
     //       else tme = 0;
