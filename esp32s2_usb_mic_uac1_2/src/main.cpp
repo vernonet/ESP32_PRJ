@@ -1,9 +1,7 @@
-//#include "pins_arduino.h"
 #include <Arduino.h>
 #include <stdio.h>
 #include "esp_heap_caps.h"
 #include "tusb.h"
-#include "board.h"
 #include "WiFi.h"
 #include "I2SMEMSSampler.h"
 #include "tusb_config.h"
@@ -231,7 +229,7 @@ void audio_task(void)
   // // Yet to be filled - e.g. put meas data into TX FIFOs etc.
   //asm("nop");
   if (!uac1_active && !tud_mounted()) {
-    if ( (board_millis()) > 5000) {   //5000 ms
+    if ( (millis()) > 5000) {   //5000 ms
        uac1_active = true;
        tud_disconnect();
        vTaskDelay(10/ portTICK_PERIOD_MS);
