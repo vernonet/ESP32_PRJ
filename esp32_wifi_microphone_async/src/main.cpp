@@ -978,10 +978,14 @@ bool writeConfigFile()
   HWSerial.println("Saving config file");
 
 #if (ARDUINOJSON_VERSION_MAJOR >= 6)
-  DynamicJsonDocument json(1024);
-#else
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  #if (ARDUINOJSON_VERSION_MAJOR == 6)
+    DynamicJsonDocument json(1024);
+  #else
+    JsonDocument json;
+  #endif
+#else  
+   DynamicJsonBuffer jsonBuffer;
+   JsonObject& json = jsonBuffer.createObject();
 #endif
 
   // JSONify local configuration parameters
@@ -1040,7 +1044,11 @@ bool readConfigFile(void)
     // See https://github.com/bblanchon/ArduinoJson/wiki/Memory%20model
 
 #if (ARDUINOJSON_VERSION_MAJOR >= 6)
+   #if (ARDUINOJSON_VERSION_MAJOR == 6)
     DynamicJsonDocument json(1024);
+   #else
+    JsonDocument json;
+   #endif 
     auto deserializeError = deserializeJson(json, buf.get());
     if ( deserializeError )
     {
