@@ -113,6 +113,7 @@ uint8_t temprature_sens_read();
 #define PASS_OTA                   "admin"
 #define PASS_CONF_PORTAL           "testtest"
 #define LOG_SIZE                   (0x4000)
+#define HOST_NME                   "wifi-mic"
 
 #define SEND_BLOCK_SIZE_MAX        (2048)
 #define SEND_BLOCK_SIZE_MIN        (2048)  //1024
