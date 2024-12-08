@@ -180,7 +180,7 @@ uint32_t aviable;
 extern bool client_connected;
 
 AsyncClient *client_ = nullptr;
-AsyncWebServer * server;
+AsyncWebServer * server = nullptr;
 AsyncWebServer * webServer_async;
 TaskHandle_t i2sMemsToBuffTaskHandle;
 SemaphoreHandle_t mutex_wav_stream;
@@ -457,35 +457,47 @@ void loop(void) {
         free_mem8  = heap_caps_get_free_size(MALLOC_CAP_8BIT);
         free_mem32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
       }
-    tme++;
-    if (tme > 6000)
-    {
-        tme = 0;
-        if (WiFi.status() != WL_CONNECTED)
-        {
-          HWSerial.println("NO WIFI, try to connect");
-          WiFi.mode(WIFI_STA);
-          // WiFi.hostname(HOST_NME);
-          WiFi.setHostname(HOST_NME);
-          // WiFi.persistent (true);
-          // WiFi.setOutputPower(0);
-          WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str());
-        }
-        else if (WiFi.status() == WL_CONNECTED)
-        {
-          if (!con_flag) {  //if at startup it was not possible to connect to the wifi
-          con_flag = true;
-          timeClient.begin();
-          timeClient.setTimeOffset(3600 * 2); // for GMT+2
-          timeClient.update();
-          launchWeb(0);
-          }
-        }
-    }
     // if (tme > 6000) {
     //    if (timeClient.isTimeSet()) tme = 1;
     //       else tme = 0;
     // }
+  }
+  
+   // if at startup it was not possible to connect to the wifi  or the connection is lost
+  if (!stream_active)
+  {
+    tme++;
+    if (tme > 6000)
+    {
+      tme = 0;
+      if (WiFi.status() != WL_CONNECTED)
+      {
+        con_flag = false;
+        WiFi.disconnect();
+        HWSerial.println("NO WIFI, try to connect");
+        WiFi.mode(WIFI_STA);
+        // WiFi.hostname(HOST_NME);
+        WiFi.setHostname(HOST_NME);
+        // WiFi.persistent (true);
+        // WiFi.setOutputPower(0);
+        WiFi.begin(Router_SSID.c_str(), Router_Pass.c_str());
+      }
+      else if (WiFi.status() == WL_CONNECTED)
+      {
+        if (!con_flag)
+        { // if at startup it was not possible to connect to the wifi
+          con_flag = true;
+          if (!(timeClient.isTimeSet()))
+          {
+            timeClient.end();
+            timeClient.begin();
+            timeClient.setTimeOffset(3600 * 2); // for GMT+2
+            timeClient.update();
+          }
+          launchWeb(0);
+        }
+      }
+    }
   }
 
   // is configuration portal requested?
@@ -626,6 +638,8 @@ void launchWeb(int webtype) {
   HWSerial.println(WiFi.localIP());
   HWSerial.print("SoftAP IP: ");
   HWSerial.println(WiFi.softAPIP());
+  if (server)
+    server->end();
   createWebServer(webtype);
   // Start the server
   server->begin();
