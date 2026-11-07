@@ -49,6 +49,7 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
 
 
 ---
+## 🚀 Quick Start & Installation
 
 ### Option 1: PlatformIO (VS Code)  - tested
 
@@ -69,7 +70,6 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
    ```
 ---
 
-## 🚀 Quick Start & Installation
 
 ### Option 2: Arduino IDE (v1.8.x or v2.x) - not tested
 
