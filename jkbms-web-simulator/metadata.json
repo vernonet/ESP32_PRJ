@@ -1,6 +1,0 @@
-{
-  "name": "ESP32 JK-BMS English Studio & Monitor",
-  "description": "Complete English translation, live simulator, diff viewer, and firmware generator for ESP32 Jikong (JK) BMS Bluetooth Web Monitor.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
