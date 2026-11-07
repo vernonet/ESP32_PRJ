@@ -47,11 +47,31 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
 4. **Status LED**:
    - Built-in LED on `GPIO 2` (blinks while connecting to WiFi; stays solid ON once connected).
 
+
+---
+
+### Option 1: PlatformIO (VS Code)  - tested
+
+1. Put the source code into `src/esp32_JK_BMS.cpp`.
+2. Use the provided `platformio.ini`:
+   ```ini
+   [env:wemos_d1_mini32]
+   platform = espressif32
+   board = wemos_d1_mini32
+   framework = arduino
+   monitor_speed = 115200
+   board_build.partitions = min_spiffs.csv
+   ```
+3. Run:
+   ```bash
+   pio run -t upload
+   pio device monitor -b 115200
+   ```
 ---
 
 ## 🚀 Quick Start & Installation
 
-### Option 1: Arduino IDE (v1.8.x or v2.x)
+### Option 2: Arduino IDE (v1.8.x or v2.x) - not tested
 
 1. **Install ESP32 Core**:
    - Open Arduino IDE -> *File > Preferences*.
@@ -88,25 +108,7 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
    - Connect ESP32 via USB and click **Upload** (`Ctrl + U`).
    - Open Serial Monitor at **115200 baud** to see the assigned IP address.
 
----
 
-### Option 2: PlatformIO (VS Code)
-
-1. Put the source code into `src/esp32_JK_BMS.cpp`.
-2. Use the provided `platformio.ini`:
-   ```ini
-   [env:wemos_d1_mini32]
-   platform = espressif32
-   board = wemos_d1_mini32
-   framework = arduino
-   monitor_speed = 115200
-   board_build.partitions = min_spiffs.csv
-   ```
-3. Run:
-   ```bash
-   pio run -t upload
-   pio device monitor -b 115200
-   ```
 
 ---
 
