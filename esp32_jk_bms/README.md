@@ -187,7 +187,12 @@ esp_ble_gattc_write_char_descr(
 ```
 ---
 
-![ESP32 JK-BMS Web Server Dashboard](esp32_jkbms_real_web.png)
+# Програма для зчитування даних з JK-BMS
+
+## 🚀 Інтерактивний веб-сервер (Демо)
+Для демонстрації роботи вебу без підключення реального заліза, ви можете запустити живий симулятор прямо в браузері:
+👉 [Запустити живий симулятор ESP32 JK-BMS](https://vernonet.github.io/jk-bms-web-simulator/)
+
 ---
 
 ## 📜 Credits & License
