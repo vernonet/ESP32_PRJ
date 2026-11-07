@@ -187,11 +187,11 @@ esp_ble_gattc_write_char_descr(
 ```
 ---
 
-# Програма для зчитування даних з JK-BMS
+# JK-BMS Data Reader
 
-## 🚀 Інтерактивний веб-сервер (Демо)
-Для демонстрації роботи вебу без підключення реального заліза, ви можете запустити живий симулятор прямо в браузері:
-👉 [Запустити живий симулятор ESP32 JK-BMS](https://vernonet.github.io/jk-bms-web-simulator/)
+## 🚀 Interactive Web Server (Demo)
+To demonstrate how the web interface works without connecting any real hardware, you can launch a live simulator directly in your browser:
+👉 [Run Live ESP32 JK-BMS Simulator](https://vernonet.github.io/jk-bms-web-simulator/)
 
 ---
 
