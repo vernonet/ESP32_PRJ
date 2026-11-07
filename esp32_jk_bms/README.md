@@ -187,12 +187,7 @@ esp_ble_gattc_write_char_descr(
 ```
 ---
 
-## 📸 Live Web Server Dashboard
-
-<p align="center">
-  <img src="docs/images/esp32_jkbms_real_web.png" alt="ESP32 JK-BMS Web Server Dashboard" width="700">
-</p>
-
+![ESP32 JK-BMS Web Server Dashboard](esp32_jkbms_real_web.png)
 ---
 
 ## 📜 Credits & License
