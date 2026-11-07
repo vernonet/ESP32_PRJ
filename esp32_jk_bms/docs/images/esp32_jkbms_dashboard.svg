@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 520" width="100%" height="100%" style="background:#f4f4f9; font-family: Arial, -apple-system, sans-serif;">
+
+
+  <!-- Container Box -->
+  <rect x="20" y="20" width="720" height="480" rx="8" fill="#ffffff"  stroke="#dddddd" stroke-width="1"/>
+
+  <!-- Title -->
+  <text x="40" y="55" font-size="20" font-weight="bold" fill="#222222">⚡️ Live Jikong BMS Telemetry</text>
+
+  <!-- Menu Buttons -->
+  <g transform="translate(40, 75)">
+    <!-- OTA Button -->
+    <rect x="120" y="0" width="125" height="30" rx="4" fill="#28a745"/>
+    <text x="182" y="19" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">📥 OTA UPDATE</text>
+
+    <!-- Settings Button -->
+    <rect x="255" y="0" width="100" height="30" rx="4" fill="#007bff"/>
+    <text x="305" y="19" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">⚙️ Settings</text>
+
+    <!-- Info Button -->
+    <rect x="365" y="0" width="80" height="30" rx="4" fill="#17a2b8"/>
+    <text x="405" y="19" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">ℹ️ Info</text>
+
+    <!-- Disconnect Button -->
+    <rect x="455" y="0" width="135" height="30" rx="4" fill="#dc3545"/>
+    <text x="522" y="19" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">❌ Disconnect BLE</text>
+  </g>
+
+  <!-- Main Table -->
+  <g transform="translate(40, 125)">
+    <!-- Header -->
+    <rect x="0" y="0" width="680" height="32" fill="#007bff"/>
+    <text x="15" y="21" font-size="13" font-weight="bold" fill="#ffffff">Parameter</text>
+    <text x="360" y="21" font-size="13" font-weight="bold" fill="#ffffff">Value</text>
+    <text x="580" y="21" font-size="13" font-weight="bold" fill="#ffffff">Unit</text>
+    
+    <!-- Table Rows -->
+    <!-- Row 1: Voltage -->
+    <line x1="0" y1="32" x2="680" y2="32" stroke="#dddddd"/>
+    <rect x="0" y="32" width="680" height="28" fill="#ffffff"/>
+    <text x="15" y="50" font-size="12" fill="#333333">Battery Voltage</text>
+    <text x="360" y="50" font-size="12" font-weight="bold" font-family="monospace" fill="#222222">53.20</text>
+    <text x="580" y="50" font-size="12" fill="#666666">V</text>
+    <line x1="0" y1="60" x2="680" y2="60" stroke="#dddddd"/>
+
+    <!-- Row 2: Current -->
+    <rect x="0" y="60" width="680" height="28" fill="#ffffff"/>
+    <text x="15" y="78" font-size="12" fill="#333333">Charge / Discharge Current</text>
+    <text x="360" y="78" font-size="12" font-weight="bold" font-family="monospace" fill="#28a745">14.48</text>
+    <text x="580" y="78" font-size="12" fill="#666666">A</text>
+    <line x1="0" y1="88" x2="680" y2="88" stroke="#dddddd"/>
+
+    <!-- Row 3: Power -->
+    <rect x="0" y="88" width="680" height="28" fill="#ffffff"/>
+    <text x="15" y="106" font-size="12" fill="#333333">Power</text>
+    <text x="360" y="106" font-size="12" font-weight="bold" font-family="monospace" fill="#222222">770.3</text>
+    <text x="580" y="106" font-size="12" fill="#666666">W</text>
+    <line x1="0" y1="116" x2="680" y2="116" stroke="#dddddd"/>
+
+    <!-- Row 4: SOC -->
+    <rect x="0" y="116" width="680" height="28" fill="#ffffff"/>
+    <text x="15" y="134" font-size="12" fill="#333333">State of Charge (SOC)</text>
+    <text x="360" y="134" font-size="12" font-weight="bold" font-family="monospace" fill="#28a745">82%</text>
+    <text x="580" y="134" font-size="12" fill="#666666">%</text>
+    <line x1="0" y1="144" x2="680" y2="144" stroke="#dddddd"/>
+
+    <!-- Row 5: Delta -->
+    <rect x="0" y="144" width="680" height="28" fill="#ffffff"/>
+    <text x="15" y="162" font-size="12" fill="#333333">Cell Delta</text>
+    <text x="360" y="162" font-size="12" font-weight="bold" font-family="monospace" fill="#007bff">0.013</text>
+    <text x="580" y="162" font-size="12" fill="#666666">V</text>
+    <line x1="0" y1="172" x2="680" y2="172" stroke="#dddddd"/>
+
+    <!-- Row 6: Temp T1/T2 -->
+    <rect x="0" y="172" width="680" height="28" fill="#ffffff"/>
+    <text x="15" y="190" font-size="12" fill="#333333">Temperature T1 / T2</text>
+    <text x="360" y="190" font-size="12" font-family="monospace" fill="#333333">24.5 / 25.1</text>
+    <text x="580" y="190" font-size="12" fill="#666666">°C</text>
+    <line x1="0" y1="200" x2="680" y2="200" stroke="#dddddd"/>
+
+    <!-- Row 7: MOSFET Temp -->
+    <rect x="0" y="200" width="680" height="28" fill="#ffffff"/>
+    <text x="15" y="218" font-size="12" fill="#333333">MOSFET Temperature</text>
+    <text x="360" y="218" font-size="12" font-family="monospace" fill="#333333">32.4</text>
+    <text x="580" y="218" font-size="12" fill="#666666">°C</text>
+    <line x1="0" y1="228" x2="680" y2="228" stroke="#dddddd"/>
+
+    <!-- Row 8: Charge Switch -->
+    <rect x="0" y="228" width="680" height="30" fill="#ffffff"/>
+    <text x="15" y="248" font-size="12" fill="#333333">Charge Switch</text>
+    <circle cx="366" cy="244" r="5" fill="#28a745"/>
+    <text x="378" y="248" font-size="12" font-weight="bold" fill="#28a745">ON</text>
+    <rect x="580" y="233" width="75" height="22" rx="3" fill="#dc3545"/>
+    <text x="617" y="248" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">TURN OFF</text>
+    <line x1="0" y1="258" x2="680" y2="258" stroke="#dddddd"/>
+
+    <!-- Row 9: Discharge Switch -->
+    <rect x="0" y="258" width="680" height="30" fill="#ffffff"/>
+    <text x="15" y="278" font-size="12" fill="#333333">Discharge Switch</text>
+    <circle cx="366" cy="274" r="5" fill="#28a745"/>
+    <text x="378" y="278" font-size="12" font-weight="bold" fill="#28a745">ON</text>
+    <rect x="580" y="263" width="75" height="22" rx="3" fill="#dc3545"/>
+    <text x="617" y="278" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">TURN OFF</text>
+    <line x1="0" y1="288" x2="680" y2="288" stroke="#dddddd"/>
+
+    <!-- Row 10: Balance Switch -->
+    <rect x="0" y="288" width="680" height="30" fill="#ffffff"/>
+    <text x="15" y="308" font-size="12" fill="#333333">Balance Switch</text>
+    <circle cx="366" cy="304" r="5" fill="#28a745"/>
+    <text x="378" y="308" font-size="12" font-weight="bold" fill="#28a745">Active (0.650 A)</text>
+    <rect x="580" y="293" width="75" height="22" rx="3" fill="#dc3545"/>
+    <text x="617" y="308" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">TURN OFF</text>
+    <line x1="0" y1="318" x2="680" y2="318" stroke="#dddddd"/>
+  </g>
+
+  <!-- Cell Section Preview -->
+  <text x="40" y="475" font-size="16" font-weight="bold" fill="#222222">🔬 Cell Voltages (16S)</text>
+</svg>
