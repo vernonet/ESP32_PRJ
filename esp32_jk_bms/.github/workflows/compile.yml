@@ -1,0 +1,41 @@
+name: PlatformIO Build (ESP32 @ 6.4.0)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/actions-setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Cache PlatformIO packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+
+    - name: Install PlatformIO Core
+      run: |
+        python -m pip install --upgrade pip
+        pip install -U platformio
+
+    # Хмарний сервер автоматично скачає ядро v2.0.11 та збере бінарник
+    - name: Run PlatformIO Build
+      run: pio run
+
+    - name: Upload compiled binary artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: JKBMS-ESP32-v2-Firmware
+        path: .pio/build/wemos_d1_mini32/firmware.bin
