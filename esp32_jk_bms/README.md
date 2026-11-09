@@ -1,4 +1,4 @@
-# ESP32 Jikong (JK) BMS Monitor & Web Server (English Localized Edition)
+# ESP32 Jikong (JK) BMS Monitor & Web Server (NimBLE-Arduino Optimized Edition)
 
 A high-performance ESP32 firmware for wirelessly reading live telemetry, cell voltages, temperatures, and controlling **Jikong (JK) Active Balance BMS** units over **Bluetooth Low Energy (BLE)** with an embedded **AJAX/JSON Web Server** on port `8089`.
 
@@ -57,10 +57,29 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
 2. Use the provided `platformio.ini`:
    ```ini
    [env:wemos_d1_mini32]
-   platform = espressif32
+   platform = espressif32 @ 6.4.0
    board = wemos_d1_mini32
    framework = arduino
    monitor_speed = 115200
+   monitor_filters = time, esp32_exception_decoder
+  
+   ; Library Dependencies:
+   ; Using high-efficiency Apache NimBLE stack instead of heavy Bluedroid
+   lib_deps =
+      h2zero/NimBLE-Arduino @ ^1.4.2
+  
+   ; Build Optimization Flags:
+   ; 1. Disable unused peripheral/server roles to save Flash & Heap RAM
+   ; 2. Enable aggressive compiler size optimization (-Os)
+   build_flags =
+      -Os
+      -D CONFIG_BT_NIMBLE_ROLE_PERIPHERAL_DISABLED
+      -D CONFIG_BT_NIMBLE_ROLE_BROADCASTER_DISABLED
+      -D CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1
+      -D CONFIG_BT_NIMBLE_ATT_PREFERRED_MTU=256
+  
+   ; Partitions:
+   ; min_spiffs gives 1.9MB for application binary, allowing comfortable dual-OTA partitions!
    board_build.partitions = min_spiffs.csv
    ```
 3. Run:
