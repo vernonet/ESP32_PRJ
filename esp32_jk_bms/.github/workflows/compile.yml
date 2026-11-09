@@ -1,4 +1,4 @@
-name: PlatformIO Build (ESP32 @ 6.4.0)
+name: PlatformIO Build (Nested ESP32 @ 6.4.0)
 
 on:
   push:
@@ -10,32 +10,43 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Суворе налаштування робочої папки для ВСІХ наступних кроків скрипту
+    defaults:
+      run:
+        working-directory: esp32_jk_bms
+
     steps:
+    # 1. Клонуємо репозиторій (цей крок завжди робиться з кореня)
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # 2. Встановлюємо Python
     - name: Set up Python
       uses: actions/actions-setup-python@v5
       with:
         python-version: '3.10'
 
+    # 3. Кешуємо пакети PlatformIO (адаптовано під вкладений шлях)
     - name: Cache PlatformIO packages
       uses: actions/cache@v4
       with:
         path: ~/.platformio
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        key: ${{ runner.os }}-platformio-${{ hashFiles('esp32_jk_bms/**/platformio.ini') }}
 
+    # 4. Встановлюємо PlatformIO Core
     - name: Install PlatformIO Core
       run: |
         python -m pip install --upgrade pip
         pip install -U platformio
 
-    # Хмарний сервер автоматично скачає ядро v2.0.11 та збере бінарник
+    # 5. Хмарний сервер заходить в esp32_jk_bms, бере platformio.ini та збирає бінарник
     - name: Run PlatformIO Build
       run: pio run
 
+    # 6. Зберігаємо та викладаємо готовий прошивальний файл .bin
     - name: Upload compiled binary artifact
       uses: actions/upload-artifact@v4
       with:
         name: JKBMS-ESP32-v2-Firmware
-        path: .pio/build/wemos_d1_mini32/firmware.bin
+        path: esp32_jk_bms/.pio/build/wemos_d1_mini32/firmware.bin
+
