@@ -55,6 +55,14 @@
 #define BMS_WATCHDOG_TIMEOUT_MS    45000
 
 // --- Hardware Pins ---
-#define LED_PIN             2
+#if defined(BOARD_WEMOS_D1_MINI32)
+  #define LED_PIN 2
+#elif defined(BOARD_ESP32_S3_ZERO)
+  #define LED_PIN 21
+  #define RGB_LED_PIN 21
+  #define RGB_LED_COUNT 1
+#else
+  #define LED_PIN 2
+#endif
 
 #endif // CONFIG_H
