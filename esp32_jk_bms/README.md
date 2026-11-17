@@ -39,7 +39,7 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
 ## 🛠 Hardware Requirements
 
 1. **ESP32 Development Board**:
-   - WEMOS D1 Mini32, ESP32 DevKit V1, NodeMCU-32S, or ESP32-WROOM-32.
+   - WEMOS D1 Mini32, ESP32 DevKit V1, NodeMCU-32S, Waveshare ESP32-S3-Zero or ESP32-WROOM-32.
 2. **Jikong (JK) Smart Active Balance BMS**:
    - Any BLE-enabled Jikong BMS (e.g., `JK-B2A24S20P`, `JK-BD6A20S10P`, `JK-B1A8S20P`, `JK-B2A16S20P`, etc.).
 3. **Power Supply**:
