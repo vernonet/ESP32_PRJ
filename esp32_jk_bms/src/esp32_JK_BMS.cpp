@@ -576,6 +576,20 @@ void handleScan()
   if (!checkAuth())
     return;
 
+  // Якщо в порталі WiFiManager вже прописано цільовий MAC — підключаємося напряму без сканування
+  if (strlen(cfg_bms_mac) > 10)
+  {
+    Serial.printf("[HTTP /scan] Target MAC '%s' found in config. Connecting directly...\n", cfg_bms_mac);
+    if (connectToBms(std::string(cfg_bms_mac)))
+    {
+      server.sendHeader("Location", "/");
+      server.send(302, "text/plain", "");
+      return;
+    }
+    Serial.println("[HTTP /scan] Direct connection failed. Falling back to full BLE scan...");
+  }
+
+  // Якщо MAC не задано або пряме підключення не вдалося — виконуємо звичайний пошук
   foundDevices.clear();
   currentBleState = BLE_SCANNING;
   Serial.println("[HTTP /scan] Scanning for devices (blocking 4 sec)...");
@@ -584,8 +598,6 @@ void handleScan()
   pBLEScan->setInterval(100);
   pBLEScan->setWindow(60);
 
-  // Згідно з 1.x -> 2.x Migration Guide:
-  // getResults() блокує виконання на 4000 мс, гарантовано збираючи всі пристрої перед формуванням HTML!
   NimBLEScanResults results = pBLEScan->getResults(4000, false);
 
   for (size_t i = 0; i < results.getCount(); i++)
@@ -639,6 +651,7 @@ void handleScan()
   server.sendHeader("Connection", "close");
   server.send(200, "text/html; charset=UTF-8", html);
 }
+
 
 // -----------------------------------------------------------------------------
 // --- 9. BLE CONNECTION & REGS MANAGEMENT ------------------------------------
@@ -949,7 +962,16 @@ void handleRoot()
   html += "  <a href='/update' class='btn' style='background:#28a745'>📥 OTA UPDATE</a>";
   html += "  <a href='/settings' class='btn'>⚙️ Settings</a>";
   html += "  <a href='/info' class='btn' style='background:#17a2b8'>ℹ️ Info</a>";
-  html += "  <a href='/scan' class='btn' style='background:#6c757d'>🔍 BLE Scan</a>";
+  //html += "  <a href='/scan' class='btn' style='background:#6c757d'>🔍 BLE Scan</a>";
+ 
+  // Динамічна кнопка збереження або видалення поточного MAC з конфігу
+  bool isMacSaved = (strlen(cfg_bms_mac) > 10 && strcasecmp(cfg_bms_mac, activeBmsAddress.c_str()) == 0);
+  if (isMacSaved) {
+    html += "  <a href='/del_mac' onclick=\"return confirm('Delete saved BMS MAC?');\" class='btn' style='background:#fd7e14'>🗑️ Del MAC</a>";
+  } else {
+    html += "  <a href='/save_mac' class='btn' style='background:#6f42c1'>💾 Save MAC</a>";
+  }
+
   html += "  <a href='/disconnect' class='btn off'>❌ Disconnect BLE</a>";
   html += "</p>";
 
@@ -1501,6 +1523,40 @@ void handleReboot()
   ESP.restart();
 }
 
+void handleSaveMac()
+{
+  if (!checkAuth())
+    return;
+
+  if (!activeBmsAddress.empty())
+  {
+    strlcpy(cfg_bms_mac, activeBmsAddress.c_str(), sizeof(cfg_bms_mac));
+    preferences.begin("jkbms_cfg", false);
+    preferences.putString("bms_mac", cfg_bms_mac);
+    preferences.end();
+    Serial.printf("[Config] Saved target BMS MAC to NVS: %s\n", cfg_bms_mac);
+  }
+
+  server.sendHeader("Location", "/");
+  server.send(302, "text/plain", "");
+}
+
+void handleDelMac()
+{
+  if (!checkAuth())
+    return;
+
+  cfg_bms_mac[0] = '\0'; // Очищаємо буфер у пам'яті RAM
+  preferences.begin("jkbms_cfg", false);
+  preferences.putString("bms_mac", ""); // Очищаємо в пам'яті NVS
+  preferences.end();
+  Serial.println("[Config] Deleted saved BMS MAC from NVS.");
+
+  server.sendHeader("Location", "/");
+  server.send(302, "text/plain", "");
+}
+
+
 // -----------------------------------------------------------------------------
 // --- 11. SETUP & INITIALIZATION ----------------------------------------------
 // -----------------------------------------------------------------------------
@@ -1541,10 +1597,10 @@ void setup()
   String s_port     = preferences.getString("web_port", WEB_SERVER_PORT);
   String s_mac      = preferences.getString("bms_mac", TARGET_BMS_MAC);
   //для автопідстановки розкоментувати
-  /*  String s_mac = preferences.getString("bms_mac", TARGET_BMS_MAC);
+  /*   String s_mac = preferences.getString("bms_mac", TARGET_BMS_MAC);
   if (s_mac.length() == 0) {
     s_mac = TARGET_BMS_MAC;
-  } */
+  }  */
 
   strlcpy(cfg_ap_ssid,  s_ap_ssid.c_str(),  sizeof(cfg_ap_ssid));
   strlcpy(cfg_ap_pass,  s_ap_pass.c_str(),  sizeof(cfg_ap_pass));
@@ -1571,7 +1627,7 @@ void setup()
   WiFiManagerParameter custom_user("www_user", "Web Server Username (empty = no auth)", cfg_www_user, 31);
   WiFiManagerParameter custom_pass("www_pass", "Web Server Password", cfg_www_pass, 31);
   WiFiManagerParameter custom_port("web_port", "Web Server Port", cfg_web_port, 6);
-  WiFiManagerParameter custom_mac("bms_mac", "BMS MAC Address (XX:XX:XX:XX:XX:XX)", cfg_bms_mac, 18);
+  WiFiManagerParameter custom_mac("bms_mac", "BMS MAC Address (XX:XX:XX:XX:XX:XX)", cfg_bms_mac, 18);  //////Тимчасово приховано з меню порталу
 
 
   wm.addParameter(&custom_ap_ssid);
@@ -1579,7 +1635,7 @@ void setup()
   wm.addParameter(&custom_user);
   wm.addParameter(&custom_pass);
   wm.addParameter(&custom_port);
-  wm.addParameter(&custom_mac);
+  wm.addParameter(&custom_mac); // Тимчасово приховано з меню порталу
 
   bool wifiConnected = false;
   if (forcePortal) {
@@ -1599,7 +1655,7 @@ void setup()
     preferences.putString("www_user", custom_user.getValue());
     preferences.putString("www_pass", custom_pass.getValue());
     preferences.putString("web_port", custom_port.getValue());
-    preferences.putString("bms_mac",  custom_mac.getValue());
+    preferences.putString("bms_mac",  custom_mac.getValue()); // Тимчасово приховано з меню порталу
     preferences.end();
     delay(500);
     ESP.restart(); // Перезавантаження для застосування нового порту та параметрів
@@ -1680,6 +1736,10 @@ void setup()
   server.on("/update", HTTP_POST, handleUpdateEnd, handleUpdateUpload);
 
   server.on("/reboot", HTTP_GET, handleReboot);
+  server.on("/save_mac", HTTP_GET, handleSaveMac);
+  server.on("/del_mac", HTTP_GET, handleDelMac);
+
+
   server.begin();
   Serial.printf("[HTTP] Web server active on port %d\n", activePort);
 
@@ -1691,18 +1751,11 @@ void setup()
   NimBLEDevice::setSecurityAuth(false, false, false);
 
   pBLEScan = NimBLEDevice::getScan();
-  // ОНОВЛЕНО ДЛЯ NimBLE 2.x: setScanCallbacks замість setAdvertisedDeviceCallbacks
   pBLEScan->setScanCallbacks(new ScanCallbacks(), false);
 
-  if (strlen(cfg_bms_mac) > 10)
-  {
-    activeBmsAddress = std::string(cfg_bms_mac);
-    connectToBms(std::string(cfg_bms_mac));
-  }
-  else
-  {
-    startScan();
-  }
+  // Не підключаємося і не скануємо автоматично при старті — чекаємо дій користувача
+  currentBleState = BLE_IDLE;
+  Serial.println("[NimBLE] Ready. Waiting for user action on web dashboard...");
 }
 
 // -----------------------------------------------------------------------------

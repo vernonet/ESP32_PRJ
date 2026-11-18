@@ -11,7 +11,7 @@
 #if defined(BOARD_ESP32_S3_ZERO)
   #define CONFIG_TRIGGER_PIN 1   // GPIO 1 на ESP32-S3-Zero
 #else
-  #define CONFIG_TRIGGER_PIN 14  // GPIO 14 (D5) на Wemos D1 Mini32
+  #define CONFIG_TRIGGER_PIN 27  // GPIO 27 на Wemos D1 Mini32
 #endif
 
 // --- Wi-Fi Settings ---
