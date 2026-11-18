@@ -46,6 +46,13 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
    - 5V USB power supply for the ESP32.
 4. **Status LED**:
    - Built-in LED on `GPIO 2` (blinks while connecting to WiFi; stays solid ON once connected).
+    
+## 🛠 Pinout
+
+| Function | WEMOS D1 Mini32 | ESP32-S3 Zero | Notes |
+| :--- | :---: | :---: | :--- |
+| **Status LED** | `GPIO 2` (Blue) | `GPIO 21` (WS2812 RGB) | Yellow = BLE Scan, Green = Connected, Red = Error, Blue = Setup Portal |
+| **Config Trigger** | `GPIO 14` (D5) | `GPIO 1` (TX) | Short to `GND` on boot to force WiFiManager Portal |
 
 
 ---
@@ -129,7 +136,13 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
    - Connect ESP32 via USB and click **Upload** (`Ctrl + U`).
    - Open Serial Monitor at **115200 baud** to see the assigned IP address.
 
+---
 
+## 🔧 First-Time Setup (WiFiManager)
+
+1. **Initial AP Mode:** On first boot, the ESP32 launches an AP named **`JKBMS-Setup`** (password: **`12345678`**) with a solid blue status LED.
+2. **Configuration Portal:** Access **`http://192.168.4.1`**, select your router, and configure credentials, port (default `8089`).
+3. **Storage & Reboot:** Saving applies settings to NVS and reboots the device. Short **`GPIO 14`** or **`GPIO 1`** to **`GND`** during boot to force config mode.
 
 ---
 
