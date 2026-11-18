@@ -223,7 +223,7 @@ esp_ble_gattc_write_char_descr(
 
 Ready-to-flash `.bin` binaries for both **WEMOS D1 Mini32** and **Waveshare ESP32-S3-Zero** are automatically published on every update:
 
-👉 **[Download Latest Firmware (.bin)](https://github.com)**
+👉 **[Download Latest Firmware (.bin)](https://github.com/vernonet/ESP32_PRJ/releases/tag/latest)**
 
 1. Download `firmware-wemos-d1-mini32.bin` or `firmware-esp32-s3-zero.bin`.
 2. Flash it directly via the web OTA page (`/update`) or ESPHome Flasher.
