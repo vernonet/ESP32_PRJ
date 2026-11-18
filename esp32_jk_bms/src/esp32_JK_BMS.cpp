@@ -29,15 +29,17 @@
 #include <string>
 #include <cmath>
 #include "config.h"
+#include <WiFiManager.h>
+#include <Preferences.h>
 
 // -----------------------------------------------------------------------------
 // --- 1. USER CONFIGURATION ---------------------------------------------------
 // -----------------------------------------------------------------------------
-const char *ssid = WIFI_SSID;
-const char *password = WIFI_PASSWORD;
+//const char *ssid = WIFI_SSID;
+//const char *password = WIFI_PASSWORD;
 
-const char *www_username = WWW_USERNAME;
-const char *www_password = WWW_PASSWORD;
+//const char *www_username = WWW_USERNAME;
+//const char *www_password = WWW_PASSWORD;
 
 // Timing & Watchdog Configuration
 const uint32_t TELEMETRY_INTERVAL_MS = TELEMETRY_POLL_INTERVAL_MS; // Poll telemetry every X ms
@@ -53,6 +55,22 @@ extern "C"
   uint8_t temprature_sens_read();
 }
 #endif
+
+Preferences preferences;
+
+// Змінні конфігурації (завантажуються з пам'яті або беруться з config.h за замовчуванням)
+char cfg_ap_ssid[32]     = "JKBMS-Setup";
+char cfg_ap_pass[32]     = "12345678";
+char cfg_www_user[32]    ;//= WWW_USERNAME;
+char cfg_www_pass[32]    ;//= WWW_PASSWORD;
+char cfg_web_port[8]     ;//= WEB_SERVER_PORT;
+char cfg_bms_mac[20]     = TARGET_BMS_MAC;
+bool shouldSaveConfig    = false;
+
+// Колбек сповіщення про необхідність зберегти кастомні поля
+void saveConfigCallback() {
+  shouldSaveConfig = true;
+}
 
 #ifdef BOARD_ESP32_S3_ZERO
 #include <Adafruit_NeoPixel.h>
@@ -97,7 +115,9 @@ inline void ledSearching()
 
 #endif
 
-WebServer server(WEB_SERVER_PORT);
+//WebServer server(WEB_SERVER_PORT);
+WebServer *serverPtr = nullptr;
+#define server (*serverPtr)
 
 // -----------------------------------------------------------------------------
 // --- 2. BLE UUIDS & CONSTANTS ------------------------------------------------
@@ -236,15 +256,24 @@ void setLed(uint8_t r, uint8_t g, uint8_t b)
 }
 #endif
 
+// Колбек входу в режим точки доступу (Captive Portal)
+void configModeCallback(WiFiManager *myWiFiManager) {
+  Serial.println("[WiFiManager] Відкрито Captive Portal налаштувань (IP: 192.168.4.1)");
+#ifdef BOARD_ESP32_S3_ZERO
+  setLed(0, 0, 64); // Постійний синій колір
+#else
+  digitalWrite(LED_PIN, HIGH); // Постійне світіння для класичного ESP32
+#endif
+}
+
+
 // -----------------------------------------------------------------------------
 // --- 6. AUTHENTICATION & CRC UTILS -------------------------------------------
 // -----------------------------------------------------------------------------
-bool checkAuth()
-{
-  if (strlen(www_username) == 0)
+bool checkAuth() {
+  if (strlen(cfg_www_user) == 0)
     return true;
-  if (!server.authenticate(www_username, www_password))
-  {
+  if (!server.authenticate(cfg_www_user, cfg_www_pass)) {
     server.requestAuthentication();
     return false;
   }
@@ -503,10 +532,8 @@ class ScanCallbacks : public NimBLEScanCallbacks
                     addr.c_str(), bms.name.c_str(), rssi, addrType);
 
       // Автопідключення за цільовим MAC (регістронезалежне)
-      if (TARGET_BMS_MAC != nullptr && strlen(TARGET_BMS_MAC) > 10)
-      {
-        if (strcasecmp(addr.c_str(), TARGET_BMS_MAC) == 0)
-        {
+      if (strlen(cfg_bms_mac) > 10) {
+        if (strcasecmp(addr.c_str(), cfg_bms_mac) == 0) {
           Serial.println("[NimBLE Scan] Target BMS detected! Stopping scan & connecting...");
           NimBLEDevice::getScan()->stop();
           activeBmsAddress = addr;
@@ -1035,6 +1062,16 @@ void handleInfo()
   html += addR("MCU Board Target", boardTarget.c_str(), "style='color:#007bff;font-weight:bold'");
   html += addR("ESP32 Chip Temp", tempStr.c_str(), "style='color:#d9534f;font-weight:bold'");
 
+  #if defined(BOARD_HAS_PSRAM)
+  if (psramFound()) {
+    String psramInfo = String(ESP.getFreePsram() / 1024) + " KB / " + String(ESP.getPsramSize() / 1024) + " KB";
+    html += addR("PSRAM Free / Total", psramInfo.c_str(), "style='color:#28a745;font-weight:bold'");
+  } else {
+    html += addR("PSRAM Status", "Not detected (Check qspi flags)", "style='color:#dc3545'");
+  }
+  #endif
+
+
   // Дані самої Jikong BMS
   html += addR("Device Name", G_info.deviceName.c_str());
   html += addR("Serial Number", G_info.serialNumber.c_str());
@@ -1469,8 +1506,12 @@ void handleReboot()
 // -----------------------------------------------------------------------------
 void setup()
 {
+
+  //setCpuFrequencyMhz(80);
+   
 #ifdef BOARD_ESP32_S3_ZERO
   led.begin();
+  led.setBrightness(25); // Обмежуємо яскравість до ~10% (діапазон 0–255)
   led.clear();
   led.show();
 #else
@@ -1483,11 +1524,98 @@ void setup()
   Serial.println("  ESP32 JK-BMS Monitor (NimBLE 2.5.2 Edition)");
   Serial.println("=======================================================");
 
-  WiFi.mode(WIFI_STA);
+  /* WiFi.mode(WIFI_STA);
   WiFi.setAutoReconnect(true);
   WiFi.persistent(true);
-  WiFi.begin(ssid, password);
-  Serial.printf("Connecting to Wi-Fi '%s'...", ssid);
+  WiFi.begin(ssid, password); */
+
+
+
+
+    // 1. Завантаження збережених налаштувань з енергонезалежної пам'яті (NVS)
+  preferences.begin("jkbms_cfg", false);
+  String s_ap_ssid  = preferences.getString("ap_ssid", "JKBMS-Setup");
+  String s_ap_pass  = preferences.getString("ap_pass", "12345678");
+  String s_www_user = preferences.getString("www_user", WWW_USERNAME);
+  String s_www_pass = preferences.getString("www_pass", WWW_PASSWORD);
+  String s_port     = preferences.getString("web_port", WEB_SERVER_PORT);
+  String s_mac      = preferences.getString("bms_mac", TARGET_BMS_MAC);
+  //для автопідстановки розкоментувати
+  /*  String s_mac = preferences.getString("bms_mac", TARGET_BMS_MAC);
+  if (s_mac.length() == 0) {
+    s_mac = TARGET_BMS_MAC;
+  } */
+
+  strlcpy(cfg_ap_ssid,  s_ap_ssid.c_str(),  sizeof(cfg_ap_ssid));
+  strlcpy(cfg_ap_pass,  s_ap_pass.c_str(),  sizeof(cfg_ap_pass));
+  strlcpy(cfg_www_user, s_www_user.c_str(), sizeof(cfg_www_user));
+  strlcpy(cfg_www_pass, s_www_pass.c_str(), sizeof(cfg_www_pass));
+  strlcpy(cfg_web_port, s_port.c_str(),     sizeof(cfg_web_port));
+  strlcpy(cfg_bms_mac,  s_mac.c_str(),      sizeof(cfg_bms_mac));
+
+  // 2. Перевірка піна примусового входу в налаштування (замкнутий на GND)
+  pinMode(CONFIG_TRIGGER_PIN, INPUT_PULLUP);
+  delay(50);
+  bool forcePortal = (digitalRead(CONFIG_TRIGGER_PIN) == LOW);
+
+  // 3. Налаштування кастомних полів у вебпорталі WiFiManager
+  WiFiManager wm;
+  wm.setShowInfoUpdate(false);
+  wm.setSaveConfigCallback(saveConfigCallback);
+  wm.setAPCallback(configModeCallback); // Увімкне синій LED при вході в портал
+  wm.setConfigPortalTimeout(180);
+
+
+  WiFiManagerParameter custom_ap_ssid("ap_ssid", "Access Point Name (AP SSID)", cfg_ap_ssid, 31);
+  WiFiManagerParameter custom_ap_pass("ap_pass", "Access Point Password (min. 8 chars)", cfg_ap_pass, 31);
+  WiFiManagerParameter custom_user("www_user", "Web Server Username (empty = no auth)", cfg_www_user, 31);
+  WiFiManagerParameter custom_pass("www_pass", "Web Server Password", cfg_www_pass, 31);
+  WiFiManagerParameter custom_port("web_port", "Web Server Port", cfg_web_port, 6);
+  WiFiManagerParameter custom_mac("bms_mac", "BMS MAC Address (XX:XX:XX:XX:XX:XX)", cfg_bms_mac, 18);
+
+
+  wm.addParameter(&custom_ap_ssid);
+  wm.addParameter(&custom_ap_pass);
+  wm.addParameter(&custom_user);
+  wm.addParameter(&custom_pass);
+  wm.addParameter(&custom_port);
+  wm.addParameter(&custom_mac);
+
+  bool wifiConnected = false;
+  if (forcePortal) {
+    Serial.println("[WiFiManager] Пін замкнуто на GND! Примусовий запуск порталу налаштувань...");
+    ledFailure();
+    wifiConnected = wm.startConfigPortal(cfg_ap_ssid, cfg_ap_pass);
+  } else {
+    Serial.println("[WiFiManager] Підключення до Wi-Fi або запуск порталу...");
+    wifiConnected = wm.autoConnect(cfg_ap_ssid, cfg_ap_pass);
+  }
+
+  // 4. Збереження змінених параметрів у пам'ять NVS
+  if (shouldSaveConfig) {
+    Serial.println("[WiFiManager] Збереження нових налаштувань у пам'ять...");
+    preferences.putString("ap_ssid",  custom_ap_ssid.getValue());
+    preferences.putString("ap_pass",  custom_ap_pass.getValue());
+    preferences.putString("www_user", custom_user.getValue());
+    preferences.putString("www_pass", custom_pass.getValue());
+    preferences.putString("web_port", custom_port.getValue());
+    preferences.putString("bms_mac",  custom_mac.getValue());
+    preferences.end();
+    delay(500);
+    ESP.restart(); // Перезавантаження для застосування нового порту та параметрів
+  }
+  preferences.end();
+
+  // 5. Ініціалізація основного вебсервера на збереженому порту
+  uint16_t activePort = atoi(cfg_web_port);
+  if (activePort == 0) activePort = atoi(WEB_SERVER_PORT);
+  serverPtr = new WebServer(activePort);
+
+
+
+
+  Serial.printf("Connecting to saved Wi-Fi '%s'...\n", WiFi.SSID().c_str());
+
 
   int attempts = 0;
 
@@ -1520,7 +1648,7 @@ void setup()
   if (WiFi.status() == WL_CONNECTED)
   {
     ledConnected();
-
+    WiFi.setSleep(true);
     Serial.println(
         "\n[Wi-Fi] Connected! IP Address: " + WiFi.localIP().toString());
   }
@@ -1553,7 +1681,7 @@ void setup()
 
   server.on("/reboot", HTTP_GET, handleReboot);
   server.begin();
-  Serial.printf("[HTTP] Web server active on port %d\n", WEB_SERVER_PORT);
+  Serial.printf("[HTTP] Web server active on port %d\n", activePort);
 
   // Ініціалізація NimBLE 2.5.2
   NimBLEDevice::init("JKBMS Client");
@@ -1566,10 +1694,10 @@ void setup()
   // ОНОВЛЕНО ДЛЯ NimBLE 2.x: setScanCallbacks замість setAdvertisedDeviceCallbacks
   pBLEScan->setScanCallbacks(new ScanCallbacks(), false);
 
-  if (TARGET_BMS_MAC != nullptr && strlen(TARGET_BMS_MAC) > 10)
+  if (strlen(cfg_bms_mac) > 10)
   {
-    activeBmsAddress = std::string(TARGET_BMS_MAC);
-    connectToBms(std::string(TARGET_BMS_MAC));
+    activeBmsAddress = std::string(cfg_bms_mac);
+    connectToBms(std::string(cfg_bms_mac));
   }
   else
   {

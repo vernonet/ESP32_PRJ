@@ -7,7 +7,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-
+// Пін для примусового входу в режим налаштувань (замикання на GND при старті)
+#if defined(BOARD_ESP32_S3_ZERO)
+  #define CONFIG_TRIGGER_PIN 1   // GPIO 1 на ESP32-S3-Zero
+#else
+  #define CONFIG_TRIGGER_PIN 14  // GPIO 14 (D5) на Wemos D1 Mini32
+#endif
 
 // --- Wi-Fi Settings ---
 #define WIFI_SSID           "your_ssid"
@@ -17,7 +22,7 @@
 // --- Web Server Security ---
 #define WWW_USERNAME        "your_admin"
 #define WWW_PASSWORD        "your_pass"
-#define WEB_SERVER_PORT     8089
+#define WEB_SERVER_PORT     "8089"
 
 // --- Target Jikong (JK) BMS ---
 // Set exact MAC address (e.g., "C8:47:8C:12:34:56") or leave empty "" to auto-scan
