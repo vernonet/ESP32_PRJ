@@ -52,7 +52,7 @@ A high-performance ESP32 firmware for wirelessly reading live telemetry, cell vo
 | Function | WEMOS D1 Mini32 | ESP32-S3 Zero | Notes |
 | :--- | :---: | :---: | :--- |
 | **Status LED** | `GPIO 2` (Blue) | `GPIO 21` (WS2812 RGB) | Yellow = BLE Scan, Green = Connected, Red = Error, Blue = Setup Portal |
-| **Config Trigger** | `GPIO 14` (D5) | `GPIO 1` (TX) | Short to `GND` on boot to force WiFiManager Portal |
+| **Config Trigger** | `GPIO 27` | `GPIO 1` (TX) | Short to `GND` on boot to force WiFiManager Portal |
 
 
 ---
@@ -219,6 +219,15 @@ esp_ble_gattc_write_char_descr(
     ESP_GATT_AUTH_REQ_NONE
 );
 ```
+## 📦 Pre-compiled Firmware (GitHub Actions)
+
+You don't need to compile the source code manually. Ready-to-flash `.bin` binaries for both **WEMOS D1 Mini32** and **Waveshare ESP32-S3-Zero** are automatically built on every commit:
+
+👉 **[Download Latest Firmware Builds (GitHub Actions)](https://github.com/vernonet/ESP32_PRJ/actions)**
+
+1. Open the latest successful workflow run (green checkmark).
+2. Scroll down to the **Artifacts** section at the bottom of the page.
+3. Download `firmware-wemos-d1-mini32` or `firmware-esp32-s3-zero`, extract the `.bin` file, and flash it via the web OTA page (`/update`) or ESPHome Flasher.
 ---
 
 # JK-BMS Data Reader
