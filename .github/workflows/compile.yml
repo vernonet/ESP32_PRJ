@@ -41,16 +41,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -U platformio
 
-    # 5. Збірка та об'єднання бінарників (створює і OTA, і повні Factory-файли)
-    - name: Build and Merge Firmware Binaries
+    # 5. Збірка прошивок (pioarduino сам створює і firmware.bin, і повний firmware.factory.bin)
+    - name: Build and Prepare Firmware Binaries
       run: |
         pio run
-        pio run -t mergebin -e wemos_d1_mini32
-        pio run -t mergebin -e esp32-s3-zero
         cp .pio/build/wemos_d1_mini32/firmware.bin ./firmware-wemos-d1-mini32-ota.bin
-        cp .pio/build/wemos_d1_mini32/firmware.merged.bin ./firmware-wemos-d1-mini32-full.bin
+        cp .pio/build/wemos_d1_mini32/firmware.factory.bin ./firmware-wemos-d1-mini32-full.bin
         cp .pio/build/esp32-s3-zero/firmware.bin ./firmware-esp32-s3-zero-ota.bin
-        cp .pio/build/esp32-s3-zero/firmware.merged.bin ./firmware-esp32-s3-zero-full.bin
+        cp .pio/build/esp32-s3-zero/firmware.factory.bin ./firmware-esp32-s3-zero-full.bin
 
     # 6. Збереження у внутрішні Artifacts (як резерв)
     - name: Upload Firmware Artifacts
