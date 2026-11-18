@@ -67,7 +67,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: latest
-        name: Latest Firmware Builds (OTA & Full Factory)
+        name: Latest Firmware Builds (OTA & Full Factory) for esp32_jk_bms
         body: |
           Ready-to-flash `.bin` binaries for **WEMOS D1 Mini32** and **Waveshare ESP32-S3-Zero**:
           - **`*-full.bin`**: Complete image (bootloader + partitions + app) for flashing a **brand new ESP32 via USB** (at address `0x0`). Can be easily flashed directly from your browser using **[ESPHome Web](https://web.esphome.io/)** (Chrome/Edge).
