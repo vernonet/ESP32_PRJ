@@ -1,10 +1,13 @@
-name: PlatformIO Multi-Board Build (D1 Mini32 & S3-Zero)
+name: PlatformIO Multi-Board Build & Release
 
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -34,20 +37,39 @@ jobs:
         python -m pip install --upgrade pip
         pip install -U platformio
 
-    # Команда pio run без прапорців автоматично збере ОБИДВА середовища з platformio.ini
+    # Збірка прошивок для обох плат
     - name: Run PlatformIO Build for All Boards
       run: pio run
 
-    # Викладаємо прошивку для класичного Wemos D1 Mini32
-    - name: Upload Wemos D1 Mini32 Firmware
+    # Копіювання та перейменування бінарників для зручного завантаження
+    - name: Prepare Firmware Binaries
+      run: |
+        cp .pio/build/wemos_d1_mini32/firmware.bin ./firmware-wemos-d1-mini32.bin
+        cp .pio/build/esp32-s3-zero/firmware.bin ./firmware-esp32-s3-zero.bin
+
+    # Збереження у внутрішні Artifacts (як резерв)
+    - name: Upload Wemos D1 Mini32 Artifact
       uses: actions/upload-artifact@v4
       with:
         name: firmware-wemos-d1-mini32
-        path: esp32_jk_bms/.pio/build/wemos_d1_mini32/firmware.bin
+        path: esp32_jk_bms/firmware-wemos-d1-mini32.bin
 
-    # Викладаємо прошивку для нового ESP32-S3 Zero
-    - name: Upload ESP32-S3 Zero Firmware
+    - name: Upload ESP32-S3 Zero Artifact
       uses: actions/upload-artifact@v4
       with:
         name: firmware-esp32-s3-zero
-        path: esp32_jk_bms/.pio/build/esp32-s3-zero/firmware.bin
+        path: esp32_jk_bms/firmware-esp32-s3-zero.bin
+
+    # Публікація відкритого релізу (доступного для скачування без реєстрації на GitHub)
+    - name: Publish Public Release
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: latest
+        name: Latest Firmware Builds (D1 Mini32 & S3-Zero)
+        body: |
+          Pre-compiled `.bin` binaries for **WEMOS D1 Mini32** and **Waveshare ESP32-S3-Zero**.
+          Flash directly via the web OTA interface (`/update`) or ESPHome Flasher.
+        files: |
+          esp32_jk_bms/firmware-wemos-d1-mini32.bin
+          esp32_jk_bms/firmware-esp32-s3-zero.bin
