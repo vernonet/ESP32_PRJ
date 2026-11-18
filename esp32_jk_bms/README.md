@@ -219,15 +219,15 @@ esp_ble_gattc_write_char_descr(
     ESP_GATT_AUTH_REQ_NONE
 );
 ```
-## 📦 Pre-compiled Firmware (GitHub Actions)
+## 📦 Pre-compiled Firmware
 
-You don't need to compile the source code manually. Ready-to-flash `.bin` binaries for both **WEMOS D1 Mini32** and **Waveshare ESP32-S3-Zero** are automatically built on every commit:
+Ready-to-flash `.bin` binaries for both **WEMOS D1 Mini32** and **Waveshare ESP32-S3-Zero** are automatically published on every update:
 
-👉 **[Download Latest Firmware Builds (GitHub Actions)](https://github.com/vernonet/ESP32_PRJ/actions)**
+👉 **[Download Latest Firmware (.bin)](https://github.com)**
 
-1. Open the latest successful workflow run (green checkmark).
-2. Scroll down to the **Artifacts** section at the bottom of the page.
-3. Download `firmware-wemos-d1-mini32` or `firmware-esp32-s3-zero`, extract the `.bin` file, and flash it via the web OTA page (`/update`) or ESPHome Flasher.
+1. Download `firmware-wemos-d1-mini32.bin` or `firmware-esp32-s3-zero.bin`.
+2. Flash it directly via the web OTA page (`/update`) or ESPHome Flasher.
+
 ---
 
 # JK-BMS Data Reader
